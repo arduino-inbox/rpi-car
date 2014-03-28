@@ -22,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.limit = "all"
       #ansible.verbose = "vvvv"
       ansible.host_key_checking = "false"
-      ansible.playbook = "ansible/site.yml"
+      ansible.playbook = "provisioning/site.yml"
       ansible.extra_vars = {ansible_python_interpreter: "/usr/bin/python2"}
   end
 end

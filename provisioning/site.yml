@@ -1,0 +1,11 @@
+---
+- hosts: all
+  tasks:
+    - pacman: name=net-tools state=installed
+    - pacman: name=base-devel state=installed
+    - pacman: name=python2-setuptools state=installed
+    - pacman: name=python2-pip state=installed
+    - pacman: name=zeromq state=installed
+    - pacman: name=python2-pyzmq state=installed
+    - pip: requirements=/rpi/provisioning/requirements.txt executable=pip2
+
