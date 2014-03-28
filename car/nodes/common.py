@@ -55,7 +55,7 @@ class MotorNode(ValueNode):
     STOP = 0
     BACKWARD = -1
 
-    def __init__(self, value_proxy):
+    def __init__(self, direction, speed):
         ValueNode.__init__(self, value_proxy)
 
     def forward(self):

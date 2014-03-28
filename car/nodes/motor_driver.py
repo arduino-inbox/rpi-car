@@ -10,8 +10,8 @@ from components import MotorDriverComponent
 class MotorDriverNode(MotorNode):
     name = 'Motor Driver Controller'
 
-    def __init__(self, value_proxy):
-        MotorNode.__init__(self, value_proxy)
+    def __init__(self, direction, speed):
+        MotorNode.__init__(self, direction, speed)
         self.motor_driver_component = MotorDriverComponent()
 
     def do(self):
