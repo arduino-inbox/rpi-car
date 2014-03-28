@@ -7,5 +7,7 @@
     - pacman: name=python2-pip state=installed
     - pacman: name=zeromq state=installed
     - pacman: name=python2-pyzmq state=installed
+    - file: src=/usr/bin/python2 dest=/usr/bin/python owner=root group=root state=link
+    - file: src=/usr/bin/pip2 dest=/usr/bin/pip owner=root group=root state=link
     - pip: requirements=/rpi/provisioning/requirements.txt executable=pip2
 
