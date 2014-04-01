@@ -4,24 +4,16 @@ Ultrasonic components.
 """
 
 import time
+from constants import *
 from gpio import GpioComponent
-
-# Some module "constants"
-SOUND_SPEED_Q = 17000
-MAX_DISTANCE = 2000
 
 
 class UltrasonicSensorComponent(GpioComponent):
-    TRIG = 24
-    ECHO = 22
-    LOOP_DELAY = 1
-    START_DELAY = .3
-    PING_DELAY = 0.00001
-
     trigger_pin = None
     echo_pin = None
 
-    def __init__(self, trigger_pin=TRIG, echo_pin=ECHO):
+    def __init__(self, trigger_pin=PIN_ULTRASONIC_TRIG,
+                 echo_pin=PIN_ULTRASONIC_ECHO):
         GpioComponent.__init__(self)
 
         self.trigger_pin = trigger_pin
@@ -34,10 +26,10 @@ class UltrasonicSensorComponent(GpioComponent):
     def reading(self):
         # found that the sensor can crash if there isn't a delay here
         # no idea why. If you have odd crashing issues, increase delay
-        time.sleep(self.START_DELAY)
+        time.sleep(ULTRASONIC_START_DELAY)
 
         self.gpio.output(self.trigger_pin, True)
-        time.sleep(self.PING_DELAY)
+        time.sleep(ULTRASONIC_PING_DELAY)
         self.gpio.output(self.trigger_pin, False)
 
         before_signal = None
@@ -53,9 +45,9 @@ class UltrasonicSensorComponent(GpioComponent):
                 break
 
         if not before_signal or not after_signal:
-            return MAX_DISTANCE
+            return ULTRASONIC_MAX_DISTANCE
 
         time_passed = after_signal - before_signal
-        distance = time_passed * SOUND_SPEED_Q
+        distance = time_passed * ULTRASONIC_SOUND_SPEED_Q
 
         return distance

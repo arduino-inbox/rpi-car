@@ -2,7 +2,7 @@
 """
 Brain node.
 """
-import time
+
 from common import Node, MotorNode
 
 

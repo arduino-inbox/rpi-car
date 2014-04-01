@@ -3,21 +3,14 @@
 Motor driver component
 """
 
+from constants import *
 from gpio import GpioComponent
-
-SPEED_PWM_PIN = 25
-IN1_PIN = 17
-IN2_PIN = 27
-
-SPEED_STEP = 100
-MIN_SPEED = 4000
-MAX_SPEED = 6000
 
 
 class MotorDriverComponent(GpioComponent):
-
-    def __init__(self, speed_pin=SPEED_PWM_PIN, in1_pin=IN1_PIN,
-                 in2_pin=IN2_PIN):
+    def __init__(self, speed_pin=PIN_MOTOR_SPEED_PWM,
+                 in1_pin=PIN_MOTOR_IN1,
+                 in2_pin=PIN_MOTOR_IN2):
         GpioComponent.__init__(self)
 
         self.speed_pin = speed_pin
@@ -32,11 +25,9 @@ class MotorDriverComponent(GpioComponent):
 
         self.stop()
 
-
     def forward(self):
         self.gpio.output(self.in2_pin, False)
         self.gpio.output(self.in1_pin, True)
-
 
     def backward(self):
         self.gpio.output(self.in1_pin, False)
