@@ -1,31 +1,25 @@
 # coding=utf-8
 """
-Main module
+Pubsub module
 """
 
 import redis
-import threading
 
 
-class Subscriber(threading.Thread):
+class Subscriber():
     def __init__(self, channels):
-        threading.Thread.__init__(self)
         self.redis = redis.Redis()
         self.pubsub = self.redis.pubsub()
         self.pubsub.subscribe(channels)
 
-
-    def work(self, item):
-        print item['channel'], ":", item['data']
-
-    def run(self):
+    def listen(self):
         for item in self.pubsub.listen():
             if item['data'] == "KILL":
                 self.pubsub.unsubscribe()
                 print self, "unsubscribed and finished"
                 break
             else:
-                self.work(item)
+                print item['channel'], ":", item['data']
 
 
 class Publisher():

@@ -2,7 +2,7 @@
 """
 Main executable of python robot car.
 """
-from __init__ import Subscriber, Publisher
+from nodes.pubsub import Subscriber, Publisher
 
 s = Subscriber(['test1', 'test2'])
 s.start()
