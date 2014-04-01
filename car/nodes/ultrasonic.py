@@ -20,4 +20,5 @@ class UltrasonicSensorNode(DistanceSensorNode):
 
     def do(self):
         self.value_proxy.value = self.ultrasonic_sensor_component.reading()
-        print self.value_proxy.value
+        if self.ultrasonic_sensor_component.gpio.DEBUG:
+            print "UltrasonicSensorNode.do - distance:", self.value_proxy.value

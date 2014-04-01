@@ -2,6 +2,8 @@
 """
 GPIO-related classes
 """
+import inspect
+import time
 
 
 def gpio_factory():
@@ -20,26 +22,38 @@ def gpio_factory():
         gpio.pwm = PWM
     except Exception, e:
         print e.message
-
+        gpio.DEBUG = True
     return gpio
 
 
 class GpioProxy():
-    IN = None
-    OUT = None
+    DEBUG = False
+    IN = "Input"
+    OUT = "Output"
     pwm = None
+    _lastInput = True
+    DEBUG_SLEEP = .5
 
-    def setup(*args, **kwargs):
-        pass
+    def setup(self, *args):
+        self._debug("setup - pin: "+str(args[0])+", mode: "+str(args[1]))
 
-    def input(*args, **kwargs):
-        pass
+    def input(self, *args):
+        self._debug("input - pin: "+str(args[0]))
+        self._lastInput = not self._lastInput
+        return self._lastInput
 
-    def output(*args, **kwargs):
-        pass
+    def output(self, *args):
+        self._debug("output - pin: "+str(args[0])+", value: "+str(args[1]))
 
-    def cleanup(*args, **kwargs):
-        pass
+    def cleanup(self):
+        self._debug("cleanup")
+
+    def _debug(self, message):
+        if self.DEBUG:
+            frm = inspect.stack()[2]
+            mod = inspect.getmodule(frm[0])
+            print mod.__name__, "-", message
+            time.sleep(self.DEBUG_SLEEP)
 
 
 class GpioComponent:

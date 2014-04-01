@@ -9,6 +9,9 @@ import time
 from nodes import MotorDriverNode, UltrasonicSensorNode, BrainNode, NodeProcess
 from ctypes import c_int, c_float
 
+
+
+
 distance = multiprocessing.Value(c_float, 0, lock=False)
 distance_sensor = UltrasonicSensorNode(value_proxy=distance)
 
