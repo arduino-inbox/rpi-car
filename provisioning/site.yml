@@ -7,6 +7,7 @@
     - pacman: name=python2-setuptools state=installed
     - pacman: name=python2-pip state=installed
     - pacman: name=redis state=installed
+    - service: name=redis enabled=yes state=started
     - pacman: name=python2-redis state=installed
     - file: src=/usr/bin/python2 dest=/usr/bin/python owner=root group=root state=link
     - file: src=/usr/bin/pip2 dest=/usr/bin/pip owner=root group=root state=link

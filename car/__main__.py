@@ -2,7 +2,19 @@
 """
 Main executable of python robot car.
 """
+from __init__ import Subscriber, Publisher
 
+s = Subscriber(['test1', 'test2'])
+s.start()
+
+p1 = Publisher('test1')
+p1.send('P1 says hi.')
+p1.send('P1 says unsubscribe.')
+
+p2 = Publisher('test2')
+p2.send('P2 says hi.')
+p2.send('P2 says unsubscribe.')
+p2.send('KILL')
 
 
 #import multiprocessing
