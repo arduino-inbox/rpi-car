@@ -5,6 +5,7 @@ Generic node classes.
 import multiprocessing
 import logging
 from redis import StrictRedis
+import time
 from components.constants import *
 
 logger = logging.getLogger()
@@ -55,12 +56,17 @@ class Subscriber(Node):
             self.do()
 
 
+def timestamp():
+    return int(round(time.time() * 10**9))
+
+
 class Publisher():
     def __init__(self):
         self.redis_connection = RedisConnectionFactory.build()
 
     def send(self, channel, message):
         self.redis_connection.publish(channel, message)
+        self.redis_connection.hset(str(timestamp()), channel, message)
 
 
 class BrainNode(Subscriber, Publisher):
@@ -118,8 +124,8 @@ class NodeProcess(multiprocessing.Process):
         self.node.run()
 
     def shutdown(self):
-        logger.info("Node shutting down: {name}".format(name=self.node.name))
         self.terminate()
+        logger.info("Node terminated: {name}".format(name=self.node.name))
 
 
 class Car:
@@ -129,14 +135,35 @@ class Car:
     @staticmethod
     def run(nodes):
         import time
+        start_time = timestamp()
+        redis_connection = RedisConnectionFactory.build()
+        redis_connection.publish(CHANNEL_ALL, 'Car started at {t}'.format(
+            t=start_time))
+        redis_connection.hset(start_time, 'start', 'OK')
 
+        # start
         processes = []
         for node in nodes:
             p = NodeProcess(node)
             processes.append(p)
             p.start()
 
+        # run
+        time.sleep(1)
+
         # exit
-        time.sleep(2)
         for p in processes:
             p.shutdown()
+
+        stop_time = timestamp()
+        redis_connection.publish(CHANNEL_ALL,
+                                 'Car stopped at {t}'.format(t=stop_time))
+        redis_connection.hset(stop_time, 'stop', 'OK')
+        redis_connection.hset(stop_time, 'runtime', str(
+            stop_time - start_time))
+
+        # check stored data
+        for key in redis_connection.keys():
+            redis_connection.persist(str(key))
+            data = redis_connection.hgetall(str(key))
+            logger.debug("Redis data stored: " + key + " - " + str(data))
