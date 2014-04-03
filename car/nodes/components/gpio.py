@@ -2,25 +2,15 @@
 """
 GPIO-related classes
 """
-import inspect
-import time
+import logging
 
-class Settings:
-    DEBUG = True
-    DEBUG_SLEEP = .2
-
-
-def debug(message):
-    if Settings.DEBUG:
-        frm = inspect.stack()[2]
-        mod = inspect.getmodule(frm[0])
-        print mod.__name__, "-", message
-        time.sleep(Settings.DEBUG_SLEEP)
+logger = logging.getLogger()
 
 
 class ServoProxy:
     def set_servo(self, pin, value):
-        debug("ServoProxy.set_servo - pin: "+str(pin)+", mode: "+str(value))
+        logger.debug("ServoProxy.set_servo - pin: "+str(pin)+", mode: "+str(value))
+
 
 
 class PwmProxy:
@@ -29,7 +19,7 @@ class PwmProxy:
         self.Servo = ServoProxy
 
     def set_loglevel(self, level):
-        debug("PwmProxy.set_loglevel - level: "+str(level))
+        logger.debug("PwmProxy.set_loglevel - level: "+str(level))
 
 
 class GpioProxy:
@@ -40,18 +30,18 @@ class GpioProxy:
         self._lastInput = False
 
     def setup(self, pin, mode):
-        debug("setup - pin: "+str(pin)+", mode: "+str(mode))
+        logger.debug("GpioProxy.setup - pin: "+str(pin)+", mode: "+str(mode))
 
     def input(self, pin):
-        debug("input - pin: "+str(pin))
+        logger.debug("GpioProxy.input - pin: "+str(pin))
         self._lastInput = not self._lastInput
         return self._lastInput
 
     def output(self, pin, value):
-        debug("output - pin: "+str(pin)+", value: "+str(value))
+        logger.debug("GpioProxy.output - pin: "+str(pin)+", value: "+str(value))
 
     def cleanup(self):
-        debug("cleanup")
+        logger.debug("GpioProxy.cleanup")
 
 
 def gpio_factory():
@@ -61,7 +51,6 @@ def gpio_factory():
         import RPIO
         from RPIO import PWM
 
-        Settings.DEBUG = False
         gpio.setup = RPIO.setup
         gpio.input = RPIO.input
         gpio.output = RPIO.output
@@ -70,7 +59,8 @@ def gpio_factory():
         gpio.OUT = RPIO.OUT
         gpio.pwm = PWM
     except Exception, e:
-        print e.message
+        logger.setLevel(logging.DEBUG)
+        logger.error(e.message)
     return gpio
 
 

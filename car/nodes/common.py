@@ -3,15 +3,18 @@
 Generic node classes.
 """
 import multiprocessing
+import logging
 from redis import StrictRedis
 from components.constants import *
+
+logger = logging.getLogger()
 
 
 class Node:
     name = 'Generic Node'
 
     def __init__(self):
-        print "Initialized.", self.name
+        logger.info("Initialized {name}".format(name=self.name))
 
     def do(self):
         raise NotImplementedError
@@ -39,6 +42,7 @@ class Subscriber(Node):
         self.redis_connection = RedisConnectionFactory.build()
         self.pubsub = self.redis_connection.pubsub()
         self.pubsub.subscribe(channels)
+        logger.debug("{name} subscribed to {channels}.".format(name=self.name, channels=channels))
         self.data = {}
 
     def listen(self):
@@ -110,11 +114,11 @@ class NodeProcess(multiprocessing.Process):
         self.node = node
 
     def run(self):
-        print self.node.name, "Running"
+        logger.info("Node process running: {name}".format(name=self.node.name))
         self.node.run()
 
     def shutdown(self):
-        print self.node.name, "Shutdown initiated"
+        logger.info("Node shutting down: {name}".format(name=self.node.name))
         self.terminate()
 
 
