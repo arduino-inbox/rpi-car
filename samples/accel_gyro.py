@@ -19,18 +19,6 @@ class I2C:
         self.address = address
         self.bus = bus
 
-    def reverseByteOrder(self, data):
-        "Reverses the byte order of an int (16-bit) or long (32-bit) value"
-        # Courtesy Vishal Sapre
-        dstr = hex(data)[2:].replace('L', '')
-        byteCount = len(dstr[::2])
-        val = 0
-        for i, n in enumerate(range(byteCount)):
-            d = data & 0xFF
-            val |= (d << (8 * (byteCount - i - 1)))
-            data >>= 8
-        return val
-
     def write8(self, reg, value):
         "Writes an 8-bit value to the specified register/address"
         while True:

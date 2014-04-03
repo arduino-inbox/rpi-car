@@ -3,7 +3,7 @@
 Ultrasonic nodes.
 """
 
-from common import ServoNode, DistanceSensorNode
+from common import ServoNode, DistanceSensor, Subscriber
 from components import UltrasonicSensorComponent
 
 
@@ -11,14 +11,13 @@ class UltrasonicServoNode(ServoNode):
     name = 'Ultrasonic Servo'
 
 
-class UltrasonicSensorNode(DistanceSensorNode):
+class UltrasonicSensorNode(DistanceSensor, Subscriber):
     name = 'Ultrasonic Sensor'
 
-    def __init__(self, value_proxy):
-        DistanceSensorNode.__init__(self, value_proxy)
+    def __init__(self):
+        DistanceSensor.__init__(self)
+        Subscriber.__init__(self, [])
         self.ultrasonic_sensor_component = UltrasonicSensorComponent()
 
     def do(self):
-        self.value_proxy.value = self.ultrasonic_sensor_component.reading()
-        if self.ultrasonic_sensor_component.gpio.DEBUG:
-            print "UltrasonicSensorNode.do - distance:", self.value_proxy.value
+        self.set_distance(self.ultrasonic_sensor_component.reading())

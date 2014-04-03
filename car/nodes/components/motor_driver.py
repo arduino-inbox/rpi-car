@@ -25,13 +25,15 @@ class MotorDriverComponent(GpioComponent):
 
         self.stop()
 
-    def forward(self):
+    def forward(self, speed):
         self.gpio.output(self.in2_pin, False)
         self.gpio.output(self.in1_pin, True)
+        self.set_speed(speed)
 
-    def backward(self):
+    def backward(self, speed):
         self.gpio.output(self.in1_pin, False)
         self.gpio.output(self.in2_pin, True)
+        self.set_speed(speed)
 
     def stop(self):
         self.gpio.output(self.in1_pin, False)

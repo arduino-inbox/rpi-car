@@ -2,3 +2,4 @@ RPIO
 RPi.GPIO
 gpiocrust
 wiringpi2
+#smbus-cffi

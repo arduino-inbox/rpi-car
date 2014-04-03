@@ -2,22 +2,33 @@
 """
 Motor driver node.
 """
-
-from common import MotorNode
+from components.constants import *
+from . import Subscriber
 from components import MotorDriverComponent
 
 
-class MotorDriverNode(MotorNode):
+class MotorDriver(Subscriber):
     name = 'Motor Driver Controller'
+    channels = [
+        'speed',
+        'direction',
+    ]
 
-    def __init__(self, direction, speed):
-        MotorNode.__init__(self, direction, speed)
+    def __init__(self):
+        Subscriber.__init__(self, self.channels)
         self.motor_driver_component = MotorDriverComponent()
+        self.speed = 0
+        self.direction = MOTOR_DIRECTION_STOP
+        self.data[CHANNEL_SPEED] = self.speed
+        self.data[CHANNEL_DIRECTION] = self.direction
 
     def do(self):
-        if self.value_proxy.value == MotorNode.FORWARD:
-            self.motor_driver_component.forward()
-        elif self.value_proxy.value == MotorNode.BACKWARD:
-            self.motor_driver_component.backward()
+        self.speed = self.data[CHANNEL_SPEED]
+        self.direction = self.data[CHANNEL_DIRECTION]
+
+        if self.direction == MOTOR_DIRECTION_FORWARD:
+            self.motor_driver_component.forward(self.speed)
+        elif self.direction == MOTOR_DIRECTION_BACKWARD:
+            self.motor_driver_component.backward(self.speed)
         else:
             self.motor_driver_component.stop()

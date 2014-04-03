@@ -1,15 +1,25 @@
 ---
 - hosts: all
   tasks:
-    - pacman: name=net-tools state=installed
     - pacman: name=base-devel state=installed
+
+    - pacman: name=lm_sensors state=installed
+    - pacman: name=i2c-tools state=installed
+    - pacman: name=python2-cffi state=installed
+
+    - pacman: name=net-tools state=installed
+    - pacman: name=wget state=installed
     - pacman: name=screen state=installed
+    - pacman: name=git state=installed
+
     - pacman: name=python2-setuptools state=installed
     - pacman: name=python2-pip state=installed
+    - file: src=/usr/bin/python2 dest=/usr/bin/python owner=root group=root state=link
+    - file: src=/usr/bin/pip2 dest=/usr/bin/pip owner=root group=root state=link
+
     - pacman: name=redis state=installed
     - service: name=redis enabled=yes state=started
     - pacman: name=python2-redis state=installed
-    - file: src=/usr/bin/python2 dest=/usr/bin/python owner=root group=root state=link
-    - file: src=/usr/bin/pip2 dest=/usr/bin/pip owner=root group=root state=link
+
     - pip: requirements=/rpi/provisioning/requirements.txt executable=pip2
 

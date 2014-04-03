@@ -1,12 +1,11 @@
 # coding=utf-8
 """
-RX-2B node.
+Accel/Gyro sensor node.
 """
 
-from common import ValueNode
-from components import AccelGyroSensorComponent
+from common import Node
 
 
-class AccelGyroSensorNode(ValueNode):
+class AccelGyroSensorNode(Node):
     # TODO: Implement and wire up the hardware
     name = 'Accel/Gyro Sensor'

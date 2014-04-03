@@ -3,84 +3,136 @@
 Generic node classes.
 """
 import multiprocessing
+from redis import StrictRedis
+from components.constants import *
 
 
 class Node:
     name = 'Generic Node'
 
     def __init__(self):
-        print "Node Initialized.", self.name
+        print "Initialized.", self.name
 
     def do(self):
-        raise NotImplemented
+        raise NotImplementedError
 
 
-class ValueNode(Node):
-    name = 'Car Node'
-    value_proxy = None
+class RedisConnectionFactory:
+    def __init__(self):
+        pass
 
-    def __init__(self, value_proxy):
+    @classmethod
+    def build(cls):
+        # todo: provision connection properties
+        return StrictRedis(host='localhost', port=6379, db=0)
+
+
+class Subscriber(Node):
+    def __init__(self, channels=None):
         Node.__init__(self)
-        self.value_proxy = value_proxy
 
-    def _get_value(self):
-        return self.value_proxy.value
+        if not channels:
+            channels = []
+        if CHANNEL_ALL not in channels:
+            channels.append(CHANNEL_ALL)
 
-    def _set_value(self, value):
-        self.value_proxy.value = value
+        self.redis_connection = RedisConnectionFactory.build()
+        self.pubsub = self.redis_connection.pubsub()
+        self.pubsub.subscribe(channels)
+        self.data = {}
+
+    def listen(self):
+        for item in self.pubsub.listen():
+            self.data[item['channel']] = item['data']
+            yield self.data
+
+    def run(self):
+        while self.listen():
+            self.do()
+
+
+class Publisher():
+    def __init__(self):
+        self.redis_connection = RedisConnectionFactory.build()
+
+    def send(self, channel, message):
+        self.redis_connection.publish(channel, message)
+
+
+class BrainNode(Subscriber, Publisher):
+    name = 'Brain'
+
+    def __init__(self):
+        Subscriber.__init__(self, [
+            'distance',
+        ])
+        Publisher.__init__(self)
+
+        self.speed = 0
+        self.direction = MOTOR_DIRECTION_STOP
+        self.distance = ULTRASONIC_MAX_DISTANCE
+        self.data[CHANNEL_DISTANCE] = self.distance
 
     def do(self):
-        print self.name, self.value_proxy.value
+        self.distance = self.data[CHANNEL_DISTANCE]
+        if self.distance < 50:
+            self.speed = 0
+            self.direction = MOTOR_DIRECTION_STOP
+        else:
+            self.speed += MOTOR_SPEED_STEP
+            self.direction = MOTOR_DIRECTION_FORWARD
+        self.send(CHANNEL_SPEED, self.speed)
+        self.send(CHANNEL_DIRECTION, self.direction)
 
 
-class ServoNode(ValueNode):
+class ServoNode(Subscriber):
     #TODO: Implement
     pass
 
 
-class DistanceSensorNode(ValueNode):
-    def __init__(self, value_proxy):
-        ValueNode.__init__(self, value_proxy)
+class DistanceSensor(Publisher):
+    _distance = ULTRASONIC_MAX_DISTANCE
 
-    def get_distance(self):
-        return self._get_value()
+    def __init__(self):
+        Publisher.__init__(self)
+        self.set_distance(ULTRASONIC_MAX_DISTANCE)
 
     def set_distance(self, distance):
-        self._set_value(distance)
-
-
-class MotorNode(ValueNode):
-
-    FORWARD = 1
-    STOP = 0
-    BACKWARD = -1
-
-    def __init__(self, direction, speed):
-        ValueNode.__init__(self, value_proxy)
-
-    def forward(self):
-        self._set_value(self.FORWARD)
-
-    def stop(self):
-        self._set_value(self.STOP)
-
-    def backward(self):
-        self._set_value(self.BACKWARD)
-
-    def get_direction(self):
-        return self._get_value()
+        # update
+        self._distance = distance
+        # notify
+        self.send(CHANNEL_DISTANCE, distance)
 
 
 class NodeProcess(multiprocessing.Process):
     def __init__(self, node):
         multiprocessing.Process.__init__(self)
-        self.exit = multiprocessing.Value('i', 0, lock=False)
         self.node = node
 
     def run(self):
-        while not self.exit.value == 1:
-            self.node.do()
+        print self.node.name, "Running"
+        self.node.run()
 
     def shutdown(self):
-        print "Shutdown initiated", self.node.name
-        self.exit.value = 1
+        print self.node.name, "Shutdown initiated"
+        self.terminate()
+
+
+class Car:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def run(nodes):
+        import time
+
+        processes = []
+        for node in nodes:
+            p = NodeProcess(node)
+            processes.append(p)
+            p.start()
+
+        # exit
+        time.sleep(2)
+        for p in processes:
+            p.shutdown()
