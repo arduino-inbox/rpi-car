@@ -15,12 +15,39 @@ import smbus
 logger = logging.getLogger()
 
 
+#noinspection PyClassHasNoInit
+class SmBusMock:
+    """
+    Mock SMBus
+    """
+    pass
+
+
+#noinspection PyClassHasNoInit
+class SmBusFactory:
+    """
+    SM bus factory.
+    """
+    @staticmethod
+    def build():
+        """
+        Factory method.
+        """
+        try:
+            return smbus.SMBus(1)
+        except IOError, e:
+            logger.setLevel(logging.DEBUG)
+            logger.warning("Using SMBus mock.")
+            logger.error(e.message)
+            return SmBusMock()
+
+
 class I2C:
     """
     Adafruit i2c interface plus bug fix.
     """
 
-    def __init__(self, address, bus=smbus.SMBus(1)):
+    def __init__(self, address, bus=SmBusFactory.build()):
         self.address = address
         self.bus = bus
 

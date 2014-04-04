@@ -5,7 +5,6 @@ Generic node classes.
 import multiprocessing
 import logging
 from redis import StrictRedis
-from . import timestamp
 import time
 from components.constants import *
 
@@ -237,3 +236,11 @@ class Car:
             redis_connection.persist(str(key))
             data = redis_connection.hgetall(str(key))
             logger.debug("Redis data stored: " + key + " - " + str(data))
+
+
+def timestamp():
+    """
+    Timestamp helper.
+    @return: int
+    """
+    return int(round(time.time() * 10**9))

@@ -9,11 +9,3 @@ from motor_driver import MotorDriverNode
 from ultrasonic import UltrasonicSensorNode, UltrasonicServoNode
 from steering import SteeringServoNode
 from accel import AccelerometerGyroSensorNode
-
-
-def timestamp():
-    """
-    Timestamp helper.
-    @return: int
-    """
-    return int(round(time.time() * 10**9))
