@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-Accel/Gyro helper classes
+Accelerometer/Gyroscope helper classes
 """
 
 from __future__ import division
@@ -109,8 +109,8 @@ class I2C:
         """
         while True:
             try:
-                hibyte = self.bus.read_byte_data(self.address, register)
-                result = (hibyte << 8) + self.bus.read_byte_data(self.address,
+                high_byte = self.bus.read_byte_data(self.address, register)
+                result = (high_byte << 8) + self.bus.read_byte_data(self.address,
                                                                  register + 1)
                 logger.debug(
                     'I2C: Device 0x%02X returned 0x%04X from reg 0x%02X',
@@ -134,10 +134,10 @@ class I2C:
         """
         while True:
             try:
-                hibyte = self.bus.read_byte_data(self.address, register)
-                if hibyte > 127:
-                    hibyte -= 256
-                result = (hibyte << 8) + self.bus.read_byte_data(self.address,
+                high_byte = self.bus.read_byte_data(self.address, register)
+                if high_byte > 127:
+                    high_byte -= 256
+                result = (high_byte << 8) + self.bus.read_byte_data(self.address,
                                                                  register + 1)
                 logger.debug(
                     'I2C: Device 0x%02X returned 0x%04X from reg 0x%02X',
@@ -636,7 +636,7 @@ class MPU6050:
 class PID:
     """
     PID algorithm to take input accelerometer readings, and target
-    accelermeter requirements, and
+    accelerometer requirements, and
     as a result feedback new rotor speeds.
     """
 

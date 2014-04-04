@@ -2,7 +2,7 @@
 """
 Main executable of python robot car.
 """
-from nodes import MotorDriver, UltrasonicSensorNode, BrainNode, Car
+from nodes import MotorDriverNode, UltrasonicSensorNode, BrainNode, Car
 
 # Logging setup
 import logging
@@ -15,7 +15,7 @@ logger.addHandler(handler)
 
 
 distance_sensor = UltrasonicSensorNode()
-motor = MotorDriver()
+motor = MotorDriverNode()
 brain = BrainNode()
 
 nodes = [

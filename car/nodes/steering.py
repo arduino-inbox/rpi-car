@@ -7,5 +7,10 @@ from common import ServoNode
 
 
 class SteeringServoNode(ServoNode):
-    # TODO: Implement
+    """
+    Steering servo motor node.
+    """
     name = 'Steering Servo'
+
+    def __init__(self):
+        ServoNode.__init__(self)

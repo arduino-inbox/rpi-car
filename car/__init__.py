@@ -1,1 +1,4 @@
-__author__ = 'rstets'
+# coding=utf-8
+"""
+Main module.
+"""

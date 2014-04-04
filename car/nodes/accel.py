@@ -1,11 +1,14 @@
 # coding=utf-8
 """
-Accel/Gyro sensor node.
+Accelerometer/Gyro sensor node.
 """
 
 from common import Node
 
 
-class AccelGyroSensorNode(Node):
+class AccelerometerGyroSensorNode(Node):
+    """
+    Accelerometer/Gyroscope node.
+    """
     # TODO: Implement and wire up the hardware
-    name = 'Accel/Gyro Sensor'
+    name = 'Accelerometer/Gyroscope Sensor'

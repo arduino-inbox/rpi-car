@@ -9,8 +9,9 @@ from gpio import GpioComponent
 
 
 class UltrasonicSensorComponent(GpioComponent):
-    trigger_pin = None
-    echo_pin = None
+    """
+    HC-SR04 ultrasonic sensor component.
+    """
 
     def __init__(self, trigger_pin=PIN_ULTRASONIC_TRIG,
                  echo_pin=PIN_ULTRASONIC_ECHO):
@@ -24,6 +25,12 @@ class UltrasonicSensorComponent(GpioComponent):
         self.gpio.output(self.trigger_pin, False)
 
     def reading(self):
+        """
+        Operate the sensor to calculate the distance value.
+
+        @return: float
+        """
+
         # found that the sensor can crash if there isn't a delay here
         # no idea why. If you have odd crashing issues, increase delay
         time.sleep(ULTRASONIC_START_DELAY)
@@ -45,7 +52,7 @@ class UltrasonicSensorComponent(GpioComponent):
                 break
 
         if not before_signal or not after_signal:
-            return ULTRASONIC_MAX_DISTANCE
+            return DISTANCE_MAXIMUM
 
         time_passed = after_signal - before_signal
         distance = time_passed * ULTRASONIC_SOUND_SPEED_Q

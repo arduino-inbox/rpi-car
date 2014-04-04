@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-Accel/Gyro module.
+Accelerometer/Gyroscope module.
 """
 
-from component import AccelGyroSensorComponent
+from component import AccelerometerGyroSensorComponent

@@ -5,6 +5,7 @@ Generic node classes.
 import multiprocessing
 import logging
 from redis import StrictRedis
+from . import timestamp
 import time
 from components.constants import *
 
@@ -12,30 +13,48 @@ logger = logging.getLogger()
 
 
 class Node:
+    """
+    Base class for all nodes.
+    """
     name = 'Generic Node'
 
     def __init__(self):
         logger.info("Initialized {name}".format(name=self.name))
 
     def do(self):
+        """
+        Do a bit of work.
+        """
         raise NotImplementedError
 
     def run(self):
+        """
+        Node loop
+        """
         while True:
             self.do()
 
 
+#noinspection PyClassHasNoInit
 class RedisConnectionFactory:
-    def __init__(self):
-        pass
+    """
+    Redis connection factory.
+    """
+    @staticmethod
+    def build():
+        """
+        Instantiate a redis connection
 
-    @classmethod
-    def build(cls):
+        @return: StrictRedis
+        """
         # todo: provision connection properties
         return StrictRedis(host='localhost', port=6379, db=0)
 
 
-class Subscriber(Node):
+class SubscriberNode(Node):
+    """
+    Pub/Sub subscriber node
+    """
     def __init__(self, channels=None):
         Node.__init__(self)
 
@@ -45,49 +64,70 @@ class Subscriber(Node):
             channels.append(CHANNEL_ALL)
 
         self.redis_connection = RedisConnectionFactory.build()
-        self.pubsub = self.redis_connection.pubsub()
-        self.pubsub.subscribe(channels)
+        self.pub_sub = self.redis_connection.pubsub()
+        self.pub_sub.subscribe(channels)
         logger.debug("{name} subscribed to {channels}.".format(name=self.name, channels=channels))
         self.data = {}
 
     def listen(self):
-        for item in self.pubsub.listen():
+        """
+        Listen to pub/sub messages and yield the updated data.
+
+        @return: dict
+        """
+        for item in self.pub_sub.listen():
             self.data[item['channel']] = item['data']
             yield self.data
 
     def run(self):
+        """
+        Node loop.
+        """
         while self.listen():
             self.do()
 
 
-def timestamp():
-    return int(round(time.time() * 10**9))
+class PublisherNode(Node):
+    """
+    Pub/sub publisher node.
+    """
 
-
-class Publisher():
     def __init__(self):
+        Node.__init__(self)
         self.redis_connection = RedisConnectionFactory.build()
 
     def send(self, channel, message):
+        """
+        Send message.
+
+        @param channel: string
+        @param message: string
+        """
         self.redis_connection.publish(channel, message)
         self.redis_connection.hset(str(timestamp()), channel, message)
 
 
-class BrainNode(Subscriber, Publisher):
+class BrainNode(SubscriberNode, PublisherNode):
+    """
+    Dispatcher node.
+    """
     name = 'Brain'
 
     def __init__(self):
-        Subscriber.__init__(self, [
+        SubscriberNode.__init__(self, [
             'distance',
         ])
-        Publisher.__init__(self)
+        PublisherNode.__init__(self)
 
         self.speed = 0
         self.direction = MOTOR_DIRECTION_STOP
-        self.distance = ULTRASONIC_MAX_DISTANCE
+        self.distance = DISTANCE_MAXIMUM
         self.data[CHANNEL_DISTANCE] = self.distance
 
     def do(self):
+        """
+        A bit of work.
+        """
         self.distance = self.data[CHANNEL_DISTANCE]
         if self.distance < 50:
             self.speed = 0
@@ -99,46 +139,72 @@ class BrainNode(Subscriber, Publisher):
         self.send(CHANNEL_DIRECTION, self.direction)
 
 
-class ServoNode(Subscriber):
-    #TODO: Implement
-    pass
-
-
-class DistanceSensor(Publisher):
-    _distance = ULTRASONIC_MAX_DISTANCE
+class ServoNode(SubscriberNode):
+    """
+    Generic servo motor node.
+    """
 
     def __init__(self):
-        Publisher.__init__(self)
-        self.set_distance(ULTRASONIC_MAX_DISTANCE)
+        SubscriberNode.__init__(self)
+        # todo Implement
+        raise NotImplementedError
+
+
+class DistanceSensor(PublisherNode):
+    """
+    Generic distance sensor publisher node.
+    """
+    _distance = None
+
+    def __init__(self):
+        PublisherNode.__init__(self)
+        self.set_distance(DISTANCE_MAXIMUM)
 
     def set_distance(self, distance):
-        # update
+        """
+        Set and publish distance value.
+
+        @param distance: float
+        """
         self._distance = distance
-        # notify
         self.send(CHANNEL_DISTANCE, distance)
 
 
 class NodeProcess(multiprocessing.Process):
+    """
+    System process running a node.
+    """
     def __init__(self, node):
         multiprocessing.Process.__init__(self)
         self.node = node
 
     def run(self):
+        """
+        Start a node process.
+        """
         logger.info("Node process running: {name}".format(name=self.node.name))
         self.node.run()
 
     def shutdown(self):
+        """
+        Terminate a node process.
+        """
         self.terminate()
         logger.info("Node terminated: {name}".format(name=self.node.name))
 
 
+#noinspection PyClassHasNoInit
 class Car:
-    def __init__(self):
-        pass
-
+    """
+    Main routine class
+    """
     @staticmethod
     def run(nodes):
-        import time
+        """
+        Main routine.
+
+        @param nodes: list
+        """
         start_time = timestamp()
         redis_connection = RedisConnectionFactory.build()
         redis_connection.publish(CHANNEL_ALL, 'Car started at {t}'.format(

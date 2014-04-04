@@ -2,13 +2,11 @@
 """
 Ultrasonic components.
 """
-import time
-
 from helpers import MPU6050
 from ..gpio import GpioComponent
 
 
-class AccelGyroSensorComponent(GpioComponent):
+class AccelerometerGyroSensorComponent(GpioComponent):
 
     """
     @todo Read these:
@@ -28,14 +26,11 @@ class AccelGyroSensorComponent(GpioComponent):
 
     def __init__(self):
         GpioComponent.__init__(self)
-
         self.mpu = MPU6050()
 
-        raise NotImplementedError()
-
     def reading(self):
-        while True:
-            fax, fay, faz, fgx, fgy, fgz = self.mpu.read_sensors()
-            print "Accel, Z: ", faz
-            time.sleep(.1)
-        #raise NotImplementedError()
+        """
+        Read accelerometer/gyroscope values.
+        @return:
+        """
+        return self.mpu.read_sensors()

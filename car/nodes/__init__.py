@@ -2,9 +2,18 @@
 """
 Robot car sensors, motors and other active components
 """
-from common import (Node, Publisher, Subscriber, BrainNode, ServoNode,
+import time
+from common import (Node, PublisherNode, SubscriberNode, BrainNode, ServoNode,
                     NodeProcess, Car)
-from motor_driver import MotorDriver
+from motor_driver import MotorDriverNode
 from ultrasonic import UltrasonicSensorNode, UltrasonicServoNode
 from steering import SteeringServoNode
-from accel import AccelGyroSensorNode
+from accel import AccelerometerGyroSensorNode
+
+
+def timestamp():
+    """
+    Timestamp helper.
+    @return: int
+    """
+    return int(round(time.time() * 10**9))
