@@ -8,7 +8,7 @@ from array import *
 import smbus
 import logging
 
-logger = logging.Logger("", logging.DEBUG)
+logger = logging.getLogger()
 ###########################################
 #
 #  Adafruit i2c interface plus bug fix

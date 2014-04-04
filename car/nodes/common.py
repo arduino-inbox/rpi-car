@@ -20,6 +20,10 @@ class Node:
     def do(self):
         raise NotImplementedError
 
+    def run(self):
+        while True:
+            self.do()
+
 
 class RedisConnectionFactory:
     def __init__(self):
