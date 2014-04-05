@@ -3,9 +3,9 @@
   tasks:
     - pacman: name=base-devel state=installed
 
-    #- pacman: name=lm_sensors state=installed  # use on "real" hardware
-    #- pacman: name=i2c-tools state=installed  # use on "real" hardware
-    #- pacman: name=python2-cffi state=installed  # use on "real" hardware
+    - pacman: name=lm_sensors state=installed  # use on "real" hardware
+    - pacman: name=i2c-tools state=installed  # use on "real" hardware
+    - pacman: name=python2-cffi state=installed  # use on "real" hardware
 
     - pacman: name=net-tools state=installed
     - pacman: name=wget state=installed
