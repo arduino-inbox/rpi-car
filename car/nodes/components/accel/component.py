@@ -6,7 +6,7 @@ from helpers import MPU6050
 from ..gpio import GpioComponent
 
 
-class AccelerometerGyroSensorComponent(GpioComponent):
+class AccelerometerGyroscopeSensorComponent(GpioComponent):
 
     """
     @todo Read these:
@@ -31,6 +31,6 @@ class AccelerometerGyroSensorComponent(GpioComponent):
     def reading(self):
         """
         Read accelerometer/gyroscope values.
-        @return:
+        @return: tuple
         """
         return self.mpu.read_sensors()

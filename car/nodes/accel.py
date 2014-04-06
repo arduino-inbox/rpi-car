@@ -2,13 +2,22 @@
 """
 Accelerometer/Gyro sensor node.
 """
+from components import AccelerometerGyroscopeSensorComponent
+from common import PublisherNode
 
-from common import Node
 
-
-class AccelerometerGyroSensorNode(Node):
+class AccelerometerGyroscopeSensorNode(PublisherNode):
     """
     Accelerometer/Gyroscope node.
     """
-    # TODO: Implement and wire up the hardware
     name = 'Accelerometer/Gyroscope Sensor'
+
+    def __init__(self):
+        PublisherNode.__init__(self)
+        self.sensor_component = AccelerometerGyroscopeSensorComponent()
+
+    def do(self):
+        """
+        Read ultrasonic component value and update the property.
+        """
+        self.set_distance(self.ultrasonic_sensor_component.reading())

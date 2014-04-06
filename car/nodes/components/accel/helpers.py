@@ -475,7 +475,7 @@ class MPU6050:
         """
         Read raw sensor values.
 
-        @return: list
+        @return: array
         """
 
         # Clear the interrupt by reading the interrupt status register
@@ -510,7 +510,7 @@ class MPU6050:
         """
         Read and calibrate sensor values.
 
-        @return: list
+        @return: tuple
         """
 
         # +/- 2g 2 * 16 bit range for the accelerometer

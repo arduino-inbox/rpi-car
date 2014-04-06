@@ -3,7 +3,7 @@
 Ultrasonic nodes.
 """
 
-from common import ServoNode, DistanceSensor
+from common import ServoNode, DistanceSensorNode
 from components import UltrasonicSensorComponent
 
 
@@ -19,14 +19,14 @@ class UltrasonicServoNode(ServoNode):
         raise NotImplementedError
 
 
-class UltrasonicSensorNode(DistanceSensor):
+class UltrasonicSensorNode(DistanceSensorNode):
     """
     Ultrasonic sensor node.
     """
     name = 'Ultrasonic Sensor'
 
     def __init__(self):
-        DistanceSensor.__init__(self)
+        DistanceSensorNode.__init__(self)
         self.ultrasonic_sensor_component = UltrasonicSensorComponent()
 
     def do(self):

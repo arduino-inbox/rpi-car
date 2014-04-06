@@ -8,4 +8,4 @@ from common import (Node, PublisherNode, SubscriberNode, BrainNode, ServoNode,
 from motor_driver import MotorDriverNode
 from ultrasonic import UltrasonicSensorNode, UltrasonicServoNode
 from steering import SteeringServoNode
-from accel import AccelerometerGyroSensorNode
+from accel import AccelerometerGyroscopeSensorNode

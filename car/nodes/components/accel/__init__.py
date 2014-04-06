@@ -3,4 +3,4 @@
 Accelerometer/Gyroscope module.
 """
 
-from component import AccelerometerGyroSensorComponent
+from component import AccelerometerGyroscopeSensorComponent

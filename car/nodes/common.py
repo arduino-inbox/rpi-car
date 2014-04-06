@@ -149,7 +149,7 @@ class ServoNode(SubscriberNode):
         raise NotImplementedError
 
 
-class DistanceSensor(PublisherNode):
+class DistanceSensorNode(PublisherNode):
     """
     Generic distance sensor publisher node.
     """
