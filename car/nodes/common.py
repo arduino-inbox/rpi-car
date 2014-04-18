@@ -52,7 +52,7 @@ class RedisConnectionFactory:
 
 class SubscriberNode(Node):
     """
-    Pub/Sub subscriber node
+    Redis subscriber node
     """
     def __init__(self, channels=None):
         Node.__init__(self)
@@ -62,28 +62,20 @@ class SubscriberNode(Node):
         if CHANNEL_ALL not in channels:
             channels.append(CHANNEL_ALL)
 
+        self.channels = channels
         self.redis_connection = RedisConnectionFactory.build()
-        self.pub_sub = self.redis_connection.pubsub()
-        self.pub_sub.subscribe(channels)
-        logger.debug("{name} subscribed to {channels}.".format(name=self.name, channels=channels))
+        logger.debug("{name} subscribed to {channels}.".format(
+            name=self.name, channels=channels))
         self.data = {}
 
-    def listen(self):
+    def do(self):
         """
         Listen to pub/sub messages and yield the updated data.
 
         @return: dict
         """
-        for item in self.pub_sub.listen():
-            self.data[item['channel']] = item['data']
-            yield self.data
-
-    def run(self):
-        """
-        Node loop.
-        """
-        while self.listen():
-            self.do()
+        for channel in self.channels:
+            self.data[channel] = self.redis_connection.get(channel)
 
 
 class PublisherNode(Node):
