@@ -29,4 +29,4 @@
     - pacman: name=python2-cffi state=installed
 
     - pip: name=wiringpi2 state=present
-    - pip: name=smbus-cffi state=present
+    #- pip: name=smbus-cffi state=present  # todo: i2cdetect - http://blog.bitify.co.uk/2013/11/interfacing-raspberry-pi-and-mpu-6050.html
