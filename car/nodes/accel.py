@@ -38,8 +38,8 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         deltaTime = self.t1 - self.t0
 
         # convert to force [N]
-        ax = fax #* 9.80665
-        ay = fay #* 9.80665
+        ax = fax * 9.80665
+        ay = fay * 9.80665
         #az *= 9.80665
 
         # distance moved in deltaTime, s = 1/2 a t^2 + vt
