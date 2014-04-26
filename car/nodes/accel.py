@@ -2,9 +2,9 @@
 """
 Accelerometer/Gyro sensor node.
 """
-# import cmath
+import cmath
 # import time
-from components.constants import CHANNEL_ACCELERATION
+from components.constants import *
 from components import AccelerometerGyroscopeSensorComponent
 from common import PublisherNode
 
@@ -41,7 +41,7 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         ax = fax * 9.80665
         ay = fay * 9.80665
 
-        self.send(CHANNEL_TRAVEL_DISTANCE, float(travel))
+        self.send(CHANNEL_ACCELERATION, float(cmath.sqrt(ax**2 + ay**2).real))
 
         #az *= 9.80665
 
