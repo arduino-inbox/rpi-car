@@ -1,3 +1,0 @@
-RPIO
-RPi.GPIO
-gpiocrust

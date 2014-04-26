@@ -17,7 +17,10 @@
     - service: name=redis enabled=yes state=started
     - pacman: name=python2-redis state=installed
 
-    - pip: requirements=/rpi/provisioning/requirements.txt executable=pip2
+    - pip: name=RPIO state=present
+    - pip: name=RPi.GPIO state=present
+    - pip: name=gpiocrust state=present
+
 
 - hosts: rpi
   tasks:

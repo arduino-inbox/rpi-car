@@ -2,6 +2,7 @@
 """
 Ultrasonic components.
 """
+from time import sleep
 from helpers import MPU6050
 from ..gpio import GpioComponent
 
@@ -27,6 +28,12 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
     def __init__(self):
         GpioComponent.__init__(self)
         self.mpu = MPU6050()
+
+        # update offsets
+        sleep(.5)
+        self.mpu.update_offsets('/tmp/mpu6050_offsets')
+
+
 
     def reading(self):
         """

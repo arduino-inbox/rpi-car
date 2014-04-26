@@ -18,6 +18,6 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
 
     def do(self):
         """
-        Read ultrasonic component value and update the property.
+        Read component value and update the property.
         """
-        self.set_distance(self.ultrasonic_sensor_component.reading())
+        fax, fay, faz, fgx, fgy, fgz = self.sensor_component.reading()
