@@ -105,7 +105,8 @@ class BrainNode(SubscriberNode, PublisherNode):
 
     def __init__(self):
         SubscriberNode.__init__(self, [
-            'distance',
+            CHANNEL_DISTANCE,
+            CHANNEL_TRAVEL_DISTANCE,
         ])
         PublisherNode.__init__(self)
 
@@ -124,15 +125,19 @@ class BrainNode(SubscriberNode, PublisherNode):
         # Update data.
         SubscriberNode.do(self)
 
-        self.distance = int(self.data[CHANNEL_DISTANCE] or DISTANCE_MAXIMUM)
         self.travel_distance = int(self.data[CHANNEL_TRAVEL_DISTANCE] or 0)
+        self.distance = int(self.data[CHANNEL_DISTANCE] or DISTANCE_MAXIMUM)
 
-        if self.distance < 50:
+        if self.travel_distance > 1:
             self.speed = 0
             self.direction = MOTOR_DIRECTION_STOP
         else:
-            self.speed += MOTOR_SPEED_STEP
-            self.direction = MOTOR_DIRECTION_FORWARD
+            if self.distance < 50:
+                self.speed = 0
+                self.direction = MOTOR_DIRECTION_STOP
+            else:
+                self.speed += MOTOR_SPEED_STEP
+                self.direction = MOTOR_DIRECTION_FORWARD
         self.send(CHANNEL_SPEED, self.speed)
         self.send(CHANNEL_DIRECTION, self.direction)
 
