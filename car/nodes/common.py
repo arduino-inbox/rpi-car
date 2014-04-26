@@ -236,9 +236,9 @@ class Car:
                 pass
 
 
-def timestamp():
+def timestamp(precision=9):
     """
     Timestamp helper.
     @return: int
     """
-    return int(round(time.time() * 10**9))
+    return int(round(time.time() * 10 ** precision))
