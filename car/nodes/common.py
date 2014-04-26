@@ -222,7 +222,7 @@ class Car:
             p.start()
 
         # run
-        time.sleep(1)
+        time.sleep(10)
 
         # exit
         for p in processes:
