@@ -2,6 +2,7 @@
 """
 Accelerometer/Gyro sensor node.
 """
+import cmath
 
 import math
 import time
@@ -57,7 +58,7 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         #self.zVelocity += az * deltaTime
 
         #
-        travel = math.sqrt(self.xTravel ** 2 + self.yTravel ** 2)
+        travel = cmath.sqrt(self.xTravel ** 2 + self.yTravel ** 2).real
 
         # # print("X Gyro (orig):", fgx)
         # # print("Y Gyro (orig):", fgy)
