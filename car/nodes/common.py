@@ -136,6 +136,8 @@ class BrainNode(SubscriberNode, PublisherNode):
         #     self.speed = 0
         #     self.direction = MOTOR_DIRECTION_STOP
         # else:
+        print "Distance: {d}".format(d=self.distance)
+        print "Acceleraton: {a}".format(a=self.acceleration)
 
         if self.distance < 50:
             self.speed = 0
