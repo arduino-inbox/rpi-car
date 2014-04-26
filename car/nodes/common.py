@@ -106,16 +106,19 @@ class BrainNode(SubscriberNode, PublisherNode):
     def __init__(self):
         SubscriberNode.__init__(self, [
             CHANNEL_DISTANCE,
-            CHANNEL_TRAVEL_DISTANCE,
+            # CHANNEL_TRAVEL_DISTANCE,
+            CHANNEL_ACCELERATION,
         ])
         PublisherNode.__init__(self)
 
         self.speed = 0
         self.direction = MOTOR_DIRECTION_STOP
         self.distance = DISTANCE_MAXIMUM
-        self.travel_distance = 0
+        self.acceleration = 0
+        # self.travel_distance = 0
         self.data[CHANNEL_DISTANCE] = float(self.distance)
-        self.data[CHANNEL_TRAVEL_DISTANCE] = float(self.travel_distance)
+        self.data[CHANNEL_ACCELERATION] = float(self.acceleration)
+        # self.data[CHANNEL_TRAVEL_DISTANCE] = float(self.travel_distance)
 
     def do(self):
         """
@@ -125,19 +128,22 @@ class BrainNode(SubscriberNode, PublisherNode):
         # Update data.
         SubscriberNode.do(self)
 
-        self.travel_distance = float(self.data[CHANNEL_TRAVEL_DISTANCE] or 0)
+        # self.travel_distance = float(self.data[CHANNEL_TRAVEL_DISTANCE] or 0)
         self.distance = float(self.data[CHANNEL_DISTANCE] or DISTANCE_MAXIMUM)
+        self.acceleration = float(self.data[CHANNEL_ACCELERATION] or 0)
 
-        if self.travel_distance > 1:
+        # if self.travel_distance > 1:
+        #     self.speed = 0
+        #     self.direction = MOTOR_DIRECTION_STOP
+        # else:
+
+        if self.distance < 50:
             self.speed = 0
             self.direction = MOTOR_DIRECTION_STOP
-        else:
-            if self.distance < 50:
-                self.speed = 0
-                self.direction = MOTOR_DIRECTION_STOP
-            else:
-                self.speed += MOTOR_SPEED_STEP
-                self.direction = MOTOR_DIRECTION_FORWARD
+        elif self.acceleration < 1:
+            self.speed += MOTOR_SPEED_STEP
+            self.direction = MOTOR_DIRECTION_FORWARD
+
         self.send(CHANNEL_SPEED, self.speed)
         self.send(CHANNEL_DIRECTION, self.direction)
 
@@ -208,11 +214,11 @@ class Car:
 
         @param nodes: list
         """
-        start_time = timestamp()
-        redis_connection = RedisConnectionFactory.build()
-        redis_connection.publish(CHANNEL_ALL, 'Car started at {t}'.format(
-            t=start_time))
-        redis_connection.hset(start_time, 'start', 'OK')
+        # start_time = timestamp()
+        # redis_connection = RedisConnectionFactory.build()
+        # redis_connection.publish(CHANNEL_ALL, 'Car started at {t}'.format(
+        #     t=start_time))
+        # redis_connection.hset(start_time, 'start', 'OK')
 
         # start
         processes = []
@@ -221,28 +227,28 @@ class Car:
             processes.append(p)
             p.start()
 
-        # run
-        time.sleep(10)
-
-        # exit
-        for p in processes:
-            p.shutdown()
-
-        stop_time = timestamp()
-        redis_connection.publish(CHANNEL_ALL,
-                                 'Car stopped at {t}'.format(t=stop_time))
-        redis_connection.hset(stop_time, 'stop', 'OK')
-        redis_connection.hset(stop_time, 'runtime', str(
-            stop_time - start_time))
-
-        # check stored data
-        for key in redis_connection.keys():
-            redis_connection.persist(str(key))
-            try:
-                data = redis_connection.hgetall(str(key))
-                # logger.debug("Redis data stored: " + key + " - " + str(data))
-            except:
-                pass
+        # # run
+        # time.sleep(10)
+        #
+        # # exit
+        # for p in processes:
+        #     p.shutdown()
+        #
+        # stop_time = timestamp()
+        # redis_connection.publish(CHANNEL_ALL,
+        #                          'Car stopped at {t}'.format(t=stop_time))
+        # redis_connection.hset(stop_time, 'stop', 'OK')
+        # redis_connection.hset(stop_time, 'runtime', str(
+        #     stop_time - start_time))
+        #
+        # # check stored data
+        # for key in redis_connection.keys():
+        #     redis_connection.persist(str(key))
+        #     try:
+        #         data = redis_connection.hgetall(str(key))
+        #         # logger.debug("Redis data stored: " + key + " - " + str(data))
+        #     except:
+        #         pass
 
 
 def timestamp(precision=9):
