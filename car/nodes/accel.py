@@ -17,7 +17,6 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
     def __init__(self):
         PublisherNode.__init__(self)
         self.sensor_component = AccelerometerGyroscopeSensorComponent()
-        self.t0 = timestamp(precision=9)
         self.xTravel = 0
         self.yTravel = 0
         self.zTravel = 0
@@ -29,8 +28,11 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         """
         Read component value and update the property.
         """
+        if not self.t0:
+            self.t0 = timestamp(precision=3)
+
         fax, fay, faz, fgx, fgy, fgz = self.sensor_component.reading()
-        self.t1 = timestamp(precision=9)
+        self.t1 = timestamp(precision=3)
         deltaTime = self.t1 - self.t0
 
         # convert to force [N]
