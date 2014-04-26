@@ -52,7 +52,7 @@ class RedisConnectionFactory:
 
 class SubscriberNode(Node):
     """
-    Redis subscriber node
+    Subscriber node
     """
     def __init__(self, channels=None):
         Node.__init__(self)
@@ -70,7 +70,7 @@ class SubscriberNode(Node):
 
     def do(self):
         """
-        Listen to pub/sub messages and yield the updated data.
+        Read "channel" value and update data.
 
         @return: dict
         """
@@ -80,9 +80,8 @@ class SubscriberNode(Node):
 
 class PublisherNode(Node):
     """
-    Pub/sub publisher node.
+    Publisher node.
     """
-
     def __init__(self):
         Node.__init__(self)
         self.redis_connection = RedisConnectionFactory.build()
@@ -94,7 +93,7 @@ class PublisherNode(Node):
         @param channel: string
         @param message: string
         """
-        self.redis_connection.publish(channel, message)
+        self.redis_connection.set(channel, message)
         self.redis_connection.hset(str(timestamp()), channel, message)
 
 
