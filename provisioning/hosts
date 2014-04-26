@@ -1,0 +1,2 @@
+[rpi]
+alarmpi.local ansible_ssh_user=developer ansible_python_interpreter=/usr/bin/python2

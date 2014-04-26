@@ -1,5 +1,3 @@
 RPIO
 RPi.GPIO
 gpiocrust
-wiringpi2
-#smbus-cffi  # use on "real" hardware
