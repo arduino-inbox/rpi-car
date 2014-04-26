@@ -57,4 +57,4 @@ class UltrasonicSensorComponent(GpioComponent):
         time_passed = after_signal - before_signal
         distance = time_passed * ULTRASONIC_SOUND_SPEED_Q
 
-        return distance
+        return float(distance)

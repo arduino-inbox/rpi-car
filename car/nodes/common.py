@@ -114,8 +114,8 @@ class BrainNode(SubscriberNode, PublisherNode):
         self.direction = MOTOR_DIRECTION_STOP
         self.distance = DISTANCE_MAXIMUM
         self.travel_distance = 0
-        self.data[CHANNEL_DISTANCE] = int(self.distance)
-        self.data[CHANNEL_TRAVEL_DISTANCE] = int(self.travel_distance)
+        self.data[CHANNEL_DISTANCE] = float(self.distance)
+        self.data[CHANNEL_TRAVEL_DISTANCE] = float(self.travel_distance)
 
     def do(self):
         """

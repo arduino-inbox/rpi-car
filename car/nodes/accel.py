@@ -76,5 +76,5 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         self.t0 = self.t1
 
         # set
-        self.send(CHANNEL_TRAVEL_DISTANCE, travel)
+        self.send(CHANNEL_TRAVEL_DISTANCE, float(travel))
 
