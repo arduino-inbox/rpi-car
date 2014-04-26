@@ -20,4 +20,5 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         """
         Read component value and update the property.
         """
-        fax, fay, faz, fgx, fgy, fgz = self.sensor_component.reading()
+        ax, ay, az, gx, gy, gz = self.sensor_component.reading()
+
