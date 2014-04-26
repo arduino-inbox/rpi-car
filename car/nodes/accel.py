@@ -3,9 +3,10 @@
 Accelerometer/Gyro sensor node.
 """
 from cmath import sqrt
+import time
 from components.constants import CHANNEL_TRAVEL_DISTANCE
 from components import AccelerometerGyroscopeSensorComponent
-from common import PublisherNode, timestamp
+from common import PublisherNode
 
 
 class AccelerometerGyroscopeSensorNode(PublisherNode):
@@ -30,15 +31,15 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         Read component value and update the property.
         """
         if self.t0 is None:
-            self.t0 = timestamp(precision=3)
+            self.t0 = time.time()
 
         fax, fay, faz, fgx, fgy, fgz = self.sensor_component.reading()
-        self.t1 = timestamp(precision=3)
+        self.t1 = time.time()
         deltaTime = self.t1 - self.t0
 
         # convert to force [N]
-        ax = fax * 9.80665
-        ay = fay * 9.80665
+        ax = fax #* 9.80665
+        ay = fay #* 9.80665
         #az *= 9.80665
 
         # distance moved in deltaTime, s = 1/2 a t^2 + vt
@@ -57,12 +58,12 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         #
         travel = sqrt(self.xTravel ** 2 + self.yTravel ** 2)
 
-        print("X Gyro (orig):", fgx)
-        print("Y Gyro (orig):", fgy)
-        print("Z Gyro (orig):", fgz)
-        print("X Accel (orig):", fax)
-        print("Y Accel (orig):", fay)
-        print("Z Accel (orig):", faz)
+        # print("X Gyro (orig):", fgx)
+        # print("Y Gyro (orig):", fgy)
+        # #print("Z Gyro (orig):", fgz)
+        # print("X Accel (orig):", fax)
+        # print("Y Accel (orig):", fay)
+        # #print("Z Accel (orig):", faz)
         print("X Accel:", ax)
         print("Y Accel:", ay)
         print("X Velocity:", self.xVelocity)
