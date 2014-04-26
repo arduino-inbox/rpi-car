@@ -62,4 +62,8 @@ class MotorDriverComponent(GpioComponent):
         Set PWM value for speed change.
         @param value: int
         """
+
+        # some hack
+        if value > 99999:
+            value = 99999
         self.speed_servo.set_servo(self.speed_pin, value)
