@@ -2,7 +2,8 @@
 """
 Accelerometer/Gyro sensor node.
 """
-from cmath import sqrt
+
+import math
 import time
 from components.constants import CHANNEL_TRAVEL_DISTANCE
 from components import AccelerometerGyroscopeSensorComponent
@@ -56,7 +57,7 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         #self.zVelocity += az * deltaTime
 
         #
-        travel = sqrt(self.xTravel ** 2 + self.yTravel ** 2)
+        travel = math.sqrt(self.xTravel ** 2 + self.yTravel ** 2)
 
         # # print("X Gyro (orig):", fgx)
         # # print("Y Gyro (orig):", fgy)
