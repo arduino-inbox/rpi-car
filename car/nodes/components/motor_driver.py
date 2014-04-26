@@ -63,7 +63,7 @@ class MotorDriverComponent(GpioComponent):
         @param value: int
         """
 
-        # some hack
-        if value > 99999:
-            value = 99999
+        # some hack. @todo Use constant
+        if value > 6000:
+            value = 6000
         self.speed_servo.set_servo(self.speed_pin, value)
