@@ -3,7 +3,7 @@
 Accelerometer/Gyro sensor node.
 """
 from cmath import sqrt
-from components.constants import CHANNEL_DISTANCE
+from components.constants import CHANNEL_TRAVEL_DISTANCE
 from components import AccelerometerGyroscopeSensorComponent
 from common import PublisherNode, timestamp
 
@@ -52,11 +52,11 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         #self.zVelocity += az * deltaTime
 
         #
-        distance = sqrt(self.xTravel ** 2 + self.yTravel ** 2)
+        travel = sqrt(self.xTravel ** 2 + self.yTravel ** 2)
 
         # Update t0
         self.t0 = self.t1
 
         # set
-        self.send(CHANNEL_DISTANCE, distance)
+        self.send(CHANNEL_TRAVEL_DISTANCE, travel)
 

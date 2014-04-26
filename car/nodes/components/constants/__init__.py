@@ -33,6 +33,7 @@ MOTOR_DIRECTION_BACKWARD = -1
 # Events (Pub/Sub channels)
 CHANNEL_ALL = 'all'
 CHANNEL_DISTANCE = 'distance'
+CHANNEL_TRAVEL_DISTANCE = 'travel_distance'
 CHANNEL_SPEED = 'speed'
 CHANNEL_DIRECTION = 'direction'
 

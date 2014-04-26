@@ -15,14 +15,14 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-distance_sensor = UltrasonicSensorNode()
-motor = MotorDriverNode()
+#distance_sensor = UltrasonicSensorNode()
+#motor = MotorDriverNode()
 brain = BrainNode()
 accelGyro = AccelerometerGyroscopeSensorNode()
 
 nodes = [
-    motor,
-    distance_sensor,
+#    motor,
+#    distance_sensor,
     brain,
     accelGyro,
 ]

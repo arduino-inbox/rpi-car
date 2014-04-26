@@ -112,7 +112,9 @@ class BrainNode(SubscriberNode, PublisherNode):
         self.speed = 0
         self.direction = MOTOR_DIRECTION_STOP
         self.distance = DISTANCE_MAXIMUM
+        self.travel_distance = 0
         self.data[CHANNEL_DISTANCE] = int(self.distance)
+        self.data[CHANNEL_TRAVEL_DISTANCE] = int(self.travel_distance)
 
     def do(self):
         """
@@ -123,6 +125,9 @@ class BrainNode(SubscriberNode, PublisherNode):
         SubscriberNode.do(self)
 
         self.distance = int(self.data[CHANNEL_DISTANCE])
+        self.travel_distance = int(self.data[CHANNEL_TRAVEL_DISTANCE])
+        print("Travel distance:", self.travel_distance)
+
         if self.distance < 50:
             self.speed = 0
             self.direction = MOTOR_DIRECTION_STOP
