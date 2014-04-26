@@ -125,7 +125,7 @@ class BrainNode(SubscriberNode, PublisherNode):
         # Update data.
         SubscriberNode.do(self)
 
-        self.travel_distance = int(self.data[CHANNEL_TRAVEL_DISTANCE] or 0)
+        self.travel_distance = float(self.data[CHANNEL_TRAVEL_DISTANCE] or 0)
         self.distance = float(self.data[CHANNEL_DISTANCE] or DISTANCE_MAXIMUM)
 
         if self.travel_distance > 1:
