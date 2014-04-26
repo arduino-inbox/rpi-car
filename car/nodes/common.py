@@ -112,13 +112,17 @@ class BrainNode(SubscriberNode, PublisherNode):
         self.speed = 0
         self.direction = MOTOR_DIRECTION_STOP
         self.distance = DISTANCE_MAXIMUM
-        self.data[CHANNEL_DISTANCE] = self.distance
+        self.data[CHANNEL_DISTANCE] = int(self.distance)
 
     def do(self):
         """
         A bit of work.
         """
-        self.distance = self.data[CHANNEL_DISTANCE]
+
+        # Update data.
+        SubscriberNode.do(self)
+
+        self.distance = int(self.data[CHANNEL_DISTANCE])
         if self.distance < 50:
             self.speed = 0
             self.direction = MOTOR_DIRECTION_STOP
@@ -225,8 +229,11 @@ class Car:
         # check stored data
         for key in redis_connection.keys():
             redis_connection.persist(str(key))
-            data = redis_connection.hgetall(str(key))
-            logger.debug("Redis data stored: " + key + " - " + str(data))
+            try:
+                data = redis_connection.hgetall(str(key))
+                # logger.debug("Redis data stored: " + key + " - " + str(data))
+            except:
+                pass
 
 
 def timestamp():

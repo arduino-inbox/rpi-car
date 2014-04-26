@@ -19,7 +19,7 @@ class ServoProxy:
         @param pin: int
         @param value: int
         """
-        logger.debug("ServoProxy.set_servo - pin: "+str(pin)+", mode: "+str(
+        logger.debug("ServoProxy.set_servo - pin: "+str(pin)+", value: "+str(
             value))
 
 
