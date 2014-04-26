@@ -54,6 +54,20 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         #
         travel = sqrt(self.xTravel ** 2 + self.yTravel ** 2)
 
+        print("X Gyro (orig):", fgx)
+        print("Y Gyro (orig):", fgy)
+        print("Z Gyro (orig):", fgz)
+        print("X Accel (orig):", fax)
+        print("Y Accel (orig):", fay)
+        print("Z Accel (orig):", faz)
+        print("X Accel:", ax)
+        print("Y Accel:", ay)
+        print("X Velocity:", self.xVelocity)
+        print("Y Velocity:", self.yVelocity)
+        print("X Travel:", self.xTravel)
+        print("Y Travel:", self.yTravel)
+        print("Travel distance:", travel)
+
         # Update t0
         self.t0 = self.t1
 

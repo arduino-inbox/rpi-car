@@ -126,7 +126,6 @@ class BrainNode(SubscriberNode, PublisherNode):
 
         self.distance = int(self.data[CHANNEL_DISTANCE] or DISTANCE_MAXIMUM)
         self.travel_distance = int(self.data[CHANNEL_TRAVEL_DISTANCE] or 0)
-        print("Travel distance:", self.travel_distance)
 
         if self.distance < 50:
             self.speed = 0
