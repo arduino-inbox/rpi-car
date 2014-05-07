@@ -696,7 +696,9 @@ class PID:
 
 # main
 mpu = MPU6050()
+mpu.updateOffsets('/tmp/ag_offsets')
+
 while True:
-    fax, fay, faz, fgx, fgy, fgz = mpu.readSensors()
-    print "Accel, Z: ", faz
-    time.sleep(.1)
+    a, b, c, d, e, f = mpu.readSensors()
+    print "a:", int(a * 9.80665), "\tb:", int(b * 9.80665), "\tc:", int(c * 9.80665), "\td:", int(d * 9.80665), "\te:", int(e * 9.80665), "\tf:", int(f * 9.80665)
+
