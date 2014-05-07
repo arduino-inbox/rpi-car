@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Python Standard Library Imports
 from time import sleep
 from math import atan, atan2, sqrt
