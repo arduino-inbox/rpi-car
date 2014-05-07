@@ -34,10 +34,12 @@ while True:
         q = mpu.dmpGetQuaternion(result)
         g = mpu.dmpGetGravity(q)
         ypr = mpu.dmpGetYawPitchRoll(q, g)
-        
-        print(ypr['yaw'] * 180 / math.pi),
-        print(ypr['pitch'] * 180 / math.pi),
-        print(ypr['roll'] * 180 / math.pi)
+
+        print('Quaternion:', q)
+        print('Gravity:', g)
+        print('Yaw:', ypr['yaw'] * 180 / math.pi),
+        print('Pitch:', ypr['pitch'] * 180 / math.pi),
+        print('Roll:', ypr['roll'] * 180 / math.pi)
     
         # track FIFO count here in case there is > 1 packet available
         # (this lets us immediately read more without waiting for an interrupt)        
