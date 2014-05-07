@@ -35,8 +35,8 @@ while True:
         g = mpu.dmpGetGravity(q)
         ypr = mpu.dmpGetYawPitchRoll(q, g)
 
-        print('Quaternion:', q)
-        print('Gravity:', g)
+        print('Quaternion:', q),
+        print('Gravity:', g),
         print('Yaw:', ypr['yaw'] * 180 / math.pi),
         print('Pitch:', ypr['pitch'] * 180 / math.pi),
         print('Roll:', ypr['roll'] * 180 / math.pi)
