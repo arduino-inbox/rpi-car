@@ -20,6 +20,7 @@
     - pip: name=RPIO state=present
     - pip: name=RPi.GPIO state=present
     - pip: name=gpiocrust state=present
+    - pip: name='https://github.com/arduino-inbox/PyComms.git#egg=PyComms' state=present
 
 
 - hosts: rpi
