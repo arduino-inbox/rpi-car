@@ -11,7 +11,6 @@ import logging
 logger = logging.getLogger()
 
 
-
 class AccelerometerGyroscopeSensorNode(PublisherNode):
     """
     Accelerometer/Gyroscope node.
@@ -42,9 +41,14 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         Read component value and update the property.
         """
         for result in self.sensor_component.reading():
-            logger.debug("A: {a}".format(a=result))
-            #(self.dt, self.yaw, self.ax, self.ay) = result
-            #
+            (self.dt, self.yaw, self.ax, self.ay) = result
+
+            logger.debug(
+                "∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}"
+                .format(
+                    dt=self.dt, yaw=self.yaw,
+                    ax=self.ax, ay=self.ay))
+
             #if self.dt and self.yaw and self.ax and self.ay:
             #    self.axy = float(math.sqrt(self.ax**2 + self.ay**2).real)
             #

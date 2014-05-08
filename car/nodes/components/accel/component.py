@@ -87,7 +87,7 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                 if self.fifo_count == 1024:
                     # reset so we can continue cleanly
                     self.mpu.resetFIFO()
-                    logger.critical('FIFO overflow!')
+                    logger.warning('FIFO overflow!')
 
                 # wait for correct available data length
                 self.fifo_count = self.mpu.getFIFOCount()
@@ -124,7 +124,8 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                              self.ay0, self.az0, ]
                     ):
                         self.calibrating = False
-                        logger.debug("Calibration done in ", self.dt, "seconds")
+                        logger.debug("Calibration done in {t}s".format(
+                            t=int(self.dt)))
                     else:
                         self.yaw0 = self.yaw
                         self.pitch0 = self.pitch
@@ -132,23 +133,8 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                         self.ax0 = self.ax
                         self.ay0 = self.ay
                         self.az0 = self.az
-                        logger.debug(
-                            "Calibrating: ∂t={dt}s, "
-                            "Yaw={yaw}, aX={ax}, aY={ay}".format(
-                                dt=int(self.dt),
-                                yaw=self._ftoip(self.yaw),
-                                ax=self._ftoip(self.ax),
-                                ay=self._ftoip(self.ay)))
                 else:
-                    # Update time only when not calibrating!
                     self.t0 = time()
-                    logger.debug(
-                        "@{ts}, ∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}"
-                        .format(
-                            ts=self.t0,
-                            dt=int(self.dt), yaw=self._ftoip(self.yaw),
-                            ax=self._ftoip(self.ax), ay=self._ftoip(self.ay)))
-
                     yield self.dt, self.yaw, self.ax, self.ay
 
                 yield None, None, None, None
