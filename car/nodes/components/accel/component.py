@@ -124,6 +124,7 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                              self.ay0, self.az0, ]
                     ):
                         self.calibrating = False
+                        self.t0 = time()
                         logger.debug("Calibration done in {t}s".format(
                             t=int(self.dt)))
                     else:
