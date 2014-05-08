@@ -43,6 +43,7 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.packet_size = self.mpu.dmpGetFIFOPacketSize()
 
         self.calibrating = True
+        self.tc = time()
         self.t0 = time()
         self.yaw0 = 0.0
         self.pitch0 = 0.0
@@ -50,7 +51,7 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.ax0 = 0.0
         self.ay0 = 0.0
         self.az0 = 0.0
-        self.precision = 100
+        self.precision = 300
 
         self.mpu_int_status = 0
         self.fifo_count = 0
@@ -71,6 +72,7 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.az = None
 
         self.dt = None
+        self.dtc = None
 
         logger.debug("Calibrating...")
 
@@ -110,6 +112,7 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                 self.az = self.laiw['z'] * 9.80665
                 # Update timedelta
                 self.dt = time() - self.t0
+                self.dtc = int(time() - self.tc)
 
                 # track FIFO count here in case there is > 1 packet available
                 # (this lets us immediately read more without waiting for an
@@ -128,6 +131,10 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                         logger.debug("Calibration done in {t}s".format(
                             t=int(self.dt)))
                     else:
+                        self.tc = time()
+                        logger.debug("Calibrating... {t}s".format(
+                            t=self.dtc))
+
                         self.yaw0 = self.yaw
                         self.pitch0 = self.pitch
                         self.roll0 = self.roll
