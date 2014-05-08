@@ -9,11 +9,7 @@ from common import PublisherNode
 
 import logging
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)  # @todo set to warning or error
-handler = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)-15s %(levelname)-8s %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+
 
 
 class AccelerometerGyroscopeSensorNode(PublisherNode):
