@@ -29,6 +29,7 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
      - http://mpuprojectblog.wordpress.com/2013/01/31/distance-measurement/
 
     @todo Provision rpi for i2c use.
+    @todo Provision rpi with arduino-inbox/PyComms
     """
 
     def __init__(self):
@@ -39,42 +40,61 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.mpu.dmpInitialize()
         self.mpu.setDMPEnabled(True)
         # get expected DMP packet size for later comparison
-        self.packetSize = self.mpu.dmpGetFIFOPacketSize()
+        self.packet_size = self.mpu.dmpGetFIFOPacketSize()
 
         self.calibrating = True
         self.t0 = time()
-        self.yaw0 = 0
-        self.pitch0 = 0
-        self.roll0 = 0
-        self.ax0 = 0
-        self.ay0 = 0
-        self.az0 = 0
+        self.yaw0 = 0.0
+        self.pitch0 = 0.0
+        self.roll0 = 0.0
+        self.ax0 = 0.0
+        self.ay0 = 0.0
+        self.az0 = 0.0
         self.precision = 100
 
+        self.mpu_int_status = 0
+        self.fifo_count = 0
+
+        self.result = None
+        self.q = None
+        self.g = None
+        self.ypr = None
+        self.a = None
+        self.la = None
+        self.laiw = None
+
+        self.yaw = None
+        self.pitch = None
+        self.roll = None
+        self.ax = None
+        self.ay = None
+        self.az = None
+
+        self.dt = None
 
         logger.debug("Calibrating...")
 
     def reading(self):
         while True:
             # Get INT_STATUS byte
-            self.mpuIntStatus = self.mpu.getIntStatus()
+            self.mpu_int_status = self.mpu.getIntStatus()
 
-            if self.mpuIntStatus >= 2:  # check for DMP data ready interrupt
+            if self.mpu_int_status >= 2:  # check for DMP data ready interrupt
                 # get current FIFO count
-                self.fifoCount = self.mpu.getFIFOCount()
+                self.fifo_count = self.mpu.getFIFOCount()
 
                 # check for overflow
-                if self.fifoCount == 1024:
+                if self.fifo_count == 1024:
                     # reset so we can continue cleanly
                     self.mpu.resetFIFO()
                     logger.critical('FIFO overflow!')
 
-                # wait for correct available data length, should be a VERY short wait
-                self.fifoCount = self.mpu.getFIFOCount()
-                while self.fifoCount < self.packetSize:
-                    self.fifoCount = self.mpu.getFIFOCount()
+                # wait for correct available data length
+                self.fifo_count = self.mpu.getFIFOCount()
+                while self.fifo_count < self.packet_size:
+                    self.fifo_count = self.mpu.getFIFOCount()
 
-                self.result = self.mpu.getFIFOBytes(self.packetSize)
+                self.result = self.mpu.getFIFOBytes(self.packet_size)
                 self.q = self.mpu.dmpGetQuaternion(self.result)
                 self.g = self.mpu.dmpGetGravity(self.q)
                 self.ypr = self.mpu.dmpGetYawPitchRoll(self.q, self.g)
@@ -82,7 +102,7 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                 self.la = self.mpu.dmpGetLinearAccel(self.a, self.g)
                 self.laiw = self.mpu.dmpGetLinearAccelInWorld(self.a, self.q)
 
-                self.yaw = self.ypr['yaw'] * 180 / math.pi  # radians to degrees
+                self.yaw = self.ypr['yaw'] * 180 / math.pi  # rads to degs
                 self.pitch = self.ypr['pitch'] * 180 / math.pi
                 self.roll = self.ypr['roll'] * 180 / math.pi
                 self.ax = self.laiw['x'] * 9.80665
@@ -94,7 +114,7 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                 # track FIFO count here in case there is > 1 packet available
                 # (this lets us immediately read more without waiting for an
                 # interrupt)
-                self.fifoCount -= self.packetSize
+                self.fifo_count -= self.packet_size
 
                 if self.calibrating:
                     if self._equal(
@@ -113,10 +133,12 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                         self.ay0 = self.ay
                         self.az0 = self.az
                         logger.debug(
-                            "Calibrating: ∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}"
-                            .format(
-                                dt=int(self.dt), yaw=self._ftoip(self.yaw),
-                                ax=self._ftoip(self.ax), ay=self._ftoip(self.ay)))
+                            "Calibrating: ∂t={dt}s, "
+                            "Yaw={yaw}, aX={ax}, aY={ay}".format(
+                                dt=int(self.dt),
+                                yaw=self._ftoip(self.yaw),
+                                ax=self._ftoip(self.ax),
+                                ay=self._ftoip(self.ay)))
                 else:
                     # Update time only when not calibrating!
                     self.t0 = time()
