@@ -44,6 +44,8 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
             (self.dt, self.yaw, self.ax, self.ay) = result
             if self.dt and self.yaw and self.ax and self.ay:
                 #self.axy = float(math.sqrt(self.ax**2 + self.ay**2).real)
+                self.ax = float(int(self.ax * 100) / 100)
+                self.ay = float(int(self.ay * 100) / 100)
 
                 # change in velocity, v = v0 + at
                 self.vx += self.ax * self.dt

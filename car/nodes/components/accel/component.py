@@ -147,8 +147,8 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                     self.t0 = time()
                     yield (self.dt,
                            self.yaw,
-                           float(math.ceil(self.ax * 100) / 100),
-                           float(math.ceil(self.ay * 100) / 100))
+                           self.ax,
+                           self.ay)
 
                 yield None, None, None, None
 
