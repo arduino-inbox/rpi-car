@@ -105,9 +105,9 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                 self.yaw = self.ypr['yaw'] * 180 / math.pi  # rads to degs
                 self.pitch = self.ypr['pitch'] * 180 / math.pi
                 self.roll = self.ypr['roll'] * 180 / math.pi
-                self.ax = self.laiw['x'] * 9.80665
-                self.ay = self.laiw['y'] * 9.80665
-                self.az = self.laiw['z'] * 9.80665
+                self.ax = self.laiw['x']
+                self.ay = self.laiw['y']
+                self.az = self.laiw['z']
                 # Update timedelta
                 self.dt = time() - self.t0
 
