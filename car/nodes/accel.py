@@ -45,7 +45,10 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         """
         Read component value and update the property.
         """
-        self.sensor_component.reading()
+        for a in self.sensor_component.reading():
+            logger.debug("A: {a}".format(a=a))
+
+
             #(self.dt, self.yaw, self.ax, self.ay) = result
             #if self.dt and self.yaw and self.ax and self.ay:
             #    self.axy = float(math.sqrt(self.ax**2 + self.ay**2).real)
