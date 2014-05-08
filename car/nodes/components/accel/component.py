@@ -56,80 +56,81 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         logger.debug("Calibrating...")
 
     def reading(self):
-        # Get INT_STATUS byte
-        self.mpuIntStatus = self.mpu.getIntStatus()
+        while True:
+            # Get INT_STATUS byte
+            self.mpuIntStatus = self.mpu.getIntStatus()
 
-        if self.mpuIntStatus >= 2:  # check for DMP data ready interrupt
-            # get current FIFO count
-            self.fifoCount = self.mpu.getFIFOCount()
-
-            # check for overflow
-            if self.fifoCount == 1024:
-                # reset so we can continue cleanly
-                self.mpu.resetFIFO()
-                logger.critical('FIFO overflow!')
-
-            # wait for correct available data length, should be a VERY short wait
-            self.fifoCount = self.mpu.getFIFOCount()
-            while self.fifoCount < self.packetSize:
+            if self.mpuIntStatus >= 2:  # check for DMP data ready interrupt
+                # get current FIFO count
                 self.fifoCount = self.mpu.getFIFOCount()
 
-            self.result = self.mpu.getFIFOBytes(self.packetSize)
-            self.q = self.mpu.dmpGetQuaternion(self.result)
-            self.g = self.mpu.dmpGetGravity(self.q)
-            self.ypr = self.mpu.dmpGetYawPitchRoll(self.q, self.g)
-            self.a = self.mpu.dmpGetAccel(self.result)
-            self.la = self.mpu.dmpGetLinearAccel(self.a, self.g)
-            self.laiw = self.mpu.dmpGetLinearAccelInWorld(self.a, self.q)
+                # check for overflow
+                if self.fifoCount == 1024:
+                    # reset so we can continue cleanly
+                    self.mpu.resetFIFO()
+                    logger.critical('FIFO overflow!')
 
-            self.yaw = self.ypr['yaw'] * 180 / math.pi  # radians to degrees
-            self.pitch = self.ypr['pitch'] * 180 / math.pi
-            self.roll = self.ypr['roll'] * 180 / math.pi
-            self.ax = self.laiw['x'] * 9.80665
-            self.ay = self.laiw['y'] * 9.80665
-            self.az = self.laiw['z'] * 9.80665
-            # Update timedelta
-            self.dt = time() - self.t0
+                # wait for correct available data length, should be a VERY short wait
+                self.fifoCount = self.mpu.getFIFOCount()
+                while self.fifoCount < self.packetSize:
+                    self.fifoCount = self.mpu.getFIFOCount()
 
-            # track FIFO count here in case there is > 1 packet available
-            # (this lets us immediately read more without waiting for an
-            # interrupt)
-            self.fifoCount -= self.packetSize
+                self.result = self.mpu.getFIFOBytes(self.packetSize)
+                self.q = self.mpu.dmpGetQuaternion(self.result)
+                self.g = self.mpu.dmpGetGravity(self.q)
+                self.ypr = self.mpu.dmpGetYawPitchRoll(self.q, self.g)
+                self.a = self.mpu.dmpGetAccel(self.result)
+                self.la = self.mpu.dmpGetLinearAccel(self.a, self.g)
+                self.laiw = self.mpu.dmpGetLinearAccelInWorld(self.a, self.q)
 
-            if self.calibrating:
-                if self._equal(
-                        [self.yaw, self.pitch, self.roll, self.ax, self.ay,
-                         self.az, ],
-                        [self.yaw0, self.pitch0, self.roll0, self.ax0,
-                         self.ay0, self.az0, ]
-                ):
-                    self.calibrating = False
-                    logger.debug("Calibration done in ", self.dt, "seconds")
+                self.yaw = self.ypr['yaw'] * 180 / math.pi  # radians to degrees
+                self.pitch = self.ypr['pitch'] * 180 / math.pi
+                self.roll = self.ypr['roll'] * 180 / math.pi
+                self.ax = self.laiw['x'] * 9.80665
+                self.ay = self.laiw['y'] * 9.80665
+                self.az = self.laiw['z'] * 9.80665
+                # Update timedelta
+                self.dt = time() - self.t0
+
+                # track FIFO count here in case there is > 1 packet available
+                # (this lets us immediately read more without waiting for an
+                # interrupt)
+                self.fifoCount -= self.packetSize
+
+                if self.calibrating:
+                    if self._equal(
+                            [self.yaw, self.pitch, self.roll, self.ax, self.ay,
+                             self.az, ],
+                            [self.yaw0, self.pitch0, self.roll0, self.ax0,
+                             self.ay0, self.az0, ]
+                    ):
+                        self.calibrating = False
+                        logger.debug("Calibration done in ", self.dt, "seconds")
+                    else:
+                        self.yaw0 = self.yaw
+                        self.pitch0 = self.pitch
+                        self.roll0 = self.roll
+                        self.ax0 = self.ax
+                        self.ay0 = self.ay
+                        self.az0 = self.az
+                        logger.debug(
+                            "Calibrating: ∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}"
+                            .format(
+                                dt=int(self.dt), yaw=self._ftoip(self.yaw),
+                                ax=self._ftoip(self.ax), ay=self._ftoip(self.ay)))
                 else:
-                    self.yaw0 = self.yaw
-                    self.pitch0 = self.pitch
-                    self.roll0 = self.roll
-                    self.ax0 = self.ax
-                    self.ay0 = self.ay
-                    self.az0 = self.az
+                    # Update time only when not calibrating!
+                    self.t0 = time()
                     logger.debug(
-                        "Calibrating: ∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}"
+                        "@{ts}, ∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}"
                         .format(
+                            ts=self.t0,
                             dt=int(self.dt), yaw=self._ftoip(self.yaw),
                             ax=self._ftoip(self.ax), ay=self._ftoip(self.ay)))
-            else:
-                # Update time only when not calibrating!
-                self.t0 = time()
-                logger.debug(
-                    "@{ts}, ∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}"
-                    .format(
-                        ts=self.t0,
-                        dt=int(self.dt), yaw=self._ftoip(self.yaw),
-                        ax=self._ftoip(self.ax), ay=self._ftoip(self.ay)))
 
-                return self.dt, self.yaw, self.ax, self.ay
+                    yield self.dt, self.yaw, self.ax, self.ay
 
-            return None, None, None, None
+                yield None, None, None, None
 
     def _ftoip(self, v):
         return int(self.precision * v)
