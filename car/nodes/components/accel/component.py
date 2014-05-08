@@ -50,6 +50,9 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.ax0 = 0.0
         self.ay0 = 0.0
         self.az0 = 0.0
+        self.ax_offset = 0.0
+        self.ay_offset = 0.0
+        self.az_offset = 0.0
         self.precision = 300
 
         self.mpu_int_status = 0
@@ -105,9 +108,9 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                 self.yaw = self.ypr['yaw'] * 180 / math.pi  # rads to degs
                 self.pitch = self.ypr['pitch'] * 180 / math.pi
                 self.roll = self.ypr['roll'] * 180 / math.pi
-                self.ax = int(self.laiw['x'] * 1000)
-                self.ay = int(self.laiw['y'] * 1000)
-                self.az = int(self.laiw['z'] * 1000)
+                self.ax = self.laiw['x'] - self.ax_offset
+                self.ay = self.laiw['y'] - self.ay_offset
+                self.az = self.laiw['z'] - self.az_offset
                 # Update timedelta
                 self.dt = time() - self.t0
 
@@ -124,6 +127,9 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                              self.ay0, self.az0, ]
                     ):
                         self.calibrating = False
+                        self.ax_offset = self.ax
+                        self.ay_offset = self.ay
+                        self.az_offset = self.az
                         self.t0 = time()
                         logger.debug("Calibration done in {t}s".format(
                             t=int(self.dt)))
