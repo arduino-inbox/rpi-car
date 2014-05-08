@@ -33,6 +33,7 @@ CHANNEL_ALL = 'all'
 CHANNEL_ACCELERATION = 'acceleration'
 CHANNEL_DISTANCE = 'distance'
 CHANNEL_TRAVEL_DISTANCE = 'travel_distance'
+CHANNEL_TRAVEL_VELOCITY = 'travel_velocity'
 CHANNEL_SPEED = 'speed'
 CHANNEL_DIRECTION = 'direction'
 

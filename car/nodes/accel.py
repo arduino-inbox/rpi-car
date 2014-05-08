@@ -2,8 +2,7 @@
 """
 Accelerometer/Gyro sensor node.
 """
-import cmath
-# import time
+import math
 from components.constants import *
 from components import AccelerometerGyroscopeSensorComponent
 from common import PublisherNode
@@ -18,52 +17,42 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
     def __init__(self):
         PublisherNode.__init__(self)
         self.sensor_component = AccelerometerGyroscopeSensorComponent()
-        # self.t0 = None
-        # self.xTravel = 0
-        # self.yTravel = 0
-        # self.zTravel = 0
-        # self.xVelocity = 0
-        # self.yVelocity = 0
-        # self.zVelocity = 0
+
+        self.dt = None
+        self.yaw = None
+        self.ax = None
+        self.ay = None
+
+        self.sx = 0.0
+        self.sy = 0.0
+        self.tx = 0.0
+        self.ty = 0.0
+        self.vx = 0.0
+        self.vy = 0.0
+        self.axy = 0.0
+        self.vxy = 0.0
+        self.txy = 0.0
 
     def do(self):
         """
         Read component value and update the property.
         """
-        # if self.t0 is None:
-        #     self.t0 = time.time()
+        self.dt, self.yaw, self.ax, self.ay = self.sensor_component.reading()
+        if self.dt and self.yaw and self.ax and self.ay:
+            self.axy = float(math.sqrt(self.ax**2 + self.ay**2).real)
 
-        fax, fay, faz, fgx, fgy, fgz = self.sensor_component.reading()
-        # self.t1 = time.time()
-        # deltaTime = self.t1 - self.t0
+            # change in velocity, v = v0 + at
+            self.vx += self.ax * self.dt
+            self.vy += self.ay * self.dt
+            self.vxy = float(math.sqrt(self.vx**2 + self.vy**2).real)
 
-        # convert to force [N]
-        ax = fax * 9.80665
-        ay = fay * 9.80665
+            # distance moved in deltaTime, s = 1/2 a t^2 + vt
+            self.sx = 0.5 * self.ax * self.dt * self.dt + self.vx * self.dt
+            self.sy = 0.5 * self.ay * self.dt * self.dt + self.vy * self.dt
+            self.tx += self.sx
+            self.ty += self.sy
+            self.txy = float(math.sqrt(self.tx ** 2 + self.tx ** 2).real)
 
-        self.send(CHANNEL_ACCELERATION, float(cmath.sqrt(ax**2 + ay**2).real))
-
-        #az *= 9.80665
-
-        # # distance moved in deltaTime, s = 1/2 a t^2 + vt
-        # sx = 0.5 * ax * deltaTime * deltaTime + self.xVelocity * deltaTime
-        # sy = 0.5 * ay * deltaTime * deltaTime + self.yVelocity * deltaTime
-        # #sz = 0.5 * az * deltaTime * deltaTime + self.zVelocity * deltaTime
-        # self.xTravel += sx
-        # self.yTravel += sy
-        # #self.zTravel += sz
-        #
-        # # change in velocity, v = v0 + at
-        # self.xVelocity += ax * deltaTime
-        # self.yVelocity += ay * deltaTime
-        # #self.zVelocity += az * deltaTime
-        #
-        # #
-        # travel = cmath.sqrt(self.xTravel ** 2 + self.yTravel ** 2).real
-        #
-        # # Update t0
-        # self.t0 = self.t1
-        #
-        # # set
-        # self.send(CHANNEL_TRAVEL_DISTANCE, float(travel))
-
+        self.send(CHANNEL_ACCELERATION, self.axy)
+        self.send(CHANNEL_TRAVEL_VELOCITY, self.vxy)
+        self.send(CHANNEL_TRAVEL_DISTANCE, self.txy)
