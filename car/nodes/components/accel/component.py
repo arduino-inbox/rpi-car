@@ -9,7 +9,7 @@ logger.setLevel(logging.DEBUG)  # @todo set to warning or error
 import math
 from time import time
 import mpu6050
-from car.nodes.components.accel.helpers import SmBusFactory
+from helpers import SmBusFactory
 
 from ..gpio import GpioComponent
 
