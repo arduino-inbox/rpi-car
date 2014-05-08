@@ -42,14 +42,13 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         """
         for result in self.sensor_component.reading():
             (self.dt, self.yaw, self.ax, self.ay) = result
+            if self.dt and self.yaw and self.ax and self.ay:
+                logger.debug(
+                    "∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}"
+                    .format(
+                        dt=self.dt, yaw=self.yaw,
+                        ax=self.ax, ay=self.ay))
 
-            logger.debug(
-                "∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}"
-                .format(
-                    dt=self.dt, yaw=self.yaw,
-                    ax=self.ax, ay=self.ay))
-
-            #if self.dt and self.yaw and self.ax and self.ay:
             #    self.axy = float(math.sqrt(self.ax**2 + self.ay**2).real)
             #
             #    # change in velocity, v = v0 + at
