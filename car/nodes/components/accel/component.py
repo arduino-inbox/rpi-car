@@ -139,6 +139,8 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                     else:
                         logger.debug("Calibrating... {t}s".format(
                             t=self.dt))
+                        logger.debug("Accel: {x} {y}".format(
+                            x=self.ax, y=self.ay))
 
                         self.yaw0 = self.yaw
                         self.pitch0 = self.pitch
