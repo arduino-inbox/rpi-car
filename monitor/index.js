@@ -19,9 +19,9 @@ init = function(httpd, key) {
 
 };
 
+async = require('async');
 emit = function(data) {
 	if ( clients.length > 0 ) {
-		console.info("Starting push to clients ...");
 		async.eachSeries(
 			clients,
 			function(socket, callback) {
@@ -29,7 +29,7 @@ emit = function(data) {
 				callback();
 			},
 			function(err) {
-				console.info(err);
+				//console.info(err);
 			}
 		);
 	}
@@ -39,7 +39,7 @@ var static = require('node-static');
 var webfolder = new static.Server('.');
 
 processData = function(document) {
-	emit(/*data from redis*/);
+	emit(document);
 };
 
 // init HTTP demon
@@ -63,10 +63,15 @@ client.on("error", function (err) {
     });
 
 loop = function () {
-  client.lpop('list-acceleration', function (err, data) {
+  client.get('acceleration', function (err, data) {
     if (data) {
-      console.log("Data:", data);
-      //processData({'ACC': data});
+      try {
+        var value = parseFLoat(data.split('-')[1]) * 1000000;
+        processData(value);
+        console.log("Value:", value);
+      } catch (e) {
+        console.log("Error ", e);
+      }
     }
     process.nextTick(loop);
   });

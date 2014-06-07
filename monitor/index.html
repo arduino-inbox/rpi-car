@@ -3,14 +3,9 @@
 <head>
   <title>Car Monitor</title>
   <script type="text/javascript" src="smoothie.js"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
   <script type="text/javascript">
-    var CATEGORIES = [
-      'ACC' // acceleration
-    ];
-    var STROKES = {'ACC': 'rgba(0, 255, 0, 1)'};
-    var FILLS = {'ACC': 'rgba(0, 255, 0, 0.2)'};
     var measurements = [];
-
     var current_state = null;
 
     function init() {
@@ -20,15 +15,13 @@
 
     function initChart() {
       var chart = new SmoothieChart();
-      forEachCategory(function (category) {
-        measurements[category] = new TimeSeries();
-        chart.addTimeSeries(measurements[category], {
-          strokeStyle: STROKES[category],
-          fillStyle: FILLS[category],
-          lineWidth: 2
-        });
+      measurements = new TimeSeries();
+      chart.addTimeSeries(measurements, {
+        strokeStyle: 'rgba(0, 255, 0, 1)',
+        fillStyle: 'rgba(0, 255, 0, 0.2)',
+        lineWidth: 2
       });
-      chart.streamTo(document.getElementById("measurement-chart"), 500);
+      chart.streamTo(document.getElementById("measurement-chart"), 100);
 
       setInterval(autoUpdate, 2000);
     }
@@ -43,20 +36,13 @@
 
     function updateChart(data) {
       if (data) {
-        forEachCategory(function (category) {
-          measurements[category].append(new Date().getTime(), data[category]);
-        });
+        console.log(data);
+        measurements.append(new Date().getTime(), parseFloat(data));
       }
     }
 
     function autoUpdate() {
       updateChart(current_state);
-    }
-
-    function forEachCategory(onCategory) {
-      for (var cat in CATEGORIES) {
-        onCategory(CATEGORIES[cat]);
-      }
     }
 
   </script>
@@ -65,10 +51,5 @@
 <h1>Measurements</h1>
 <canvas id="measurement-chart" width="600" height="200">
 </canvas>
-<br/>
-Categories:
-<ul>
-  <li><span style="color: #00ff00; font-weight: bold">Acceleration</span></li>
-</ul>
 </body>
 </html>
