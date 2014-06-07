@@ -103,14 +103,17 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
                 self.ypr = self.mpu.dmpGetYawPitchRoll(self.q, self.g)
                 self.a = self.mpu.dmpGetAccel(self.result)
                 self.la = self.mpu.dmpGetLinearAccel(self.a, self.g)
-                self.laiw = self.mpu.dmpGetLinearAccelInWorld(self.a, self.q)
+                #self.laiw = self.mpu.dmpGetLinearAccelInWorld(self.a, self.q)
 
                 self.yaw = self.ypr['yaw'] * 180 / math.pi  # rads to degs
                 self.pitch = self.ypr['pitch'] * 180 / math.pi
                 self.roll = self.ypr['roll'] * 180 / math.pi
-                self.ax = self.laiw['x'] - self.ax_offset
-                self.ay = self.laiw['y'] - self.ay_offset
-                self.az = self.laiw['z'] - self.az_offset
+                self.ax = self.la['x'] - self.ax_offset
+                self.ay = self.la['y'] - self.ay_offset
+                self.az = self.la['z'] - self.az_offset
+                #self.ax = self.laiw['x'] - self.ax_offset
+                #self.ay = self.laiw['y'] - self.ay_offset
+                #self.az = self.laiw['z'] - self.az_offset
                 # Update timedelta
                 self.dt = time() - self.t0
 
