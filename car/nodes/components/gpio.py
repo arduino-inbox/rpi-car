@@ -112,7 +112,6 @@ class GpioFactory:
             gpio.OUT = RPIO.OUT
             gpio.pwm = PWM
         except Exception, e:
-            logger.setLevel(logging.DEBUG)
             logger.error(e.message)
         return gpio
 

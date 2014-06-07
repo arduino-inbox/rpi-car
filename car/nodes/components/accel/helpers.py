@@ -34,7 +34,6 @@ class SmBusFactory:
         try:
             return smbus.SMBus(1)
         except IOError, e:
-            logger.setLevel(logging.DEBUG)
             logger.warning("Using SMBus mock.")
             logger.error(e.message)
             return SmBusMock()
