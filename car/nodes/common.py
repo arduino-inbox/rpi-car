@@ -96,6 +96,9 @@ class PublisherNode(Node):
         logger.debug("Send: {c} << {m}".format(c=channel, m=message))
         self.redis_connection.set(channel, message)
         self.redis_connection.hset(str(timestamp()), channel, message)
+        self.redis_connection.rpush(channel, "{t}-{m}".format(
+            t=timestamp(),
+            m=message))
 
 
 class BrainNode(SubscriberNode, PublisherNode):
@@ -107,8 +110,9 @@ class BrainNode(SubscriberNode, PublisherNode):
     def __init__(self):
         SubscriberNode.__init__(self, [
             CHANNEL_DISTANCE,
-            # CHANNEL_TRAVEL_DISTANCE,
+            CHANNEL_TRAVEL_DISTANCE,
             CHANNEL_ACCELERATION,
+            CHANNEL_ROTATION,
         ])
         PublisherNode.__init__(self)
 
@@ -116,10 +120,12 @@ class BrainNode(SubscriberNode, PublisherNode):
         self.direction = MOTOR_DIRECTION_STOP
         self.distance = DISTANCE_MAXIMUM
         self.acceleration = 0
-        # self.travel_distance = 0
+        self.travel_distance = 0
+        self.rotation = 0
         self.data[CHANNEL_DISTANCE] = float(self.distance)
         self.data[CHANNEL_ACCELERATION] = float(self.acceleration)
-        # self.data[CHANNEL_TRAVEL_DISTANCE] = float(self.travel_distance)
+        self.data[CHANNEL_TRAVEL_DISTANCE] = float(self.travel_distance)
+        self.data[CHANNEL_ROTATION] = float(self.rotation)
 
     def do(self):
         """

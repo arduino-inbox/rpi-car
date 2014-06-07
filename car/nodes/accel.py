@@ -43,21 +43,21 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         for result in self.sensor_component.reading():
             (self.dt, self.yaw, self.ax, self.ay) = result
             if self.dt and self.yaw and self.ax and self.ay:
-                #self.axy = float(math.sqrt(self.ax**2 + self.ay**2).real)
+                self.axy = float(math.sqrt(self.ax**2 + self.ay**2).real)
                 self.ax = float(int(self.ax * 100) / 100)
                 self.ay = float(int(self.ay * 100) / 100)
 
                 # change in velocity, v = v0 + at
                 self.vx += self.ax * self.dt
                 self.vy += self.ay * self.dt
-                #self.vxy = float(math.sqrt(self.vx**2 + self.vy**2).real)
+                self.vxy = float(math.sqrt(self.vx**2 + self.vy**2).real)
 
                 # distance moved in deltaTime, s = 1/2 a t^2 + vt
                 self.sx = 0.5 * self.ax * self.dt * self.dt + self.vx * self.dt
                 self.sy = 0.5 * self.ay * self.dt * self.dt + self.vy * self.dt
                 self.tx += self.sx
                 self.ty += self.sy
-                #self.txy = float(math.sqrt(self.tx ** 2 + self.tx ** 2).real)
+                self.txy = float(math.sqrt(self.tx ** 2 + self.tx ** 2).real)
 
                 logger.debug(
                     "∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}, "
@@ -69,6 +69,7 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
                         tx=self.tx, ty=self.ty
                     ))
 
-            #self.send(CHANNEL_ACCELERATION, self.axy)
-            #self.send(CHANNEL_TRAVEL_VELOCITY, self.vxy)
-            #self.send(CHANNEL_TRAVEL_DISTANCE, self.txy)
+            self.send(CHANNEL_ACCELERATION, self.axy)
+            self.send(CHANNEL_ROTATION, self.yaw)
+            self.send(CHANNEL_TRAVEL_VELOCITY, self.vxy)
+            self.send(CHANNEL_TRAVEL_DISTANCE, self.txy)
