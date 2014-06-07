@@ -34,8 +34,8 @@ class MotorDriverNode(SubscriberNode):
         # Update data.
         SubscriberNode.do(self)
 
-        self.speed = int(self.data[CHANNEL_SPEED])
-        self.direction = int(self.data[CHANNEL_DIRECTION])
+        self.speed = int(self.data[CHANNEL_SPEED] or 0)
+        self.direction = int(self.data[CHANNEL_DIRECTION] or MOTOR_DIRECTION_STOP)
 
         if self.direction == MOTOR_DIRECTION_FORWARD:
             self.motor_driver_component.forward(self.speed)
