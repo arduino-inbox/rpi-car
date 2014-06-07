@@ -8,9 +8,14 @@ from nodes import (MotorDriverNode, UltrasonicSensorNode, BrainNode, Car,
 
 # Logging setup
 import logging
+import os
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)  # @todo set to warning or error
+if os.environ.get('DEBUG'):
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.ERROR)
+
 handler = logging.StreamHandler()
 formatter = logging.Formatter("%(asctime)-15s %(levelname)-8s %(message)s")
 handler.setFormatter(formatter)

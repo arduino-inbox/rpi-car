@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car Monitor</title>
+  <script type="text/javascript" src="smoothie.js"></script>
+  <script type="text/javascript">
+    var CATEGORIES = [
+      'ACC' // acceleration
+    ];
+    var STROKES = {'ACC': 'rgba(0, 255, 0, 1)'};
+    var FILLS = {'ACC': 'rgba(0, 255, 0, 0.2)'};
+    var measurements = [];
+
+    var current_state = null;
+
+    function init() {
+      initChart();
+      initWebsocket();
+    }
+
+    function initChart() {
+      var chart = new SmoothieChart();
+      forEachCategory(function (category) {
+        measurements[category] = new TimeSeries();
+        chart.addTimeSeries(measurements[category], {
+          strokeStyle: STROKES[category],
+          fillStyle: FILLS[category],
+          lineWidth: 2
+        });
+      });
+      chart.streamTo(document.getElementById("measurement-chart"), 500);
+
+      setInterval(autoUpdate, 2000);
+    }
+
+    function initWebsocket() {
+      var socket = io.connect('http://localhost:8080');
+      socket.on('measurements_update', function (data) {
+        current_state = data;
+        updateChart(data);
+      });
+    }
+
+    function updateChart(data) {
+      if (data) {
+        forEachCategory(function (category) {
+          measurements[category].append(new Date().getTime(), data[category]);
+        });
+      }
+    }
+
+    function autoUpdate() {
+      updateChart(current_state);
+    }
+
+    function forEachCategory(onCategory) {
+      for (var cat in CATEGORIES) {
+        onCategory(CATEGORIES[cat]);
+      }
+    }
+
+  </script>
+</head>
+<body onload="init()" style="background-color: #000000; color: #ffffff">
+<h1>Measurements</h1>
+<canvas id="measurement-chart" width="600" height="200">
+</canvas>
+<br/>
+Categories:
+<ul>
+  <li><span style="color: #00ff00; font-weight: bold">Acceleration</span></li>
+</ul>
+</body>
+</html>
