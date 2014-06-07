@@ -66,7 +66,7 @@ loop = function () {
   client.get('acceleration', function (err, data) {
     if (data) {
       try {
-        var value = parseFLoat(data.split('-')[1]) * 1000000;
+        var value = parseFloat(data);
         processData(value);
         console.log("Value:", value);
       } catch (e) {

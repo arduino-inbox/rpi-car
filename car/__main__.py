@@ -30,9 +30,9 @@ brain = BrainNode()
 accelGyro = AccelerometerGyroscopeSensorNode()
 
 nodes = [
-    motor,
-    distance_sensor,
-    brain,
+    #motor,
+    #distance_sensor,
+    #brain,
     accelGyro,
 ]
 
