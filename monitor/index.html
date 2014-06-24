@@ -6,7 +6,6 @@
   <script type="text/javascript" src="/socket.io/socket.io.js"></script>
   <script type="text/javascript">
     var measurements = {};
-    var current_state = {};
     var dataPoints = [
         //'test-gyro-0',
         //'test-gyro-1',
@@ -33,41 +32,32 @@
         chart.addTimeSeries(measurements[p], {
           strokeStyle: 'rgba('+c+', 1)',
           fillStyle: 'rgba('+c+', 0.2)',
-          lineWidth: 2
+          lineWidth: 2,
+          interpolation:'linear',
+          timestampFormatter:SmoothieChart.timeFormatter,
+          maxValue:2^14,
+          minValue:-2^14
         });
-        current_state[p] = 0;
       });
 
       chart.streamTo(document.getElementById("measurement-chart"), 50);
-
-      setInterval(autoUpdate, 2000);
     }
 
+    last_data = null;
     function initWebsocket() {
       var socket = io.connect('http://localhost:8080');
       socket.on('measurements_update', function (data) {
-        current_state[data['key']] = parseInt(data['value']);
-        //console.log(current_state);
-        updateChart();
+        if ('key' in data && 'value' in data) {
+            measurements[data['key']].append(new Date().getTime(), parseInt(data['value']));
+            last_data = data;
+        }
       });
-    }
-
-    function updateChart() {
-        dataPoints.forEach(function (p) {
-            measurements[p].append(new Date().getTime(), current_state[p]);
-        });
-    }
-
-    function autoUpdate() {
-        //console.log(current_state);
-        updateChart();
     }
 
   </script>
 </head>
 <body onload="init()" style="background-color: #000000; color: #ffffff">
-<h1>Measurements</h1>
-<canvas id="measurement-chart" width="600" height="200">
-</canvas>
+  <h1>Measurements</h1>
+  <canvas id="measurement-chart" width="800" height="800"></canvas>
 </body>
 </html>
