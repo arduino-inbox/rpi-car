@@ -25,18 +25,19 @@
     }
 
     function initChart() {
-      var chart = new SmoothieChart();
+      var chart = new SmoothieChart({
+          interpolation:'linear',
+          timestampFormatter:SmoothieChart.timeFormatter,
+          maxValue:16000,
+          minValue:-16000
+      });
       dataPoints.forEach(function (p) {
         measurements[p] = new TimeSeries();
         var c = getRandomInt(0, 255)+', '+getRandomInt(0, 255)+', '+getRandomInt(0, 255);
         chart.addTimeSeries(measurements[p], {
           strokeStyle: 'rgba('+c+', 1)',
           fillStyle: 'rgba('+c+', 0.2)',
-          lineWidth: 2,
-          interpolation:'linear',
-          timestampFormatter:SmoothieChart.timeFormatter,
-          maxValue:2^14,
-          minValue:-2^14
+          lineWidth: 2
         });
       });
 
