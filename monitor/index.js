@@ -24,10 +24,9 @@ io.sockets.on('disconnect', function (socket) {
     console.log("Client disconnected");
 });
 
-var redis = require("redis"),
-    client = redis.createClient(null, 'alarmpi.local');
+var r = require("redis").createClient(null, 'alarmpi.local');
 
-client.on("error", function (err) {
+r.on("error", function (err) {
     console.log("Err:", err);
 });
 
@@ -42,9 +41,9 @@ var dataPoints = [
 
 loop = function () {
     dataPoints.forEach(function (p) {
-        client.get(p, function (err, data) {
+        r.get(p, function (err, data) {
             if (data) {
-                if (c) c.emit('measurements_update', {
+                c.emit('measurements_update', {
                     key: p,
                     value: data
                 });
@@ -55,4 +54,5 @@ loop = function () {
     });
 };
 
-process.nextTick(loop);
+// run
+if (c) process.nextTick(loop);
