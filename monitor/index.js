@@ -58,7 +58,7 @@ var redis = require("redis"),
         client = redis.createClient(null, 'alarmpi.local');
 
 client.on("error", function (err) {
-        console.log("Error " + err);
+        console.log("Err:", err);
     });
 
 var dataPoints = [
@@ -95,9 +95,9 @@ loop = function () {
                 key: p,
                 value: data
             });
-            console.log("Value:", data);
+            //console.log("Value:", data);
           } catch (e) {
-            console.log("Error ", e);
+            console.log("Err:", e);
           }
         }
         process.nextTick(loop);

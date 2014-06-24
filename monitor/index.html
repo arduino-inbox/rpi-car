@@ -6,7 +6,7 @@
   <script type="text/javascript" src="/socket.io/socket.io.js"></script>
   <script type="text/javascript">
     var measurements = {};
-    var current_state = null;
+    var current_state = {};
     var dataPoints = [
         'test-gyro-0',
         'test-gyro-1',
@@ -35,6 +35,7 @@
           fillStyle: 'rgba('+c+', 0.2)',
           lineWidth: 2
         });
+        current_state[p] = 0;
       });
 
       chart.streamTo(document.getElementById("measurement-chart"), 50);
@@ -45,21 +46,20 @@
     function initWebsocket() {
       var socket = io.connect('http://localhost:8080');
       socket.on('measurements_update', function (data) {
-        console.log(data);
-        //current_state = data;
-        //updateChart(data);
+        current_state[data['key']] = data['value'];
+        updateChart();
       });
     }
 
-    function updateChart(data) {
-      if (data) {
-        console.log(data);
-        measurements[data['key']].append(new Date().getTime(), parseInt(data['value']));
-      }
+    function updateChart() {
+        dataPoints.forEach(function (p) {
+            measurements[p].append(new Date().getTime(), parseInt(current_state[p]));
+        });
     }
 
     function autoUpdate() {
-      updateChart(current_state);
+        console.log(current_state);
+        updateChart();
     }
 
   </script>
