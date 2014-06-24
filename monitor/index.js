@@ -20,12 +20,8 @@ r.on("error", function (err) {
 });
 
 var dataPoints = [
-//    'test-gyro-0',
-//    'test-gyro-1',
-//    'test-gyro-2',
-    'test-accel-0',
-    'test-accel-1'
-//    'test-accel-2'
+    'accel-x',
+    'accel-y'
 ];
 
 loop = function () {
