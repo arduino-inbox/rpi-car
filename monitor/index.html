@@ -8,12 +8,12 @@
     var measurements = {};
     var current_state = {};
     var dataPoints = [
-        'test-gyro-0',
-        'test-gyro-1',
-        'test-gyro-2',
+        //'test-gyro-0',
+        //'test-gyro-1',
+        //'test-gyro-2',
         'test-accel-0',
-        'test-accel-1',
-        'test-accel-2'
+        'test-accel-1'
+        //'test-accel-2'
     ];
 
     function init() {
@@ -46,19 +46,20 @@
     function initWebsocket() {
       var socket = io.connect('http://localhost:8080');
       socket.on('measurements_update', function (data) {
-        current_state[data['key']] = data['value'];
+        current_state[data['key']] = parseInt(data['value']);
+        //console.log(current_state);
         updateChart();
       });
     }
 
     function updateChart() {
         dataPoints.forEach(function (p) {
-            measurements[p].append(new Date().getTime(), parseInt(current_state[p]));
+            measurements[p].append(new Date().getTime(), current_state[p]);
         });
     }
 
     function autoUpdate() {
-        console.log(current_state);
+        //console.log(current_state);
         updateChart();
     }
 
