@@ -44,7 +44,7 @@ loop = function () {
     dataPoints.forEach(function (p) {
         client.get(p, function (err, data) {
             if (data) {
-                c.emit('measurements_update', {
+                if (c) c.emit('measurements_update', {
                     key: p,
                     value: data
                 });
