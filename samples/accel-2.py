@@ -42,21 +42,21 @@ while True:
             fifoCount = mpu.getFIFOCount()
 
         result = mpu.getFIFOBytes(packetSize)
-        q = mpu.dmpGetQuaternion(result)
-        g = mpu.dmpGetGravity(q)
-        ypr = mpu.dmpGetYawPitchRoll(q, g)
+        # q = mpu.dmpGetQuaternion(result)
+        # g = mpu.dmpGetGravity(q)
+        # ypr = mpu.dmpGetYawPitchRoll(q, g)
         a = mpu.dmpGetAccel(result)
-        accel = mpu.dmpGetLinearAccel(a, g)
+        # accel = mpu.dmpGetLinearAccel(a, g)
 
-        y = ypr['yaw'] * 180 / math.pi
-        p = ypr['pitch'] * 180 / math.pi
-        r = ypr['roll'] * 180 / math.pi
-
-        redis_conn.set('yaw', y)
-        redis_conn.set('pitch', p)
-        redis_conn.set('roll', r)
-        redis_conn.set('accel-x', accel['x'])
-        redis_conn.set('accel-y', accel['y'])
+        # y = ypr['yaw'] * 180 / math.pi
+        # p = ypr['pitch'] * 180 / math.pi
+        # r = ypr['roll'] * 180 / math.pi
+        #
+        # redis_conn.set('yaw', y)
+        # redis_conn.set('pitch', p)
+        # redis_conn.set('roll', r)
+        redis_conn.set('accel-x', a['x'])
+        redis_conn.set('accel-y', a['y'])
         #redis_conn.set('accel-z', accel['z'])
 
         # track FIFO count here in case there is > 1 packet available
