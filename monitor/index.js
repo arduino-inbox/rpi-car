@@ -62,18 +62,44 @@ client.on("error", function (err) {
         console.log("Error " + err);
     });
 
+var dataPoints = [
+    'test-gyro-0',
+    'test-gyro-1',
+    'test-gyro-2',
+    'test-accel-0',
+    'test-accel-1',
+    'test-accel-2'
+];
+
 loop = function () {
-  client.get('acceleration', function (err, data) {
-    if (data) {
-      try {
-        var value = parseFloat(data);
-        processData(value);
-        console.log("Value:", value);
-      } catch (e) {
-        console.log("Error ", e);
-      }
-    }
-    process.nextTick(loop);
+//  client.get('acceleration', function (err, data) {
+//    if (data) {
+//      try {
+//        var value = parseFloat(data);
+//        processData(value);
+//        //console.log("Value:", value);
+//      } catch (e) {
+//        //console.log("Error ", e);
+//      }
+//    }
+//    process.nextTick(loop);
+//  });
+
+  dataPoints.forEach(function (p) {
+      client.get(p, function (err, data) {
+        if (data) {
+          try {
+            processData({
+                key: p,
+                value: data
+            });
+            //console.log("Value:", value);
+          } catch (e) {
+            //console.log("Error ", e);
+          }
+        }
+        process.nextTick(loop);
+      });
   });
 };
 

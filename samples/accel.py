@@ -48,16 +48,25 @@ address = 0x68        # This is the address value read via the i2cdetect command
 # Now wake the 6050 up as it starts in sleep mode
 bus.write_byte_data(address, power_mgmt_1, 0)
 
+from redis import StrictRedis
+redis_conn = StrictRedis(host='localhost', port=6379, db=0)
+
 while True:
     gyro = (read_word_2c(0x43), read_word_2c(0x45), read_word_2c(0x47),)
     accel = (read_word_2c(0x3b), read_word_2c(0x3d), read_word_2c(0x3f),)
+    redis_conn.set('test-gyro-0', gyro[0])
+    redis_conn.set('test-gyro-1', gyro[1])
+    redis_conn.set('test-gyro-2', gyro[2])
+    redis_conn.set('test-accel-0', accel[0])
+    redis_conn.set('test-accel-1', accel[1])
+    redis_conn.set('test-accel-2', accel[2])
 
     #accel_xout_scaled = accel_xout / 16384.0
 
-    print (
-        "gyro: ", gyro,  # " scaled: ", (gyro_xout / 131)
-        "accel: ", accel,  # " scaled: ", accel_xout_scaled
-    )
+    # print (
+    #     "gyro: ", gyro,  # " scaled: ", (gyro_xout / 131)
+    #     "accel: ", accel,  # " scaled: ", accel_xout_scaled
+    # )
 
     #print (
     #    "x rotation: ",
