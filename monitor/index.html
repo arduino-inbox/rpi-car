@@ -26,10 +26,8 @@
 
     function initChart() {
       var chart = new SmoothieChart({
-          interpolation:'linear',
-          timestampFormatter:SmoothieChart.timeFormatter,
-          maxValue:16000,
-          minValue:-16000
+          maxValue:2000,
+          minValue:-2000
       });
       dataPoints.forEach(function (p) {
         measurements[p] = new TimeSeries();
@@ -37,11 +35,11 @@
         chart.addTimeSeries(measurements[p], {
           strokeStyle: 'rgba('+c+', 1)',
           fillStyle: 'rgba('+c+', 0.2)',
-          lineWidth: 2
+          lineWidth: 3
         });
       });
 
-      chart.streamTo(document.getElementById("measurement-chart"), 50);
+      chart.streamTo(document.getElementById("measurement-chart"), 100);
     }
 
     last_data = null;
