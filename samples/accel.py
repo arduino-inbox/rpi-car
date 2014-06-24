@@ -63,10 +63,10 @@ while True:
 
     #accel_xout_scaled = accel_xout / 16384.0
 
-    # print (
-    #     "gyro: ", gyro,  # " scaled: ", (gyro_xout / 131)
-    #     "accel: ", accel,  # " scaled: ", accel_xout_scaled
-    # )
+    print (
+        "gyro: ", gyro,  # " scaled: ", (gyro_xout / 131)
+        "accel: ", accel,  # " scaled: ", accel_xout_scaled
+    )
 
     #print (
     #    "x rotation: ",
