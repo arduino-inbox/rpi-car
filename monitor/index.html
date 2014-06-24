@@ -45,8 +45,9 @@
     function initWebsocket() {
       var socket = io.connect('http://localhost:8080');
       socket.on('measurements_update', function (data) {
-        current_state = data;
-        updateChart(data);
+        console.log(data);
+        //current_state = data;
+        //updateChart(data);
       });
     }
 

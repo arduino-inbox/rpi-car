@@ -3,7 +3,6 @@ var data_key;
 
 init = function(httpd, key) {
 	var io = require('socket.io').listen(httpd);
-	io.set('log level', 1);
 
 	data_key = key;
 
@@ -87,15 +86,18 @@ loop = function () {
 
   dataPoints.forEach(function (p) {
       client.get(p, function (err, data) {
-        if (data) {
+        if (err) {
+            console.log("Err:", err);
+        }
+        else if (data) {
           try {
             processData({
                 key: p,
                 value: data
             });
-            //console.log("Value:", value);
+            console.log("Value:", data);
           } catch (e) {
-            //console.log("Error ", e);
+            console.log("Error ", e);
           }
         }
         process.nextTick(loop);
