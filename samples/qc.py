@@ -1202,6 +1202,8 @@ file_handler.setLevel(logging.WARNING)
 
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.CRITICAL)
+if os.getenv('DEBUG'):
+    console_handler.setLevel(logging.DEBUG)
 
 #-------------------------------------------------------------------------------------------
 # Create a formatter and add it to both handlers
