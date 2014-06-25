@@ -738,14 +738,14 @@ def RpioSetup():
 	#-----------------------------------------------------------------------------------
 	# Set the beeper output LOW
 	#-----------------------------------------------------------------------------------
-	logger.info('Set status sounder pin %s as out', RPIO_STATUS_SOUNDER)
-	RPIO.setup(RPIO_STATUS_SOUNDER, RPIO.OUT, RPIO.LOW)
+	# logger.info('Set status sounder pin %s as out', RPIO_STATUS_SOUNDER)
+	# RPIO.setup(RPIO_STATUS_SOUNDER, RPIO.OUT, RPIO.LOW)
 
 	#-----------------------------------------------------------------------------------
 	# Set the MPU6050 interrupt input
 	#-----------------------------------------------------------------------------------
-	logger.info('Setup MPU6050 interrupt input %s', RPIO_DATA_READY_INTERRUPT)
-	RPIO.setup(RPIO_DATA_READY_INTERRUPT, RPIO.IN) # , RPIO.PUD_DOWN)
+	# logger.info('Setup MPU6050 interrupt input %s', RPIO_DATA_READY_INTERRUPT)
+	# RPIO.setup(RPIO_DATA_READY_INTERRUPT, RPIO.IN) # , RPIO.PUD_DOWN)
 
 ############################################################################################
 #
@@ -1016,12 +1016,13 @@ def CheckCLI(argv):
 #
 ############################################################################################
 def CountdownBeep(num_beeps):
-	for beep in range(0, num_beeps):
-		RPIO.output(RPIO_STATUS_SOUNDER, RPIO.HIGH)
-		time.sleep(0.25)
-		RPIO.output(RPIO_STATUS_SOUNDER, RPIO.LOW)
-		time.sleep(0.25)
-	time.sleep(2.0)
+	# for beep in range(0, num_beeps):
+	# 	RPIO.output(RPIO_STATUS_SOUNDER, RPIO.HIGH)
+	# 	time.sleep(0.25)
+	# 	RPIO.output(RPIO_STATUS_SOUNDER, RPIO.LOW)
+	# 	time.sleep(0.25)
+    print "beep"
+    time.sleep(2.0)
 
 ############################################################################################
 #
@@ -1029,9 +1030,9 @@ def CountdownBeep(num_beeps):
 #
 ############################################################################################
 def CleanShutdown():
-	global esc_list
-	global shoot_video
-	global video
+	# global esc_list
+	# global shoot_video
+	# global video
 
 	#-----------------------------------------------------------------------------------
 	# Stop the signal handler
@@ -1041,15 +1042,15 @@ def CleanShutdown():
 	#-----------------------------------------------------------------------------------
 	# Time for teddy bye byes
 	#-----------------------------------------------------------------------------------
-	for esc in esc_list:
-		logger.info('Stop blade %d spinning', esc_index)
-		esc.update(0)
+	# for esc in esc_list:
+	# 	logger.info('Stop blade %d spinning', esc_index)
+	# 	esc.update(0)
 
 	#-----------------------------------------------------------------------------------
 	# Stop the video if it's running
 	#-----------------------------------------------------------------------------------
-	if shoot_video:
-		video.send_signal(signal.SIGINT)
+	# if shoot_video:
+	# 	video.send_signal(signal.SIGINT)
 
 	#-----------------------------------------------------------------------------------
 	# Copy logs from /dev/shm (shared / virtual memory) to the Logs directory.
@@ -1063,7 +1064,7 @@ def CleanShutdown():
 	# Clean up PWM / GPIO
 	#-----------------------------------------------------------------------------------
 	PWM.cleanup()
-	RPIO.output(RPIO_STATUS_SOUNDER, RPIO.LOW)
+	# RPIO.output(RPIO_STATUS_SOUNDER, RPIO.LOW)
 	RPIO.cleanup()
 
 	#-----------------------------------------------------------------------------------
@@ -1163,10 +1164,10 @@ G_FORCE = 9.80665
 
 RPIO_DMA_CHANNEL = 1
 
-ESC_BCM_BL = 22
-ESC_BCM_FL = 17
-ESC_BCM_FR = 18
-ESC_BCM_BR = 23
+# ESC_BCM_BL = 22
+# ESC_BCM_FL = 17
+# ESC_BCM_FR = 18
+# ESC_BCM_BR = 23
 
 MOTOR_LOCATION_FRONT = 0b00000001
 MOTOR_LOCATION_BACK =  0b00000010
@@ -1182,8 +1183,8 @@ RC_SILENCE_LIMIT = 10
 #-------------------------------------------------------------------------------------------
 # Set the BCM outputs assigned to LED and sensor interrupt
 #-------------------------------------------------------------------------------------------
-RPIO_STATUS_SOUNDER = 27
-RPIO_DATA_READY_INTERRUPT = 25
+# RPIO_STATUS_SOUNDER = 27
+# RPIO_DATA_READY_INTERRUPT = 25
 
 silent_scan_count = 0
 
@@ -1234,18 +1235,18 @@ mpu6050 = MPU6050(0x68, dlpf)
 #-------------------------------------------------------------------------------------------
 # Assign motor properties to each ESC
 #-------------------------------------------------------------------------------------------
-pin_list = [ESC_BCM_FL, ESC_BCM_FR, ESC_BCM_BL, ESC_BCM_BR]
-location_list = [MOTOR_LOCATION_FRONT | MOTOR_LOCATION_LEFT, MOTOR_LOCATION_FRONT | MOTOR_LOCATION_RIGHT, MOTOR_LOCATION_BACK | MOTOR_LOCATION_LEFT, MOTOR_LOCATION_BACK | MOTOR_LOCATION_RIGHT]
-rotation_list = [MOTOR_ROTATION_ACW, MOTOR_ROTATION_CW, MOTOR_ROTATION_CW, MOTOR_ROTATION_ACW]
-name_list = ['front left', 'front right', 'back left', 'back right']
+# pin_list = [ESC_BCM_FL, ESC_BCM_FR, ESC_BCM_BL, ESC_BCM_BR]
+# location_list = [MOTOR_LOCATION_FRONT | MOTOR_LOCATION_LEFT, MOTOR_LOCATION_FRONT | MOTOR_LOCATION_RIGHT, MOTOR_LOCATION_BACK | MOTOR_LOCATION_LEFT, MOTOR_LOCATION_BACK | MOTOR_LOCATION_RIGHT]
+# rotation_list = [MOTOR_ROTATION_ACW, MOTOR_ROTATION_CW, MOTOR_ROTATION_CW, MOTOR_ROTATION_ACW]
+# name_list = ['front left', 'front right', 'back left', 'back right']
 
 #-------------------------------------------------------------------------------------------
 # Prime the ESCs with the default 0 spin rotors
 #-------------------------------------------------------------------------------------------
-esc_list = []
-for esc_index in range(0, 4):
-	esc = ESC(pin_list[esc_index], location_list[esc_index], rotation_list[esc_index], name_list[esc_index])
-	esc_list.append(esc)
+# esc_list = []
+# for esc_index in range(0, 4):
+# 	esc = ESC(pin_list[esc_index], location_list[esc_index], rotation_list[esc_index], name_list[esc_index])
+# 	esc_list.append(esc)
 
 #-------------------------------------------------------------------------------------------
 # Now with some peace and quiet, enable RPIO for beeper and MPU 6050 interrupts
@@ -1424,17 +1425,17 @@ fp_total_time = 0.0
 #-------------------------------------------------------------------------------------------
 # START TESTCASE 1 CODE: spin up each blade individually for 10s each and check they all turn the right way
 #-------------------------------------------------------------------------------------------
-if test_case == 1:
-	for esc in esc_list:
-		for count in range(0, hover_target, 10):
-			#-------------------------------------------------------------------
-			# Spin up to user determined (-h) hover speeds ~200
-			#-------------------------------------------------------------------
-			esc.update(count)
-			time.sleep(0.01)
-		time.sleep(10.0)
-		esc.update(0)
-	CleanShutdown()
+# if test_case == 1:
+# 	for esc in esc_list:
+# 		for count in range(0, hover_target, 10):
+# 			#-------------------------------------------------------------------
+# 			# Spin up to user determined (-h) hover speeds ~200
+# 			#-------------------------------------------------------------------
+# 			esc.update(count)
+# 			time.sleep(0.01)
+# 		time.sleep(10.0)
+# 		esc.update(0)
+# 	CleanShutdown()
 #-------------------------------------------------------------------------------------------
 # END TESTCASE 1 CODE: spin up each blade individually for 10s each and check they all turn the right way
 #-------------------------------------------------------------------------------------------
@@ -1926,64 +1927,64 @@ while keep_looping:
 		#===========================================================================
 		# Mixer: Walk through the ESCs, and depending on their location, apply the output accordingly
 		#===========================================================================
-		for esc in esc_list:
-			#-------------------------------------------------------------------
-			# Update all blades' power in accordance with the z error
-			#-------------------------------------------------------------------
-			delta_spin = vert_out
-
-			#-------------------------------------------------------------------
-			# For a left downwards roll, the x gyro goes negative, so the PID error is positive,
-			# meaning PID output is positive, meaning this needs to be added to the left blades
-			# and subtracted from the right.
-			#-------------------------------------------------------------------
-			if esc.motor_location & MOTOR_LOCATION_RIGHT:
-				delta_spin -= rr_out
-			else:
-				delta_spin += rr_out
-
-			#-------------------------------------------------------------------
-			# For a forward downwards pitch, the y gyro goes negative, so the PID error is
-			# postive, meaning PID output is positive, meaning this needs to be added to the
-			# front blades and subreacted from the back.
-			#-------------------------------------------------------------------
-			if esc.motor_location & MOTOR_LOCATION_BACK:
-				delta_spin -= pr_out
-			else:
-				delta_spin += pr_out
-
-			#-------------------------------------------------------------------
-			# An excess CW rotating of the front-right and back-left (FR & BL) blades
-			# results in an CW rotation of the quadcopter body. The z gyro produces
-			# a negative output as a result. This then leads to the PID error
-			# being postive, meaning PID  output is positive. Since the PID output needs to reduce the
-			# over-enthusiastic CW rotation of the FR & BL blades, the positive PID
-			# output needs to be subtracted from those blades (thus slowing their rotation)
-			# and added to the ACW FL & BR blades (thus speeding them up) to
-			# compensate for the yaw.
-			#-------------------------------------------------------------------
-			if esc.motor_rotation == MOTOR_ROTATION_ACW:
-				delta_spin -= yr_out
-			else:
-				delta_spin += yr_out
-
-			#-------------------------------------------------------------------
-			# Apply the blended outputs to the esc PWM signal
-			#-------------------------------------------------------------------
-			esc.update(delta_spin)
-
-			#-------------------------------------------------------------------
-			# Track proportion of time applying PWM outputs
-			#-------------------------------------------------------------------
-			sample_time = time.time()
-			time_handling_pid_outputs += sample_time - prev_sample_time
-			prev_sample_time = sample_time
+		# for esc in esc_list:
+		# 	#-------------------------------------------------------------------
+		# 	# Update all blades' power in accordance with the z error
+		# 	#-------------------------------------------------------------------
+		# 	delta_spin = vert_out
+        #
+		# 	#-------------------------------------------------------------------
+		# 	# For a left downwards roll, the x gyro goes negative, so the PID error is positive,
+		# 	# meaning PID output is positive, meaning this needs to be added to the left blades
+		# 	# and subtracted from the right.
+		# 	#-------------------------------------------------------------------
+		# 	if esc.motor_location & MOTOR_LOCATION_RIGHT:
+		# 		delta_spin -= rr_out
+		# 	else:
+		# 		delta_spin += rr_out
+        #
+		# 	#-------------------------------------------------------------------
+		# 	# For a forward downwards pitch, the y gyro goes negative, so the PID error is
+		# 	# postive, meaning PID output is positive, meaning this needs to be added to the
+		# 	# front blades and subreacted from the back.
+		# 	#-------------------------------------------------------------------
+		# 	if esc.motor_location & MOTOR_LOCATION_BACK:
+		# 		delta_spin -= pr_out
+		# 	else:
+		# 		delta_spin += pr_out
+        #
+		# 	#-------------------------------------------------------------------
+		# 	# An excess CW rotating of the front-right and back-left (FR & BL) blades
+		# 	# results in an CW rotation of the quadcopter body. The z gyro produces
+		# 	# a negative output as a result. This then leads to the PID error
+		# 	# being postive, meaning PID  output is positive. Since the PID output needs to reduce the
+		# 	# over-enthusiastic CW rotation of the FR & BL blades, the positive PID
+		# 	# output needs to be subtracted from those blades (thus slowing their rotation)
+		# 	# and added to the ACW FL & BR blades (thus speeding them up) to
+		# 	# compensate for the yaw.
+		# 	#-------------------------------------------------------------------
+		# 	if esc.motor_rotation == MOTOR_ROTATION_ACW:
+		# 		delta_spin -= yr_out
+		# 	else:
+		# 		delta_spin += yr_out
+        #
+		# 	#-------------------------------------------------------------------
+		# 	# Apply the blended outputs to the esc PWM signal
+		# 	#-------------------------------------------------------------------
+		# 	esc.update(delta_spin)
+        #
+		# 	#-------------------------------------------------------------------
+		# 	# Track proportion of time applying PWM outputs
+		# 	#-------------------------------------------------------------------
+		# 	sample_time = time.time()
+		# 	time_handling_pid_outputs += sample_time - prev_sample_time
+		# 	prev_sample_time = sample_time
 
 	#-----------------------------------------------------------------------------------
 	# Diagnostic statistics log - every 0.1s
 	#-----------------------------------------------------------------------------------
 	if statistics:
-		logger.warning('%f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f, %d, %d, %d, %d', elapsed_time, delta_time, loop_count, evz_target,qgx, qgy, qgz, qax, qay, qaz, eax, eay, eaz, evx, evy, evz, math.degrees(i_pitch), math.degrees(i_roll), math.degrees(e_pitch), math.degrees(e_roll), math.degrees(c_pitch), math.degrees(c_roll), math.degrees(i_yaw), math.degrees(e_tilt), evx_diags, pa_target, pa_diags, pr_diags, pr_out, evy_diags, ra_target, ra_diags, rr_diags, rr_out, evz_diags, evz_out, ya_diags, yr_diags, yr_out, esc_list[0].current_pulse_width, esc_list[1].current_pulse_width, esc_list[2].current_pulse_width, esc_list[3].current_pulse_width)
+		logger.warning('%f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f', elapsed_time, delta_time, loop_count, evz_target,qgx, qgy, qgz, qax, qay, qaz, eax, eay, eaz, evx, evy, evz, math.degrees(i_pitch), math.degrees(i_roll), math.degrees(e_pitch), math.degrees(e_roll), math.degrees(c_pitch), math.degrees(c_roll), math.degrees(i_yaw), math.degrees(e_tilt), evx_diags, pa_target, pa_diags, pr_diags, pr_out, evy_diags, ra_target, ra_diags, rr_diags, rr_out, evz_diags, evz_out, ya_diags, yr_diags, yr_out)
 
 	#-----------------------------------------------------------------------------------
 	# Track proportion of time logging diagnostics
