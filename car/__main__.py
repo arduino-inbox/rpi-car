@@ -27,13 +27,15 @@ GpioFactory.build().cleanup()
 distance_sensor = UltrasonicSensorNode()
 motor = MotorDriverNode()
 brain = BrainNode()
+bt = BluetoothNode()
 accelGyro = AccelerometerGyroscopeSensorNode()
 
 nodes = [
     #motor,
     #distance_sensor,
     #brain,
-    accelGyro,
+    #accelGyro,
+    bt,
 ]
 
 Car.run(nodes)

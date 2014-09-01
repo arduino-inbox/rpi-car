@@ -2,11 +2,13 @@
 """
 Generic node classes.
 """
+import json
 import multiprocessing
 import logging
 from redis import StrictRedis
 import time
 from components.constants import *
+import bluetooth
 
 logger = logging.getLogger()
 
@@ -156,6 +158,69 @@ class BrainNode(SubscriberNode, PublisherNode):
         self.send(CHANNEL_SPEED, self.speed)
         self.send(CHANNEL_DIRECTION, self.direction)
 
+class BluetoothNode(SubscriberNode, PublisherNode):
+    """
+    Communication and control over bluetooth node.
+    """
+    name = 'Bluetooth'
+
+    def __init__(self):
+        SubscriberNode.__init__(self, [
+            CHANNEL_DIRECTION,
+            CHANNEL_SPEED,
+            CHANNEL_DISTANCE,
+            CHANNEL_TRAVEL_DISTANCE,
+            CHANNEL_ACCELERATION,
+            CHANNEL_ROTATION,
+        ])
+        PublisherNode.__init__(self)
+
+        self.speed = 0
+        self.direction = MOTOR_DIRECTION_STOP
+        self.distance = DISTANCE_MAXIMUM
+        self.acceleration = 0
+        self.travel_distance = 0
+        self.rotation = 0
+        self.data[CHANNEL_SPEED] = float(self.speed)
+        self.data[CHANNEL_DIRECTION] = float(self.direction)
+        self.data[CHANNEL_DISTANCE] = float(self.distance)
+        self.data[CHANNEL_ACCELERATION] = float(self.acceleration)
+        self.data[CHANNEL_TRAVEL_DISTANCE] = float(self.travel_distance)
+        self.data[CHANNEL_ROTATION] = float(self.rotation)
+
+        # Init bluetooth server
+        self.start_rfcomm()
+
+    def do(self):
+        """
+        A bit of work.
+        """
+
+        # Update data.
+        SubscriberNode.do(self)
+        # Send data.
+        self.client_sock.sendall(json.dumps(self.data))
+
+    def start_rfcomm(self):
+        self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        self.server_sock.bind(("", bluetooth.PORT_ANY))
+        self.server_sock.listen(1)
+
+        self.port = self.server_sock.getsockname()[1]
+
+        self.uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+
+        bluetooth.advertise_service(
+            self.server_sock, "Serial Port",
+            service_id=self.uuid,
+            service_classes=[self.uuid, bluetooth.SERIAL_PORT_CLASS],
+            profiles=[bluetooth.SERIAL_PORT_PROFILE],
+        )
+
+        logger.info("Waiting for connection on RFCOMM channel %d" % self.port)
+
+        self.client_sock, self.client_info = self.server_sock.accept()
+        logger.info("Accepted connection from %s" % self.client_info)
 
 class ServoNode(SubscriberNode):
     """
