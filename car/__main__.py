@@ -3,8 +3,8 @@
 Main executable of python robot car.
 """
 from nodes.components.gpio import GpioFactory
-from nodes import (MotorDriverNode, UltrasonicSensorNode, BrainNode, Car,
-                   AccelerometerGyroscopeSensorNode)
+from nodes import (MotorDriverNode, UltrasonicSensorNode, BrainNode, Car, AccelerometerGyroscopeSensorNode,
+                   BluetoothNode)
 
 # Logging setup
 import logging
