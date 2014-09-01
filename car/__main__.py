@@ -32,9 +32,9 @@ accelGyro = AccelerometerGyroscopeSensorNode()
 
 nodes = [
     #motor,
-    #distance_sensor,
-    #brain,
-    #accelGyro,
+    distance_sensor,
+    brain,
+    accelGyro,
     bt,
 ]
 
