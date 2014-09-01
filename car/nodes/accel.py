@@ -69,7 +69,7 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
                         tx=self.tx, ty=self.ty
                     ))
 
-            self.send(CHANNEL_ACCELERATION, self.ax)
+            self.send(CHANNEL_ACCELERATION, (self.ax or 0.0))
             self.send(CHANNEL_ROTATION, self.yaw)
             self.send(CHANNEL_TRAVEL_VELOCITY, self.vxy)
             self.send(CHANNEL_TRAVEL_DISTANCE, self.txy)
