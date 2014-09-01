@@ -198,8 +198,16 @@ class BluetoothNode(SubscriberNode, PublisherNode):
 
         # Update data.
         SubscriberNode.do(self)
-        # Send data.
-        self.client_sock.send(json.dumps(self.data))
+
+        # Get request.
+        data = self.client_sock.recv(1024)
+        if len(data) == 0:
+            logger.info("Request empty.")
+            return
+        logger.info("Request body: {b}".format(b=data))
+        # Send response.
+        size = self.client_sock.send(json.dumps(self.data))
+        logger.info("Response size: {s}".format(s=size))
 
     def start_rfcomm(self):
         self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
