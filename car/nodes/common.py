@@ -199,7 +199,7 @@ class BluetoothNode(SubscriberNode, PublisherNode):
         # Update data.
         SubscriberNode.do(self)
         # Send data.
-        self.client_sock.sendall(json.dumps(self.data))
+        self.client_sock.send(json.dumps(self.data))
 
     def start_rfcomm(self):
         self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
