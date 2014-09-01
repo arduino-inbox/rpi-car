@@ -207,7 +207,6 @@ class BluetoothNode(SubscriberNode, PublisherNode):
         self.server_sock.listen(1)
 
         self.port = self.server_sock.getsockname()[1]
-
         self.uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
 
         bluetooth.advertise_service(
@@ -217,10 +216,10 @@ class BluetoothNode(SubscriberNode, PublisherNode):
             profiles=[bluetooth.SERIAL_PORT_PROFILE],
         )
 
-        logger.info("Waiting for connection on RFCOMM channel %d" % self.port)
+        logger.info("Waiting for connection on RFCOMM channel {p}".format(p=self.port))
 
         self.client_sock, self.client_info = self.server_sock.accept()
-        logger.info("Accepted connection from %s" % self.client_info)
+        logger.info("Accepted connection from {ci}".format(ci=self.client_info))
 
 class ServoNode(SubscriberNode):
     """
