@@ -95,7 +95,7 @@ class PublisherNode(Node):
         @param channel: string
         @param message: string
         """
-        logger.debug("Send: {c} << {m}".format(c=channel, m=message))
+        # logger.debug("Send: {c} << {m}".format(c=channel, m=message))
         self.redis_connection.set(channel, message)
         #self.redis_connection.hset(str(timestamp()), channel, message)
         #self.redis_connection.rpush("list-{c}".format(c=channel), "{t}-{m}".format(
