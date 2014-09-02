@@ -5,10 +5,12 @@ import time
 import logging
 import os
 
-logger = logging.getLogger("i2c")
+logger = logging.getLogger("I2C-LOGGER")
 
 if os.environ.get("DEBUG_I2C"):
     logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.CRITICAL)
 
 
 class I2C:
