@@ -24,18 +24,18 @@ logger.addHandler(handler)
 # Cleanup previously defined GPIO settings
 GpioFactory.build().cleanup()
 
-distance_sensor = UltrasonicSensorNode()
-motor = MotorDriverNode()
-brain = BrainNode()
-bt = BluetoothNode()
-accelGyro = AccelerometerGyroscopeSensorNode()
+# distance_sensor = UltrasonicSensorNode()
+# motor = MotorDriverNode()
+# brain = BrainNode()
+# bt = BluetoothNode()
+accel_gyro = AccelerometerGyroscopeSensorNode()
 
 nodes = [
-    #motor,
-    distance_sensor,
-    brain,
-    accelGyro,
-    bt,
+    # motor,
+    # distance_sensor,
+    # brain,
+    accel_gyro,
+    # bt,
 ]
 
 Car.run(nodes)

@@ -14,18 +14,13 @@
 
 from __future__ import division
 import signal
-import socket
 import time
-import string
 import sys
 import getopt
 import math
-import threading
 from array import *
 import smbus
-import select
 import os
-import struct
 import logging
 
 #-------------------------------------------------------------------------------------------
