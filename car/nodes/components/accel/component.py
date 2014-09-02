@@ -448,6 +448,8 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         #-----------------------------------------------------------------------------------
         # Diagnostic statistics log - every 0.1s
         #-----------------------------------------------------------------------------------
+        logger.debug('Time, DT, Loop, evz_target, qgx, qgy, qgz, qax, qay, qaz, eax, eay, eaz, evx, evy, evz, i pitch, i roll, e pitch, e roll, c pitch, c roll, i yaw, e tilt, exp, exi, exd, pa_target, pap, pai, pad, prp, pri, prd, pr_out, eyp, eyi, eyd, ra_target, rap, rai, rad, rrp, rri, rrd, rr_out, ezp, ezi, ezd, evz_out, yap, yai, yap, yrp, yri, yrd, yr_out, FL spin, FR spin, BL spin, BR spin')
+        #'0.075547, 0.075547, 1, 0.000000, -0.000194, 0.000217, 0.000232, -0.034452, -0.031382, 0.900066, -0.001923, -0.000822, -0.098730, -0.001425, -0.000609, 0.000529, -2.065121, -1.942578, -2.192070, -1.996880, -2.069741, -1.944554, 0.001003, 2.963938, 0.000855, 0.000014, 0.000000, -0.000868, 0.088140, 0.000000, 0.000000, 13.188448, 0.000000, 0.000000, 7.000000, 0.000366, 0.000006, 0.000000, -0.000371, 0.083919, 0.000000, 0.000000, 12.617054, 0.000000, 0.000000, 6.000000, -0.158810, -0.007599, -0.000000, -0.166409, -0.000000, -0.000000, -0.000000, -0.000000, -0.000000, -0.000000, 0.000000'
         logger.debug(
             '%f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f',
             self.elapsed_time, self.delta_time, self.loop_count, self.evz_target, self.qgx, self.qgy, self.qgz,
@@ -462,27 +464,27 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         #-----------------------------------------------------------------------------------
         # Track proportion of time logging diagnostics
         #-----------------------------------------------------------------------------------
-        sample_time = time.time()
-        self.time_handling_diagnostics += sample_time - self.prev_sample_time
-        self.prev_sample_time = sample_time
+        self.sample_time = time.time()
+        self.time_handling_diagnostics += self.sample_time - self.prev_sample_time
+        self.prev_sample_time = self.sample_time
 
         #-----------------------------------------------------------------------------------
         # Slow down the scheduling loop to avoid making accelerometer noise.  This sleep critically
         # takes place between the update of the PWM and reading the sensors, so that any
         # PWM changes can stabilize (i.e. spikes reacted to) prior to reading the sensors.
         #-----------------------------------------------------------------------------------
-        loop_time = time.time() - self.current_time
-        sleep_time = 1 / self.loop_frequency - loop_time
-        if sleep_time < 0.0:
-            sleep_time = 0.0
-        time.sleep(sleep_time)
+        self.loop_time = time.time() - self.current_time
+        self.sleep_time = 1 / self.loop_frequency - self.loop_time
+        if self.sleep_time < 0.0:
+            self.sleep_time = 0.0
+        time.sleep(self.sleep_time)
 
         #-----------------------------------------------------------------------------------
         # Track proportion of time sleeping
         #-----------------------------------------------------------------------------------
-        sample_time = time.time()
-        self.time_handling_sleep += sample_time - self.prev_sample_time
-        self.prev_sample_time = sample_time
+        self.sample_time = time.time()
+        self.time_handling_sleep += self.sample_time - self.prev_sample_time
+        self.prev_sample_time = self.sample_time
 
         #-------------------------------------------------------------------------------------------
         # Dump the loops per second
@@ -505,4 +507,6 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
 
         mpu6050_misses, i2c_misses = self.mpu.getMisses()
         logger.critical("mpu6050 %d misses, i2c %d misses", mpu6050_misses, i2c_misses)
+
+        return self.delta_time, self.ya, self.eax, self.eay
 
