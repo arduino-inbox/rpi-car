@@ -298,6 +298,10 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.eay_average += (self.eay - self.eay_offset) * self.delta_time
         self.eaz_average += (self.eaz - self.eaz_offset) * self.delta_time
 
+        self.eax_out = 0.0
+        self.eay_out = 0.0
+        self.eaz_out = 0.0
+
         if self.current_time - self.last_motion_update >= 1/self.motion_frequency:
             self.last_motion_update -= self.current_time
 
@@ -316,16 +320,18 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
             self.eay_average = 0.0
             self.eaz_average = 0.0
 
+        a_abs = math.sqrt(self.eax_out**2 + self.eay_out**2)
+        v_abs = 0.0  # todo
+
         #-----------------------------------------------------------------------------------
         # Diagnostic statistics log - every 0.1s
         #-----------------------------------------------------------------------------------
-        logger.debug("{et}, {dt}, {l}, {ya}, {ax}, {ay}".format(
+        logger.debug("{et}, {dt}, {l}, {ya}, {a}".format(
             et=self.elapsed_time,
             dt=self.delta_time,
             l=self.loop_count,
             ya=self.ya,
-            ax=self.eax_out,
-            ay=self.eay_out
+            a=a_abs
         ))
 
         #-----------------------------------------------------------------------------------
