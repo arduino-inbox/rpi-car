@@ -2,9 +2,6 @@
 """
 Main executable of python robot car.
 """
-from nodes.components.gpio import GpioFactory
-from nodes import (MotorDriverNode, UltrasonicSensorNode, BrainNode, Car, AccelerometerGyroscopeSensorNode,
-                   BluetoothNode)
 
 # Logging setup
 import logging
@@ -20,6 +17,11 @@ handler = logging.StreamHandler()
 formatter = logging.Formatter("%(process)d/%(processName)s: %(asctime)-15s %(levelname)-8s %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
+
+from nodes.components.gpio import GpioFactory
+from nodes import (MotorDriverNode, UltrasonicSensorNode, BrainNode, Car, AccelerometerGyroscopeSensorNode,
+                   BluetoothNode)
 
 # Cleanup previously defined GPIO settings
 GpioFactory.build().cleanup()
