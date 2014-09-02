@@ -125,4 +125,4 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         #                    self.ax,
         #                    self.ay)
 
-        return None, None, None, None
+        yield None, None, None, None

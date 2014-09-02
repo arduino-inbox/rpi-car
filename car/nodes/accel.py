@@ -40,7 +40,22 @@ class AccelerometerGyroscopeSensorNode(PublisherNode):
         """
         Read component value and update the property.
         """
-        self.sensor_component.reading()
+        for result in self.sensor_component.reading():
+            (self.dt, self.yaw, self.ax, self.ay) = result
+            logger.debug(
+                "∂t={dt}s, Yaw={yaw}, aX={ax}, aY={ay}, "
+                # "vX={vx}, vY={vy}, tX={tx}, tY={ty}"
+                .format(
+                    dt=self.dt, yaw=self.yaw,
+                    ax=self.ax, ay=self.ay,
+                    # vx=self.vx, vy=self.vy,
+                    # tx=self.tx, ty=self.ty
+                ))
+
+            self.send(CHANNEL_ACCELERATION, self.ax)
+            self.send(CHANNEL_ROTATION, self.yaw)
+            self.send(CHANNEL_TRAVEL_VELOCITY, self.vxy)
+            self.send(CHANNEL_TRAVEL_DISTANCE, self.txy)
 
         # for result in self.sensor_component.reading():
         #     (self.dt, self.yaw, self.ax, self.ay) = result
