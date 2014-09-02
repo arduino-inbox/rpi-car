@@ -2,6 +2,11 @@
 """
 Main executable of python robot car.
 """
+import os
+print os.environ.get('DEBUG')
+exit()
+
+
 from nodes.components.gpio import GpioFactory
 from nodes import (MotorDriverNode, UltrasonicSensorNode, BrainNode, Car, AccelerometerGyroscopeSensorNode,
                    BluetoothNode)
