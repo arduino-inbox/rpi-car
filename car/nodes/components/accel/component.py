@@ -54,23 +54,11 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
     rr_out = 0.0
     yr_out = 0.0
 
-    evx_diags = "0.0, 0.0, 0.0"
-    evy_diags = "0.0, 0.0, 0.0"
-    evz_diags = "0.0, 0.0, 0.0"
-    pa_diags = "0.0, 0.0, 0.0"
-    ra_diags = "0.0, 0.0, 0.0"
-    ya_diags = "0.0, 0.0, 0.0"
-    pr_diags = "0.0, 0.0, 0.0"
-    rr_diags = "0.0, 0.0, 0.0"
-    yr_diags = "0.0, 0.0, 0.0"
-
     update_start = 0.0
     hover_speed = 0
     vert_out = 0
 
     calibrate_sensors, flying, hover_target, shoot_video, vvp_gain, vvi_gain, vvd_gain, hvp_gain, hvi_gain, hvd_gain, aap_gain, aai_gain, aad_gain, rrp_gain, rri_gain, rrd_gain, test_case, tau, dlpf, loop_frequency, motion_frequency, attitude_frequency, statistics, yaw_control = check_cli(sys.argv[1:])
-    logger.debug("calibrate_sensors = %s, fly = %s, hover_target = %d, shoot_video = %s, vvp_gain = %f, vvi_gain = %f, vvd_gain= %f, hvp_gain = %f, hvi_gain = %f, hvd_gain = %f, aap_gain = %f, aai_gain = %f, aad_gain = %f, rrp_gain = %f, rri_gain = %f, rrd_gain = %f, test_case = %d, tau = %f, dlpf = %d, loop_frequency = %d, motion_frequency = %d, attitude_frequency = %d, statistics = %s, yaw_control = %d", calibrate_sensors, flying, hover_target, shoot_video, vvp_gain, vvi_gain, vvd_gain, hvp_gain, hvi_gain, hvd_gain, aap_gain, aai_gain, aad_gain, rrp_gain, rri_gain, rrd_gain, test_case, tau, dlpf, loop_frequency, motion_frequency, attitude_frequency, statistics, yaw_control)
-
 
     #-------------------------------------------------------------------------------------------
     # The earth X axis speed controls forward / backward speed
@@ -254,24 +242,10 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         #===================================================================================
         self.qax, self.qay, self.qaz, self.qgx, self.qgy, self.qgz = self.mpu.readSensors()
 
-        #-----------------------------------------------------------------------------------
-        # Track proportion of time handling sensors
-        #-----------------------------------------------------------------------------------
-        self.sample_time = time.time()
-        self.time_handling_sensors += self.sample_time - self.prev_sample_time
-        self.prev_sample_time = self.sample_time
-
         #===================================================================================
         # Angles: Get the Euler angles in radians
         #===================================================================================
         self.e_pitch, self.e_roll, self.e_tilt  = self.mpu.getEulerAngles(self.qax, self.qay, self.qaz)
-
-        #-----------------------------------------------------------------------------------
-        # Track proportion of time handling euler angles
-        #-----------------------------------------------------------------------------------
-        self.sample_time = time.time()
-        self.time_handling_eangles += self.sample_time - self.prev_sample_time
-        self.prev_sample_time = self.sample_time
 
         #-----------------------------------------------------------------------------------
         # Integrate the gyros angular velocity to determine absolute angle of tilt in radians
@@ -280,13 +254,6 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.i_pitch += self.qgy * self.delta_time
         self.i_roll += self.qgx * self.delta_time
         self.i_yaw += self.qgz * self.delta_time
-
-        #-----------------------------------------------------------------------------------
-        # Track proportion of time handling integrated angles
-        #-----------------------------------------------------------------------------------
-        self.sample_time = time.time()
-        self.time_handling_iangles += self.sample_time - self.prev_sample_time
-        self.prev_sample_time = self.sample_time
 
         #===================================================================================
         # Filter: Apply complementary filter to ensure long-term accuracy of pitch / roll angles
@@ -313,13 +280,6 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.ya = self.i_yaw
 
         #-----------------------------------------------------------------------------------
-        # Track proportion of time handling angle filter
-        #-----------------------------------------------------------------------------------
-        sample_time = time.time()
-        self.time_handling_angles_filter += sample_time - self.prev_sample_time
-        self.prev_sample_time = sample_time
-
-        #-----------------------------------------------------------------------------------
         # Convert quad orientated axes accelerometer reading to earth orientated axes
         #-----------------------------------------------------------------------------------
         self.eax, self.eay, self.eaz = convert_axes(self.qax, self.qay, self.qaz, self.c_pitch, self.c_roll)
@@ -339,143 +299,18 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.eaz_average += (self.eaz - self.eaz_offset) * self.delta_time
 
         #-----------------------------------------------------------------------------------
-        # Track proportion of time handling sensor angles
-        #-----------------------------------------------------------------------------------
-        sample_time = time.time()
-        self.time_handling_axes_shift += sample_time - self.prev_sample_time
-        self.prev_sample_time = sample_time
-
-        #-----------------------------------------------------------------------------------
-        # The attitude PID targets are updated with new motion PID outputs at 31Hz.
-        # The attitude PID outputs are updated every 100Hz.
-        #-----------------------------------------------------------------------------------
-        if self.current_time - self.last_motion_update >= 1/self.motion_frequency:
-            self.last_motion_update -= self.current_time
-
-            #===========================================================================
-            # Motion PIDs: Run the horizontal speed PIDs each rotation axis to determine
-            # targets for absolute angle PIDs and the verical speed PID to control height.
-            #===========================================================================
-            [p_out, i_out, d_out] = self.evx_pid.Compute(self.evx, self.evx_target)
-            self.evx_diags = "%f, %f, %f" % (p_out, i_out, d_out)
-            self.evx_out = p_out + i_out + d_out
-
-            [p_out, i_out, d_out] = self.evy_pid.Compute(self.evy, self.evy_target)
-            self.evy_diags = "%f, %f, %f" % (p_out, i_out, d_out)
-            self.evy_out =  p_out + i_out + d_out
-
-            [p_out, i_out, d_out] = self.evz_pid.Compute(self.evz, self.evz_target)
-            self.evz_diags = "%f, %f, %f" % (p_out, i_out, d_out)
-            self.evz_out = p_out + i_out + d_out
-
-            #---------------------------------------------------------------------------
-            # Work out the earth axis acceleration averages
-            #---------------------------------------------------------------------------
-            self.eax_average /= (self.current_time - self.ea_averaging_start)
-            self.eay_average /= (self.current_time - self.ea_averaging_start)
-            self.eaz_average /= (self.current_time - self.ea_averaging_start)
-
-            #---------------------------------------------------------------------------
-            # Convert the horizontal velocity PID output i.e. the horizontal acceleration
-            # target in q's into the pitch and roll angle PID targets in radians
-            #---------------------------------------------------------------------------
-            self.pa_target = -math.atan2(self.evx_out, 1.0 + self.eaz_average)
-            self.ra_target = -math.atan2(self.evy_out, 1.0 + self.eaz_average)
-
-            #---------------------------------------------------------------------------
-            # Restart integrating out accelerometer noise
-            #---------------------------------------------------------------------------
-            self.ea_averaging_start = self.current_time
-            self.eax_average = 0.0
-            self.eay_average = 0.0
-            self.eaz_average = 0.0
-
-            #---------------------------------------------------------------------------
-            # Convert the vertical velocity PID output direct to PWM pulse width.
-            #---------------------------------------------------------------------------
-            self.vert_out = self.hover_speed + int(round(self.evz_out))
-
-            #---------------------------------------------------------------------------
-            # Track proportion of time handling speed PIDs
-            #---------------------------------------------------------------------------
-            sample_time = time.time()
-            self.time_handling_motion_pids += sample_time - self.prev_sample_time
-            self.prev_sample_time = sample_time
-
-
-        if self.current_time - self.last_attitude_update >= 1/self.attitude_frequency:
-            self.last_attitude_update -= self.current_time
-
-            #===========================================================================
-            # Attitude PIDs: Run the absolute and and rotoation rate PIDs each rotation
-            # axis to determine overall PWM output.
-            #===========================================================================
-            [p_out, i_out, d_out] = self.pa_pid.Compute(self.pa, self.pa_target)
-            self.pa_diags = "%f, %f, %f" % (p_out, i_out, d_out)
-            pr_target = p_out + i_out + d_out
-            [p_out, i_out, d_out] = self.ra_pid.Compute(self.ra, self.ra_target)
-            self.ra_diags = "%f, %f, %f" % (p_out, i_out, d_out)
-            rr_target = p_out + i_out + d_out
-            [p_out, i_out, d_out] = self.ya_pid.Compute(self.ya, self.ya_target)
-            self.ya_diags = "%f, %f, %f" % (p_out, i_out, d_out)
-            yr_target = p_out + i_out + d_out
-
-            [p_out, i_out, d_out] = self.pr_pid.Compute(self.qgy, pr_target)
-            self.pr_diags = "%f, %f, %f" % (p_out, i_out, d_out)
-            self.pr_out = p_out + i_out + d_out
-            [p_out, i_out, d_out] = self.rr_pid.Compute(self.qgx, rr_target)
-            self.rr_diags = "%f, %f, %f" % (p_out, i_out, d_out)
-            self.rr_out = p_out + i_out + d_out
-            [p_out, i_out, d_out] = self.yr_pid.Compute(self.qgz, yr_target)
-            self.yr_diags = "%f, %f, %f" % (p_out, i_out, d_out)
-            self.yr_out = p_out + i_out + d_out
-
-            #---------------------------------------------------------------------------
-            # Convert the rotation rate PID outputs direct to PWM pulse width
-            #---------------------------------------------------------------------------
-            self.pr_out = int(round(self.pr_out / 2))
-            self.rr_out = int(round(self.rr_out / 2))
-            self.yr_out = int(round(self.yr_out / 2))
-
-            #---------------------------------------------------------------------------
-            # Track proportion of time handling angle PIDs
-            #---------------------------------------------------------------------------
-            sample_time = time.time()
-            self.time_handling_attitude_pids += sample_time - self.prev_sample_time
-            self.prev_sample_time = sample_time
-
-        #-----------------------------------------------------------------------------------
         # Diagnostic statistics log - every 0.1s
         #-----------------------------------------------------------------------------------
-        logger.debug('Time, DT, Loop, evz_target, qgx, qgy, qgz, qax, qay, qaz, eax, eay, eaz, evx, evy, evz, i pitch, i roll, e pitch, e roll, c pitch, c roll, i yaw, e tilt, exp, exi, exd, pa_target, pap, pai, pad, prp, pri, prd, pr_out, eyp, eyi, eyd, ra_target, rap, rai, rad, rrp, rri, rrd, rr_out, ezp, ezi, ezd, evz_out, yap, yai, yap, yrp, yri, yrd, yr_out, FL spin, FR spin, BL spin, BR spin')
-        logger.debug("{et}, {dt}, {l}, {ya}, {ax}, {ay}".format(
+        logger.debug("{et}, {dt}, {l}, {ya}, {ax}, {ay}, {vx}, {vy}".format(
             et=self.elapsed_time,
             dt=self.delta_time,
             l=self.loop_count,
-            ya=self.i_yaw,
-            ax=self.eax,
-            ay=self.eay
+            ya=self.ya,
+            ax=self.eax_average,
+            ay=self.eay_average,
+            vx=self.evx,
+            vy=self.evy
         ))
-
-        # logger.debug('Time, DT, Loop, evz_target, qgx, qgy, qgz, qax, qay, qaz, eax, eay, eaz, evx, evy, evz, i pitch, i roll, e pitch, e roll, c pitch, c roll, i yaw, e tilt, exp, exi, exd, pa_target, pap, pai, pad, prp, pri, prd, pr_out, eyp, eyi, eyd, ra_target, rap, rai, rad, rrp, rri, rrd, rr_out, ezp, ezi, ezd, evz_out, yap, yai, yap, yrp, yri, yrd, yr_out, FL spin, FR spin, BL spin, BR spin')
-        #'0.075547, 0.075547, 1, 0.000000, -0.000194, 0.000217, 0.000232, -0.034452, -0.031382, 0.900066, -0.001923, -0.000822, -0.098730, -0.001425, -0.000609, 0.000529, -2.065121, -1.942578, -2.192070, -1.996880, -2.069741, -1.944554, 0.001003, 2.963938, 0.000855, 0.000014, 0.000000, -0.000868, 0.088140, 0.000000, 0.000000, 13.188448, 0.000000, 0.000000, 7.000000, 0.000366, 0.000006, 0.000000, -0.000371, 0.083919, 0.000000, 0.000000, 12.617054, 0.000000, 0.000000, 6.000000, -0.158810, -0.007599, -0.000000, -0.166409, -0.000000, -0.000000, -0.000000, -0.000000, -0.000000, -0.000000, 0.000000'
-        # logger.debug(
-        #     '%f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f',
-        #     self.elapsed_time, self.delta_time, self.loop_count, self.evz_target, self.qgx, self.qgy, self.qgz,
-        #     self.qax, self.qay, self.qaz, self.eax, self.eay,
-        #     self.eaz, self.evx, self.evy, self.evz, math.degrees(self.i_pitch), math.degrees(self.i_roll),
-        #     math.degrees(self.e_pitch),
-        #     math.degrees(self.e_roll), math.degrees(self.c_pitch), math.degrees(self.c_roll), math.degrees(self.i_yaw),
-        #     math.degrees(self.e_tilt), self.evx_diags, self.pa_target, self.pa_diags, self.pr_diags, self.pr_out,
-        #     self.evy_diags, self.ra_target, self.ra_diags, self.rr_diags, self.rr_out, self.evz_diags, self.evz_out,
-        #     self.ya_diags, self.yr_diags, self.yr_out)
-
-        #-----------------------------------------------------------------------------------
-        # Track proportion of time logging diagnostics
-        #-----------------------------------------------------------------------------------
-        self.sample_time = time.time()
-        self.time_handling_diagnostics += self.sample_time - self.prev_sample_time
-        self.prev_sample_time = self.sample_time
 
         #-----------------------------------------------------------------------------------
         # Slow down the scheduling loop to avoid making accelerometer noise.  This sleep critically
@@ -488,34 +323,12 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
             self.sleep_time = 0.0
         time.sleep(self.sleep_time)
 
-        #-----------------------------------------------------------------------------------
-        # Track proportion of time sleeping
-        #-----------------------------------------------------------------------------------
-        self.sample_time = time.time()
-        self.time_handling_sleep += self.sample_time - self.prev_sample_time
-        self.prev_sample_time = self.sample_time
 
         #-------------------------------------------------------------------------------------------
         # Dump the loops per second
         #-------------------------------------------------------------------------------------------
-        logger.debug("loop speed %f loops per second", self.loop_count / self.elapsed_time)
+        # logger.debug("loop speed %f loops per second", self.loop_count / self.elapsed_time)
 
-        # #-------------------------------------------------------------------------------------------
-        # # Dump the percentage time handling each step
-        # #-------------------------------------------------------------------------------------------
-        # logger.critical("%% sensors:          %f", self.time_handling_sensors / self.elapsed_time * 100.0)
-        # logger.critical("%% eangles:          %f", self.time_handling_eangles / self.elapsed_time * 100.0)
-        # logger.critical("%% iangles:          %f", self.time_handling_iangles / self.elapsed_time * 100.0)
-        # logger.critical("%% angles_filter:    %f", self.time_handling_angles_filter / self.elapsed_time * 100.0)
-        # logger.critical("%% axes_shift:       %f", self.time_handling_axes_shift / self.elapsed_time * 100.0)
-        # logger.critical("%% motion_pids:      %f", self.time_handling_motion_pids / self.elapsed_time * 100.0)
-        # logger.critical("%% attitude_pids:    %f", self.time_handling_attitude_pids / self.elapsed_time * 100.0)
-        # logger.critical("%% pid_outputs:      %f", self.time_handling_pid_outputs / self.elapsed_time * 100.0)
-        # logger.critical("%% pid_diagnosticss: %f", self.time_handling_diagnostics / self.elapsed_time * 100.0)
-        # logger.critical("%% sleep:            %f", self.time_handling_sleep / self.elapsed_time * 100.0)
-        #
-        mpu6050_misses, i2c_misses = self.mpu.getMisses()
-        logger.debug("mpu6050 %d misses, i2c %d misses", mpu6050_misses, i2c_misses)
-
-        return self.delta_time, self.ya, self.eax, self.eay
+        # DT, Yaw, Acc, Vel, Dist
+        return self.delta_time, self.ya, 0.0, 0.0, 0.0
 
