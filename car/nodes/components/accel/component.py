@@ -444,22 +444,31 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
             self.time_handling_attitude_pids += sample_time - self.prev_sample_time
             self.prev_sample_time = sample_time
 
-
         #-----------------------------------------------------------------------------------
         # Diagnostic statistics log - every 0.1s
         #-----------------------------------------------------------------------------------
         logger.debug('Time, DT, Loop, evz_target, qgx, qgy, qgz, qax, qay, qaz, eax, eay, eaz, evx, evy, evz, i pitch, i roll, e pitch, e roll, c pitch, c roll, i yaw, e tilt, exp, exi, exd, pa_target, pap, pai, pad, prp, pri, prd, pr_out, eyp, eyi, eyd, ra_target, rap, rai, rad, rrp, rri, rrd, rr_out, ezp, ezi, ezd, evz_out, yap, yai, yap, yrp, yri, yrd, yr_out, FL spin, FR spin, BL spin, BR spin')
+        logger.debug("{et}, {dt}, {l}, {ya}, {ax}, {ay}".format(
+            et=self.elapsed_time,
+            dt=self.delta_time,
+            l=self.loop_count,
+            ya=self.i_yaw,
+            ax=self.eax,
+            ay=self.eay
+        ))
+
+        # logger.debug('Time, DT, Loop, evz_target, qgx, qgy, qgz, qax, qay, qaz, eax, eay, eaz, evx, evy, evz, i pitch, i roll, e pitch, e roll, c pitch, c roll, i yaw, e tilt, exp, exi, exd, pa_target, pap, pai, pad, prp, pri, prd, pr_out, eyp, eyi, eyd, ra_target, rap, rai, rad, rrp, rri, rrd, rr_out, ezp, ezi, ezd, evz_out, yap, yai, yap, yrp, yri, yrd, yr_out, FL spin, FR spin, BL spin, BR spin')
         #'0.075547, 0.075547, 1, 0.000000, -0.000194, 0.000217, 0.000232, -0.034452, -0.031382, 0.900066, -0.001923, -0.000822, -0.098730, -0.001425, -0.000609, 0.000529, -2.065121, -1.942578, -2.192070, -1.996880, -2.069741, -1.944554, 0.001003, 2.963938, 0.000855, 0.000014, 0.000000, -0.000868, 0.088140, 0.000000, 0.000000, 13.188448, 0.000000, 0.000000, 7.000000, 0.000366, 0.000006, 0.000000, -0.000371, 0.083919, 0.000000, 0.000000, 12.617054, 0.000000, 0.000000, 6.000000, -0.158810, -0.007599, -0.000000, -0.166409, -0.000000, -0.000000, -0.000000, -0.000000, -0.000000, -0.000000, 0.000000'
-        logger.debug(
-            '%f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f',
-            self.elapsed_time, self.delta_time, self.loop_count, self.evz_target, self.qgx, self.qgy, self.qgz,
-            self.qax, self.qay, self.qaz, self.eax, self.eay,
-            self.eaz, self.evx, self.evy, self.evz, math.degrees(self.i_pitch), math.degrees(self.i_roll),
-            math.degrees(self.e_pitch),
-            math.degrees(self.e_roll), math.degrees(self.c_pitch), math.degrees(self.c_roll), math.degrees(self.i_yaw),
-            math.degrees(self.e_tilt), self.evx_diags, self.pa_target, self.pa_diags, self.pr_diags, self.pr_out,
-            self.evy_diags, self.ra_target, self.ra_diags, self.rr_diags, self.rr_out, self.evz_diags, self.evz_out,
-            self.ya_diags, self.yr_diags, self.yr_out)
+        # logger.debug(
+        #     '%f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f, %s, %f, %s, %s, %f',
+        #     self.elapsed_time, self.delta_time, self.loop_count, self.evz_target, self.qgx, self.qgy, self.qgz,
+        #     self.qax, self.qay, self.qaz, self.eax, self.eay,
+        #     self.eaz, self.evx, self.evy, self.evz, math.degrees(self.i_pitch), math.degrees(self.i_roll),
+        #     math.degrees(self.e_pitch),
+        #     math.degrees(self.e_roll), math.degrees(self.c_pitch), math.degrees(self.c_roll), math.degrees(self.i_yaw),
+        #     math.degrees(self.e_tilt), self.evx_diags, self.pa_target, self.pa_diags, self.pr_diags, self.pr_out,
+        #     self.evy_diags, self.ra_target, self.ra_diags, self.rr_diags, self.rr_out, self.evz_diags, self.evz_out,
+        #     self.ya_diags, self.yr_diags, self.yr_out)
 
         #-----------------------------------------------------------------------------------
         # Track proportion of time logging diagnostics
@@ -489,24 +498,24 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         #-------------------------------------------------------------------------------------------
         # Dump the loops per second
         #-------------------------------------------------------------------------------------------
-        logger.critical("loop speed %f loops per second", self.loop_count / self.elapsed_time)
+        logger.debug("loop speed %f loops per second", self.loop_count / self.elapsed_time)
 
-        #-------------------------------------------------------------------------------------------
-        # Dump the percentage time handling each step
-        #-------------------------------------------------------------------------------------------
-        logger.critical("%% sensors:          %f", self.time_handling_sensors / self.elapsed_time * 100.0)
-        logger.critical("%% eangles:          %f", self.time_handling_eangles / self.elapsed_time * 100.0)
-        logger.critical("%% iangles:          %f", self.time_handling_iangles / self.elapsed_time * 100.0)
-        logger.critical("%% angles_filter:    %f", self.time_handling_angles_filter / self.elapsed_time * 100.0)
-        logger.critical("%% axes_shift:       %f", self.time_handling_axes_shift / self.elapsed_time * 100.0)
-        logger.critical("%% motion_pids:      %f", self.time_handling_motion_pids / self.elapsed_time * 100.0)
-        logger.critical("%% attitude_pids:    %f", self.time_handling_attitude_pids / self.elapsed_time * 100.0)
-        logger.critical("%% pid_outputs:      %f", self.time_handling_pid_outputs / self.elapsed_time * 100.0)
-        logger.critical("%% pid_diagnosticss: %f", self.time_handling_diagnostics / self.elapsed_time * 100.0)
-        logger.critical("%% sleep:            %f", self.time_handling_sleep / self.elapsed_time * 100.0)
-
+        # #-------------------------------------------------------------------------------------------
+        # # Dump the percentage time handling each step
+        # #-------------------------------------------------------------------------------------------
+        # logger.critical("%% sensors:          %f", self.time_handling_sensors / self.elapsed_time * 100.0)
+        # logger.critical("%% eangles:          %f", self.time_handling_eangles / self.elapsed_time * 100.0)
+        # logger.critical("%% iangles:          %f", self.time_handling_iangles / self.elapsed_time * 100.0)
+        # logger.critical("%% angles_filter:    %f", self.time_handling_angles_filter / self.elapsed_time * 100.0)
+        # logger.critical("%% axes_shift:       %f", self.time_handling_axes_shift / self.elapsed_time * 100.0)
+        # logger.critical("%% motion_pids:      %f", self.time_handling_motion_pids / self.elapsed_time * 100.0)
+        # logger.critical("%% attitude_pids:    %f", self.time_handling_attitude_pids / self.elapsed_time * 100.0)
+        # logger.critical("%% pid_outputs:      %f", self.time_handling_pid_outputs / self.elapsed_time * 100.0)
+        # logger.critical("%% pid_diagnosticss: %f", self.time_handling_diagnostics / self.elapsed_time * 100.0)
+        # logger.critical("%% sleep:            %f", self.time_handling_sleep / self.elapsed_time * 100.0)
+        #
         mpu6050_misses, i2c_misses = self.mpu.getMisses()
-        logger.critical("mpu6050 %d misses, i2c %d misses", mpu6050_misses, i2c_misses)
+        logger.debug("mpu6050 %d misses, i2c %d misses", mpu6050_misses, i2c_misses)
 
         return self.delta_time, self.ya, self.eax, self.eay
 
