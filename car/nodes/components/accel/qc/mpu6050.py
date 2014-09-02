@@ -8,27 +8,15 @@ Copyright 2014 Andy Baker (Hove) - andy@pistuffing.co.uk
 """
 from __future__ import division
 
+import logging
+import os
 import time
 from array import *
 from i2c import I2C
 from utils import *
 
 
-
-# Logging setup
-import logging
-import os
-
 logger = logging.getLogger()
-if os.environ.get('DEBUG'):
-    logger.setLevel(logging.DEBUG)
-else:
-    logger.setLevel(logging.CRITICAL)
-
-handler = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)-15s %(levelname)-8s %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
 
 
 class MPU6050:

@@ -2,7 +2,6 @@
 """
 Accelerometer/Gyro sensor node.
 """
-import math
 from components.constants import *
 from components import AccelerometerGyroscopeSensorComponent
 from common import PublisherNode

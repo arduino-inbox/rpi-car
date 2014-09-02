@@ -2,21 +2,10 @@
 
 import smbus
 import time
-
-# Logging setup
 import logging
 import os
 
 logger = logging.getLogger()
-if os.environ.get('DEBUG'):
-    logger.setLevel(logging.DEBUG)
-else:
-    logger.setLevel(logging.CRITICAL)
-
-handler = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)-15s %(levelname)-8s %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
 
 
 class I2C:
