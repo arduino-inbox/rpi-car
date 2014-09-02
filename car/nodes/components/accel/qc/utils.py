@@ -1,7 +1,7 @@
 # coding=utf-8
 import math
 
-def convert_axes(qax, qay, qaz, pa, ra, yaw_control):
+def convert_axes(qax, qay, qaz, pa, ra, yaw_control=False):
     """
     Axes: Convert the acceleration in g's to earth coordinates, then integrate to
     convert to speeds in earth's X and Y axes meters per second.
@@ -23,7 +23,7 @@ def convert_axes(qax, qay, qaz, pa, ra, yaw_control):
     @param qaz:
     @param pa:
     @param ra:
-    @param yaw_control:
+    @param yaw_control: Boolean (Unused)
     @return:
     """
     if not yaw_control:

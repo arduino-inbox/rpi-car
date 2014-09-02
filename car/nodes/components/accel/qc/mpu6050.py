@@ -399,8 +399,8 @@ class MPU6050:
 
         temp = (float(temp_raw) / 340) + 36.53
 
-        pitch, roll, tilt = self.getEulerAngles(grav_x_offset, grav_y_offset, grav_z_offset, yaw_control=False)
-        eax, eay, eaz = convert_axes(grav_x_offset, grav_y_offset, grav_z_offset, pitch, roll, yaw_control=False)
+        pitch, roll, tilt = self.getEulerAngles(grav_x_offset, grav_y_offset, grav_z_offset)
+        eax, eay, eaz = convert_axes(grav_x_offset, grav_y_offset, grav_z_offset, pitch, roll)
 
         #---------------------------------------------------------------------------
         # Open the offset config file

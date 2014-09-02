@@ -17,7 +17,7 @@ else:
     logger.setLevel(logging.CRITICAL)
 
 handler = logging.StreamHandler()
-formatter = logging.Formatter("PROCESS=%(process)d/%(processName)s THREAD=%(thread)d: %(asctime)-15s %(levelname)-8s %(message)s")
+formatter = logging.Formatter("%(process)d/%(processName)s: %(asctime)-15s %(levelname)-8s %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 

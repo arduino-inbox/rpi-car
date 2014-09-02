@@ -4,12 +4,14 @@ Ultrasonic components.
 """
 import logging
 import os
-from mpu6050 import MPU6050
+import time
+import math
 
 logger = logging.getLogger()
 
 from helpers import SmBusFactory
 from qc import mpu6050
+from qc.utils import convert_axes
 from ..gpio import GpioComponent
 
 
@@ -47,82 +49,51 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.mpu = mpu6050.MPU6050(
             address=0x68,
             bus=SmBusFactory.build())
+        time.sleep(2.0)
+        self.mpu.calibrateSensors("./qcoffsets.csv")
+        time.sleep(2.0)
+        self.mpu.calibrateGyros()
+        #-------------------------------------------------------------------------------------------
+        # Prime the complementary angle filter with the take-off platform tilt
+        #-------------------------------------------------------------------------------------------
+        qax_average = 0.0
+        qay_average = 0.0
+        qaz_average = 0.0
+        for loop_count in range(0, 50, 1):
+            qax, qay, qaz, qgx, qgy, qgz = self.mpu.readSensors()
+            qax_average += qax
+            qay_average += qay
+            qaz_average += qaz
+            time.sleep(0.05)
+        qax = qax_average / 50.0
+        qay = qay_average / 50.0
+        qaz = qaz_average / 50.0
+
+        prev_c_pitch, prev_c_roll, prev_c_tilt  = self.mpu.getEulerAngles(qax, qay, qaz)
+        logger.critical("Platform tilt: pitch %f, roll %f", prev_c_pitch * 180 / math.pi, prev_c_roll * 180 / math.pi)
+
+        #-------------------------------------------------------------------------------------------
+        # Prime the earth axis accelerometer values for accurate earth axis speed integration
+        #-------------------------------------------------------------------------------------------
+        eax, eay, eaz = convert_axes(qax, qay, qaz, prev_c_pitch, prev_c_roll)
+        eax_offset = eax
+        eay_offset = eay
+        eaz_offset = eaz
+
+        logger.critical("Platform motion: qax %f, qay %f, qaz %f, g %f", qax, qay, qaz, math.pow(math.pow(qax, 2) + math.pow(qay, 2) + math.pow(qaz, 2), 0.5))
+        logger.critical("Platform motion: eax %f, eay %f, eaz %f, g %f", eax, eay, eaz, math.pow(math.pow(eax, 2) + math.pow(eay, 2) + math.pow(1.0 + eaz, 2), 0.5))
+
+        #-------------------------------------------------------------------------------------------
+        # Preset the integrated gyro to match the take-off angle
+        #-------------------------------------------------------------------------------------------
+        i_pitch = prev_c_pitch
+        i_roll = prev_c_roll
+        i_yaw = 0.0
+        # ... tbc
+
+
+
 
 
     def reading(self):
-        # while True:
-        #     # Get INT_STATUS byte
-        #     self.mpu_int_status = self.mpu.getIntStatus()
-        #
-        #     if self.mpu_int_status >= 2:  # check for DMP data ready interrupt
-        #         # get current FIFO count
-        #         self.fifo_count = self.mpu.getFIFOCount()
-        #
-        #         # check for overflow
-        #         if self.fifo_count == 1024:
-        #             # reset so we can continue cleanly
-        #             self.mpu.resetFIFO()
-        #             logger.warning('FIFO overflow!')
-        #
-        #         # wait for correct available data length
-        #         self.fifo_count = self.mpu.getFIFOCount()
-        #         while self.fifo_count < self.packet_size:
-        #             self.fifo_count = self.mpu.getFIFOCount()
-        #
-        #         self.result = self.mpu.getFIFOBytes(self.packet_size)
-        #         self.q = self.mpu.dmpGetQuaternion(self.result)
-        #         self.g = self.mpu.dmpGetGravity(self.q)
-        #         self.ypr = self.mpu.dmpGetYawPitchRoll(self.q, self.g)
-        #         self.a = self.mpu.dmpGetAccel(self.result)
-        #         self.la = self.mpu.dmpGetLinearAccel(self.a, self.g)
-        #         self.laiw = self.mpu.dmpGetLinearAccelInWorld(self.a, self.q)
-        #
-        #         self.yaw = self.ypr['yaw'] * 180 / math.pi  # rads to degs
-        #         self.pitch = self.ypr['pitch'] * 180 / math.pi
-        #         self.roll = self.ypr['roll'] * 180 / math.pi
-        #         #self.ax = self.la['x'] - self.ax_offset
-        #         #self.ay = self.la['y'] - self.ay_offset
-        #         #self.az = self.la['z'] - self.az_offset
-        #         self.ax = self.laiw['x'] - self.ax_offset
-        #         self.ay = self.laiw['y'] - self.ay_offset
-        #         self.az = self.laiw['z'] - self.az_offset
-        #         # Update timedelta
-        #         self.dt = time() - self.t0
-        #
-        #         # track FIFO count here in case there is > 1 packet available
-        #         # (this lets us immediately read more without waiting for an
-        #         # interrupt)
-        #         self.fifo_count -= self.packet_size
-        #
-        #         if self.calibrating:
-        #             if self._equal(
-        #                     [self.yaw, self.pitch, self.roll, self.ax, self.ay,
-        #                      self.az, ],
-        #                     [self.yaw0, self.pitch0, self.roll0, self.ax0,
-        #                      self.ay0, self.az0, ]
-        #             ):
-        #                 self.calibrating = False
-        #                 self.ax_offset = self.ax
-        #                 self.ay_offset = self.ay
-        #                 self.az_offset = self.az
-        #                 self.t0 = time()
-        #                 logger.debug("Calibration done in {t}s".format(
-        #                     t=int(self.dt)))
-        #             else:
-        #                 logger.debug("Calibrating... {t}s".format(
-        #                     t=self.dt))
-        #
-        #                 self.yaw0 = self.yaw
-        #                 self.pitch0 = self.pitch
-        #                 self.roll0 = self.roll
-        #                 self.ax0 = self.ax
-        #                 self.ay0 = self.ay
-        #                 self.az0 = self.az
-        #         else:
-        #             self.t0 = time()
-        #             yield (self.dt,
-        #                    self.yaw,
-        #                    self.ax,
-        #                    self.ay)
-
         return None, None, None, None
