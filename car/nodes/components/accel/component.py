@@ -298,18 +298,34 @@ class AccelerometerGyroscopeSensorComponent(GpioComponent):
         self.eay_average += (self.eay - self.eay_offset) * self.delta_time
         self.eaz_average += (self.eaz - self.eaz_offset) * self.delta_time
 
+        if self.current_time - self.last_motion_update >= 1/self.motion_frequency:
+            self.last_motion_update -= self.current_time
+
+            #---------------------------------------------------------------------------
+            # Work out the earth axis acceleration averages
+            #---------------------------------------------------------------------------
+            self.eax_out = self.eax_average / (self.current_time - self.ea_averaging_start)
+            self.eay_out = self.eay_average / (self.current_time - self.ea_averaging_start)
+            self.eaz_out = self.eaz_average / (self.current_time - self.ea_averaging_start)
+
+            #---------------------------------------------------------------------------
+            # Restart integrating out accelerometer noise
+            #---------------------------------------------------------------------------
+            self.ea_averaging_start = self.current_time
+            self.eax_average = 0.0
+            self.eay_average = 0.0
+            self.eaz_average = 0.0
+
         #-----------------------------------------------------------------------------------
         # Diagnostic statistics log - every 0.1s
         #-----------------------------------------------------------------------------------
-        logger.debug("{et}, {dt}, {l}, {ya}, {ax}, {ay}, {vx}, {vy}".format(
+        logger.debug("{et}, {dt}, {l}, {ya}, {ax}, {ay}".format(
             et=self.elapsed_time,
             dt=self.delta_time,
             l=self.loop_count,
             ya=self.ya,
-            ax=self.eax_average,
-            ay=self.eay_average,
-            vx=self.evx,
-            vy=self.evy
+            ax=self.eax_out,
+            ay=self.eay_out
         ))
 
         #-----------------------------------------------------------------------------------
