@@ -1,26 +1,28 @@
 ---
 - hosts: all
   tasks:
-    #- pacman: name=base-devel state=installed  # todo: install manually
-
+    - pacman: name=base-devel state=installed
     - pacman: name=net-tools state=installed
     - pacman: name=wget state=installed
     - pacman: name=screen state=installed
     - pacman: name=git state=installed
 
-    - pacman: name=python2-setuptools state=installed
-    - pacman: name=python2-pip state=installed
-    - file: src=/usr/bin/python2 dest=/usr/bin/python owner=root group=root state=link
-    - file: src=/usr/bin/pip2 dest=/usr/bin/pip owner=root group=root state=link
+    - pacman: name=nodejs state=installed
+    - npm: name=node-gyp global=true
 
-    - pacman: name=redis state=installed
-    - service: name=redis enabled=yes state=started
-    - pacman: name=python2-redis state=installed
-
-    - pip: name=RPIO state=present
-    - pip: name=RPi.GPIO state=present
-    - pip: name=gpiocrust state=present
-    - pip: name='https://github.com/arduino-inbox/PyComms.git#egg=PyComms' state=present
+#    - pacman: name=python2-setuptools state=installed
+#    - pacman: name=python2-pip state=installed
+#    - file: src=/usr/bin/python2 dest=/usr/bin/python owner=root group=root state=link
+#    - file: src=/usr/bin/pip2 dest=/usr/bin/pip owner=root group=root state=link
+#
+#    - pacman: name=redis state=installed
+#    - service: name=redis enabled=yes state=started
+#    - pacman: name=python2-redis state=installed
+#
+#    - pip: name=RPIO state=present
+#    - pip: name=RPi.GPIO state=present
+#    - pip: name=gpiocrust state=present
+#    - pip: name='https://github.com/arduino-inbox/PyComms.git#egg=PyComms' state=present
 
 
 - hosts: rpi

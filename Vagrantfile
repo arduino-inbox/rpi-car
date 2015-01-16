@@ -20,7 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "ansible" do |ansible|
       ansible.sudo = "yes"
       ansible.limit = "all"
-      #ansible.verbose = "vvvv"
+      ansible.verbose = "vvvv"
       ansible.host_key_checking = "false"
       ansible.playbook = "provisioning/site.yml"
       ansible.extra_vars = {ansible_python_interpreter: "/usr/bin/python2"}
