@@ -25,6 +25,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.limit = "all"
       ansible.verbose = "vvvv"
       ansible.host_key_checking = "false"
-      ansible.playbook = "ansible/site.yml"
+      ansible.playbook = "ansible/all.yml"
   end
 end

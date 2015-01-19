@@ -1,14 +1,7 @@
 ---
 - hosts: all
   tasks:
-    - pacman: name=base-devel state=installed
-    - pacman: name=net-tools state=installed
-    - pacman: name=wget state=installed
-    - pacman: name=screen state=installed
-    - pacman: name=git state=installed
-
-    - pacman: name=nodejs state=installed
-    - npm: name=node-gyp global=true
+    - apt: name=nodejs state=installed
 
 #    - pacman: name=python2-setuptools state=installed
 #    - pacman: name=python2-pip state=installed
@@ -25,9 +18,9 @@
 #    - pip: name='https://github.com/arduino-inbox/PyComms.git#egg=PyComms' state=present
 
 
-- hosts: rpi
-  tasks:
-    - pacman: name=lm_sensors state=installed
-    - pacman: name=i2c-tools state=installed
-    - pacman: name=python2-cffi state=installed
-    - pip: name=wiringpi2 state=present
+#- hosts: rpi
+#  tasks:
+#    - pacman: name=lm_sensors state=installed
+#    - pacman: name=i2c-tools state=installed
+#    - pacman: name=python2-cffi state=installed
+#    - pip: name=wiringpi2 state=present
