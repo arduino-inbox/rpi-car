@@ -6,7 +6,7 @@
 #    bluetooth
 #    npm: rethinkdb
 #    npm: bluetooth-serial-port
-#    npm: serial
+#    npm: serialport
 #    npm: rpio
 #    npm: mpu6050
 #    npm: ultrasonic
