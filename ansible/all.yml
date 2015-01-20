@@ -1,7 +1,8 @@
 ---
 - hosts: all
   tasks:
-    - apt: name=nodejs state=installed
+    - apt: nodejs
+    - apt: npm
 
 #    - pacman: name=python2-setuptools state=installed
 #    - pacman: name=python2-pip state=installed
