@@ -26,7 +26,7 @@ function Robot(config) {
     self.nodes.forEach(function (node) {
       console.log("-", node.name);
       node.instance.on('update', function (param, value) {
-        self.emit('nodeUpdate', self.uptime(), node.name, param, value);
+        self.emit('nodeUpdate', uptime(), node.name, param, value);
         console.log("[", uptime(), "]", "update", node.name, "", param, "", value);
       });
       node.instance.on('info', function (message) {
