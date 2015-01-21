@@ -20,8 +20,7 @@ var Robot = function (config) {
       self.nodes.forEach(function (node) {
         console.log("-", node.name);
         node.instance.on('update', function (param, value) {
-          console.log("Node update:", node.name);
-          console.log(param, "=", value);
+          console.log("[", (new Date()).getTime(), "] ", "update", node.name, "", param, "", value);
         });
         node.instance.work();
       });
@@ -37,7 +36,7 @@ var robot = new Robot({
         echoPin: 22,
         triggerPin: 24,
         timeout: 500, // smaller values always return -1
-        interval: 1000 // @todo to fiddle with
+        interval: 100 // @todo to fiddle with
       }
     }
   ]
