@@ -4,7 +4,7 @@ module.exports = function (config) {
   self.config = config || {
     echoPin: 22,
     triggerPin: 24,
-    timeout: 450
+    timeout: 500 // smaller values always return -1
   };
   self.sensor = usonic.sensor(self.config.echoPin, self.config.triggerPin, self.config.timeout);
 
