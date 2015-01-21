@@ -43,19 +43,19 @@ Robot.prototype.__proto__ = events.EventEmitter.prototype;
 var robot = new Robot({
   nodes: [
     {
+      name: "transmitter", // this one should start first.
+      config: {
+        address: '70:73:CB:C3:66:98',
+        channel: 3
+      }
+    },
+    {
       name: "ultrasonic",
       config: {
         echoPin: 22,
         triggerPin: 24,
         timeout: 1000, // values smaller than 500 always return -1
         interval: 50 // @todo to fiddle with
-      }
-    },
-    {
-      name: "transmitter",
-      config: {
-        address: '70:73:CB:C3:66:98',
-        channel: 3
       }
     }
   ]

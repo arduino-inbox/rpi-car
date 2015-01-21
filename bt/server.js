@@ -7,16 +7,15 @@ var portName = "/dev/cu.Bluetooth-Incoming-Port";
 var port = new SerialPort(portName, {
   baudRate: 57600
 });
-var message = 'pong\r\n';
+var message = 'ack\r\n';
 
 port.on('open', function () {
   console.log('port open. rate: ', port.options.baudRate);
 });
 
 port.on('data', function (data) {
-  console.log('[' + (new Date()).getTime() + ']', 'received:', data.toString());
+  console.log('received:', data.toString());
   port.write(message, function(err) {
-    console.log('[' + (new Date()).getTime() + ']', 'sent:', message);
     if (err) {
       console.log('err ' + err);
     }
