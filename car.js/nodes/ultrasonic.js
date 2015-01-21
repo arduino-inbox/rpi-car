@@ -11,15 +11,15 @@ function Ultrasonic(config) {
 
   events.EventEmitter.call(self);
 
+  // private
   var update = function () {
     self.distance = self.sensor();
     self.emit('update', 'distance', self.distance);
   };
 
-  return {
-    work: function () {
-      setInterval(update, self.config.interval);
-    }
+  // public
+  self.work = function () {
+    setInterval(update, self.config.interval);
   }
 }
 
