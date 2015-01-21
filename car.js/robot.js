@@ -5,7 +5,7 @@ function Robot(config) {
   self.started = (new Date()).getTime();
 
   var uptime = function () {
-    return (new Date()).getTime() - self.started;
+    return (((new Date()).getTime() - self.started) / 1000).toFixed(4);
   };
 
   console.log("Configuring nodes");
