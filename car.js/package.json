@@ -2,12 +2,14 @@
   "name": "car.js",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "robot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "GPL",
   "dependencies": {
+    "math-statistics": "^1.0.3",
+    "r-pi-usonic": "^2.3.2"
   }
 }
