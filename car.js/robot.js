@@ -1,7 +1,12 @@
-var Robot = function (config) {
+function Robot(config) {
   var self = this;
   self.config = config;
   self.nodes = [];
+  self.started = (new Date()).getTime();
+
+  var uptime = function () {
+    return (new Date()).getTime() - self.started;
+  };
 
   console.log("Configuring nodes");
   self.config.nodes.forEach(function (node) {
@@ -14,19 +19,17 @@ var Robot = function (config) {
     });
   });
 
-  return {
-    work: function () {
-      console.log("Starting nodes");
-      self.nodes.forEach(function (node) {
-        console.log("-", node.name);
-        node.instance.on('update', function (param, value) {
-          console.log("[", (new Date()).getTime(), "] ", "update", node.name, "", param, "", value);
-        });
-        node.instance.work();
+  self.work = function () {
+    console.log("Starting nodes");
+    self.nodes.forEach(function (node) {
+      console.log("-", node.name);
+      node.instance.on('update', function (param, value) {
+        console.log("[", uptime(), "]", "update", node.name, "", param, "", value);
       });
-    }
+      node.instance.work();
+    });
   }
-};
+}
 
 var robot = new Robot({
   nodes: [
