@@ -38,7 +38,7 @@ var robot = new Robot({
       config: {
         echoPin: 22,
         triggerPin: 24,
-        timeout: 500, // smaller values always return -1
+        timeout: 1000, // values smaller than 500 always return -1
         interval: 50 // @todo to fiddle with
       }
     }
