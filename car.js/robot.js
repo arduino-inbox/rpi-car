@@ -36,7 +36,7 @@ var robot = new Robot({
         echoPin: 22,
         triggerPin: 24,
         timeout: 500, // smaller values always return -1
-        interval: 100 // @todo to fiddle with
+        interval: 50 // @todo to fiddle with
       }
     }
   ]
