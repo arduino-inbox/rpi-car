@@ -1,6 +1,8 @@
-module.exports = function (config) {
-  var usonic = require('r-pi-usonic');
-  var events = require('events');
+var events = require('events');
+var usonic = require('r-pi-usonic');
+
+function Ultrasonic(config) {
+
   var self = this;
 
   self.config = config;
@@ -19,4 +21,8 @@ module.exports = function (config) {
       setInterval(update, self.config.interval);
     }
   }
-};
+}
+
+Ultrasonic.prototype.__proto__ = events.EventEmitter.prototype;
+
+module.exports = Ultrasonic;
