@@ -9,6 +9,7 @@
   "author": "",
   "license": "GPL",
   "dependencies": {
+    "bluetooth-serial-port": "^1.2.0",
     "math-statistics": "^1.0.3",
     "r-pi-usonic": "^2.3.2"
   }
