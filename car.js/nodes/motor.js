@@ -8,13 +8,16 @@ function Motor(robot, config) {
 
   self.robot = robot;
   self.config = config;
-  self.defaultSpeed = 1000; // @todo to fiddle with
+  self.defaultSpeed = self.config.defaultSpeed;
   self.directionPin1 = new onoff.Gpio(self.config.directionPin1, 'out');
   self.directionPin2 = new onoff.Gpio(self.config.directionPin2, 'out');
 
   events.EventEmitter.call(self);
 
   var setSpeed = function (speed) {
+    if (speed > 1) speed = 1;
+    if (speed < 0) speed = 0;
+
     self.emit('info', ['setting speed to', speed]);
 
     piblaster.setPwm(self.config.speedPin, speed);
