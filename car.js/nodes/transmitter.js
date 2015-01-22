@@ -26,6 +26,8 @@ function Transmitter(robot, config) {
 
   var transmit = function (uptime, nodeName, param, value) {
     if (!self.connected) {
+      self.robot.removeListener('nodeUpdate', transmit);
+
       return self.emit('info', 'transmission failed. not connected.');
     }
 
