@@ -20,7 +20,8 @@ function Transmitter(robot, config) {
       self.emit('info', ['received', data.toString()]);
     });
   }, function () {
-    throw new Error('cannot connect');
+    self.offline = true;
+    self.emit('info', 'cannot connect.');
   });
   self.btSerial.inquire();
 
@@ -42,7 +43,9 @@ function Transmitter(robot, config) {
 
   // public
   self.work = function () {
-    self.robot.on('nodeUpdate', transmit);
+    if (!self.offline) {
+      self.robot.on('nodeUpdate', transmit);
+    }
   }
 }
 
