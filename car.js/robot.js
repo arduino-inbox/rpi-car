@@ -37,9 +37,9 @@ function Robot(config) {
 
     // simple behaviour
     var reactToFrontDistance = function (frontDistance) {
-      if (reactToFrontDistance < 100) {
+      if (frontDistance < 100) {
         self.emit('goBackward'); // @todo pass the speed
-      }  else if (reactToFrontDistance > 200) {
+      }  else if (frontDistance > 200) {
         self.emit('goForward'); // @todo pass the speed
       } else {
         self.emit('stop');
