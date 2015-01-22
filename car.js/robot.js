@@ -89,7 +89,7 @@ var robot = new Robot({
         speedPin: constants.pins.PIN_MOTOR_SPEED_PWM,
         directionPin1: constants.pins.PIN_MOTOR_DIR1,
         directionPin2: constants.pins.PIN_MOTOR_DIR2,
-        defaultSpeed: 0.2
+        defaultSpeed: 0.6
       }
     }
   ]
