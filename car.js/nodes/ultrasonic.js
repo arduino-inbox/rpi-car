@@ -16,6 +16,7 @@ function Ultrasonic(robot, config) {
   var update = function () {
     self.distance = self.sensor();
     self.emit('update', 'distance', self.distance);
+    self.robot.emit('frontDistance', self.distance);
   };
 
   // public

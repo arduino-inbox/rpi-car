@@ -2,11 +2,14 @@
 - hosts: all
   tasks:
 #    nodejs  # installed manually from source
-#    rethinkdb
+#    rethinkdb  # installed manually from source
 #    bluetooth
+#    pi-blaster  # installed manually from source
+
 #    npm: rethinkdb
 #    npm: bluetooth-serial-port
 #    npm: serialport
 #    npm: rpio
 #    npm: mpu6050
 #    npm: ultrasonic
+
