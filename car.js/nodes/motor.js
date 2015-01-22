@@ -15,11 +15,15 @@ function Motor(robot, config) {
   events.EventEmitter.call(self);
 
   var setSpeed = function (speed) {
+    self.emit('info', ['setting speed to', speed]);
+
     piblaster.setPwm(self.config.speedPin, speed);
   };
 
   // private
   var goForward = function (speed) {
+    self.emit('info', 'received "goForward" command.');
+
     self.directionPin1.writeSync(1);
     self.directionPin2.writeSync(0);
 
@@ -27,6 +31,8 @@ function Motor(robot, config) {
   };
 
   var goBackward = function (speed) {
+    self.emit('info', 'received "goBackward" command.');
+
     self.directionPin1.writeSync(0);
     self.directionPin2.writeSync(1);
 
@@ -34,6 +40,8 @@ function Motor(robot, config) {
   };
 
   var stop = function () {
+    self.emit('info', 'received "stop" command.');
+
     self.directionPin1.writeSync(0);
     self.directionPin2.writeSync(0);
 
