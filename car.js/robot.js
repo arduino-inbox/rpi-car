@@ -27,14 +27,14 @@ function Robot(config) {
     self.nodes.forEach(function (node) {
       self.logger.log("-", node.name);
 
-      node.instance.on('update', function (param, value) {
-        self.emit('nodeUpdate', self.uptime(), node.name, param, value);
-        self.logger.log("[", self.uptime(), "]", "update", node.name, "", param, "", value);
-      });
+      //node.instance.on('update', function (param, value) {
+      //  self.emit('nodeUpdate', self.uptime(), node.name, param, value);
+      //  //self.logger.log("[", self.uptime(), "]", "update", node.name, "", param, "", value);
+      //});
 
-      node.instance.on('info', function (message) {
-        self.logger.log("[", self.uptime(), "]", "info", node.name, "", message);
-      });
+      //node.instance.on('info', function (message) {
+      //  self.logger.log("[", self.uptime(), "]", "info", node.name, "", message);
+      //});
 
       // @todo refactor
       node.instance.on('data', function (data) {

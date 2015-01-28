@@ -15,10 +15,10 @@ var lastCommand = "stop";
 stdin.addListener("data", function(d) {
   var input = d.toString().substring(0, d.length-1);
   switch (input) {
-    case 1:
+    case "1":
       lastCommand = "goForward";
       break;
-    case 2:
+    case "2":
       lastCommand = "goBackward";
       break;
     default:
