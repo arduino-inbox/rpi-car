@@ -9,12 +9,7 @@ function Robot(config) {
   self.uptime = function () {
     return (((new Date()).getTime() - self.started) / 1000).toFixed(4);
   };
-
-  self.logger = {
-    log: function () {
-      self.emit('nodeUpdate', self.uptime(), self.name, 'log', JSON.stringify(arguments));
-    }
-  };
+  self.logger = console; // @todo better logger
 
   self.logger.log("Configuring nodes");
   self.config.nodes.forEach(function (node) {
