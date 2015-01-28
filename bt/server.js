@@ -7,7 +7,7 @@ var portName = "/dev/cu.Bluetooth-Incoming-Port";
 var port = new SerialPort(portName, {
   baudRate: 115200
 });
-var message = 'ack\r\n';
+var message = new Buffer('ack', 'utf-8');
 
 port.on('open', function () {
   console.log('port open. rate: ', port.options.baudRate);

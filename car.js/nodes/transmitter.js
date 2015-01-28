@@ -28,7 +28,6 @@ function Transmitter(robot, config) {
       self.robot.on('nodeUpdate', transmit);
 
       self.btSerial.on('data', function (data) {
-        self.emit('info', ['received', data.toString()]);
         self.emit('data', data.toString());
       });
     }, function () {
