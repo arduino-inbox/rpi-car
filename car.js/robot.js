@@ -2,17 +2,23 @@ var events = require('events');
 
 function Robot(config) {
   var self = this;
+  self.name = 'Robot';
   self.config = config;
   self.nodes = [];
   self.started = (new Date()).getTime();
-
-  var uptime = function () {
+  self.uptime = function () {
     return (((new Date()).getTime() - self.started) / 1000).toFixed(4);
   };
 
-  console.log("Configuring nodes");
+  self.logger = {
+    log: function () {
+      self.emit('nodeUpdate', self.uptime(), self.name, 'log', JSON.stringify(arguments));
+    }
+  };
+
+  self.logger.log("Configuring nodes");
   self.config.nodes.forEach(function (node) {
-    console.log("-", node.name);
+    self.logger.log("-", node.name);
     var nodeClass = require('./nodes/' + node.name);
     var nodeInstance = new nodeClass(self, node.config);
     self.nodes.push({
@@ -22,18 +28,18 @@ function Robot(config) {
   });
 
   self.work = function () {
-    console.log("Starting nodes");
+    self.logger.log("Starting nodes");
     self.nodes.forEach(function (node) {
-      console.log("-", node.name);
+      self.logger.log("-", node.name);
       node.instance.on('update', function (param, value) {
-        self.emit('nodeUpdate', uptime(), node.name, param, value);
-        console.log("[", uptime(), "]", "update", node.name, "", param, "", value);
+        self.emit('nodeUpdate', self.uptime(), node.name, param, value);
+        self.logger.log("[", self.uptime(), "]", "update", node.name, "", param, "", value);
       });
       node.instance.on('info', function (message) {
-        console.log("[", uptime(), "]", "info", node.name, "", message);
+        self.logger.log("[", self.uptime(), "]", "info", node.name, "", message);
       });
       node.instance.on('error', function (message) {
-        console.log("[", uptime(), "]", "error", node.name, "", message);
+        self.logger.log("[", self.uptime(), "]", "error", node.name, "", message);
         process.exit();
       });
       node.instance.work();
