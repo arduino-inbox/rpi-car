@@ -7,16 +7,24 @@ var d2 = new onoff.Gpio(27, 'out');
 var pwmPin = 25;
 var incr = 1;
 
+var p1 = 1;
+var p2 = 0;
+
+if (process.argv[2] == "back") {
+  p1 = 0;
+  p2 = 1;
+}
+
 // forward
-d1.writeSync(1);
-d2.writeSync(0);
+d1.writeSync(p1);
+d2.writeSync(p2);
 
 increaseSpeed = function () {
   piblaster.setPwm(pwmPin, speed);
   speed += 0.1;
-  if (speed > 1) speed = 1; // fix
+  if (speed > 0.5) speed = 0.5; // fix
 
-  if (speed < 1) {
+  if (speed < 0.5) {
     setTimeout(increaseSpeed, 300);
   } else {
     setTimeout(decreaseSpeed, 300);
