@@ -26,6 +26,7 @@ function Motor(robot, config) {
   // private
   var goForward = function (speed) {
     self.emit('info', 'received "goForward" command.');
+    self.emit('update', 'command', 'goForward');
 
     self.directionPin1.writeSync(1);
     self.directionPin2.writeSync(0);
@@ -35,6 +36,7 @@ function Motor(robot, config) {
 
   var goBackward = function (speed) {
     self.emit('info', 'received "goBackward" command.');
+    self.emit('update', 'command', 'goBackward');
 
     self.directionPin1.writeSync(0);
     self.directionPin2.writeSync(1);
@@ -44,6 +46,7 @@ function Motor(robot, config) {
 
   var stop = function () {
     self.emit('info', 'received "stop" command.');
+    self.emit('update', 'command', 'stop');
 
     self.directionPin1.writeSync(0);
     self.directionPin2.writeSync(0);

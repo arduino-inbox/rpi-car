@@ -29,6 +29,7 @@ function Transmitter(robot, config) {
 
       self.btSerial.on('data', function (data) {
         self.emit('info', ['received', data.toString()]);
+        self.emit('data', data.toString());
       });
     }, function () {
       self.emit('error', 'cannot connect.');

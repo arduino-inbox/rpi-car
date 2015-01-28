@@ -33,6 +33,9 @@ function Robot(config) {
       node.instance.on('info', function (message) {
         self.logger.log("[", self.uptime(), "]", "info", node.name, "", message);
       });
+      node.instance.on('data', function (data) {
+        self.logger.log("[", self.uptime(), "]", "incoming data", node.name, "", data)
+      });
       node.instance.on('error', function (message) {
         self.logger.log("[", self.uptime(), "]", "error", node.name, "", message);
         process.exit();
