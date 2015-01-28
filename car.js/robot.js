@@ -29,7 +29,7 @@ function Robot(config) {
 
       node.instance.on('update', function (param, value) {
         self.emit('nodeUpdate', self.uptime(), node.name, param, value);
-      //  //self.logger.log("[", self.uptime(), "]", "update", node.name, "", param, "", value);
+        self.logger.log("[", self.uptime(), "]", "update", node.name, "", param, "", value);
       });
 
       //node.instance.on('info', function (message) {
@@ -48,6 +48,7 @@ function Robot(config) {
             self.manualOverride = true;
             self.emit('goBackward');
             break;
+          default:
           case "stop":
             self.manualOverride = true;
             self.emit('stop');
