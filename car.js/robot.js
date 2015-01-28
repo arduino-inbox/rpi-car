@@ -38,7 +38,8 @@ function Robot(config) {
 
       // @todo refactor
       node.instance.on('data', function (data) {
-        self.logger.log("[", self.uptime(), "]", "incoming data", node.name, "", data)
+        data = data.trim();
+        self.logger.log("[", self.uptime(), "]", "incoming data", node.name, "", data);
         switch (data) {
           case "goForward":
             self.manualOverride = true;
