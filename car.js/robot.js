@@ -26,25 +26,47 @@ function Robot(config) {
     self.logger.log("Starting nodes");
     self.nodes.forEach(function (node) {
       self.logger.log("-", node.name);
+
       node.instance.on('update', function (param, value) {
         self.emit('nodeUpdate', self.uptime(), node.name, param, value);
         self.logger.log("[", self.uptime(), "]", "update", node.name, "", param, "", value);
       });
+
       node.instance.on('info', function (message) {
         self.logger.log("[", self.uptime(), "]", "info", node.name, "", message);
       });
+
+      // @todo refactor
       node.instance.on('data', function (data) {
         self.logger.log("[", self.uptime(), "]", "incoming data", node.name, "", data)
+        switch (data) {
+          case "goForward":
+            self.manualOverride = true;
+            self.emit('goForward');
+            break;
+          case "goBackward":
+            self.manualOverride = true;
+            self.emit('goBackward');
+            break;
+          case "stop":
+            self.manualOverride = true;
+            self.emit('stop');
+            break;
+        }
       });
+
       node.instance.on('error', function (message) {
         self.logger.log("[", self.uptime(), "]", "error", node.name, "", message);
         process.exit();
       });
+
       node.instance.work();
     });
 
-    // simple behaviour
+    // simple behaviour (with manual override)
     var reactToFrontDistance = function (frontDistance) {
+      if (self.manualOverride) return; // manual control
+
       if (frontDistance < 10) {
         self.emit('goBackward'); // @todo pass the speed
       }  else if (frontDistance > 30) {
