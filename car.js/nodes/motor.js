@@ -25,6 +25,9 @@ function Motor(robot, config) {
 
   // private
   var goForward = function (speed) {
+    if (self.direction == "forward") return;
+    self.direction = "forward";
+
     self.emit('info', 'received "goForward" command.');
     self.emit('update', 'command', 'goForward');
 
@@ -35,6 +38,9 @@ function Motor(robot, config) {
   };
 
   var goBackward = function (speed) {
+    if (self.direction == "backward") return;
+    self.direction = "backward";
+
     self.emit('info', 'received "goBackward" command.');
     self.emit('update', 'command', 'goBackward');
 
@@ -45,6 +51,9 @@ function Motor(robot, config) {
   };
 
   var stop = function () {
+    if (!self.direction) return;
+    self.direction = null;
+
     self.emit('info', 'received "stop" command.');
     self.emit('update', 'command', 'stop');
 
