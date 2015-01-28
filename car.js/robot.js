@@ -70,7 +70,7 @@ var robot = new Robot({
     {
       name: "transmitter", // this one should start first.
       config: {
-        address: '70:73:CB:C3:66:98',
+        address: '60:FB:42:7B:23:54', //'70:73:CB:C3:66:98', // @todo config
         channel: 3
       }
     },
