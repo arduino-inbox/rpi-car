@@ -32,6 +32,10 @@ function Robot(config) {
       node.instance.on('info', function (message) {
         console.log("[", uptime(), "]", "info", node.name, "", message);
       });
+      node.instance.on('error', function (message) {
+        console.log("[", uptime(), "]", "error", node.name, "", message);
+        process.exit();
+      });
       node.instance.work();
     });
 

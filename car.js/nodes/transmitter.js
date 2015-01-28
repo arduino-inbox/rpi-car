@@ -21,7 +21,7 @@ function Transmitter(robot, config) {
     });
   }, function () {
     self.offline = true;
-    self.emit('info', 'cannot connect.');
+    self.emit('error', 'cannot connect.');
   });
   self.btSerial.inquire();
 
