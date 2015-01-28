@@ -25,6 +25,7 @@ stdin.addListener("data", function(d) {
       lastCommand = "stop";
       break;
   }
+  console.log("your command:", lastCommand)
 });
 
 port.on('open', function () {
@@ -32,8 +33,8 @@ port.on('open', function () {
 });
 
 port.on('data', function (data) {
-  console.log('received:', data.toString());
-  port.write(new Buffer(lastCommand, 'utf-8'), function(err) {
+  //console.log('received:', data.toString());
+  port.write(new Buffer(lastCommand + '\r\n', 'utf-8'), function(err) {
     if (err) {
       console.log('err ' + err);
     }
