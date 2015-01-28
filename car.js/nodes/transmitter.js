@@ -29,14 +29,14 @@ function Transmitter(robot, config) {
     if (!self.connected) {
       self.robot.removeListener('nodeUpdate', transmit);
 
-      return self.emit('info', 'transmission failed. not connected.');
+      return self.emit('error', 'transmission failed. not connected.');
     }
 
     var message = uptime+':'+nodeName+':'+param+':'+value;
     self.btSerial.write(new Buffer(message, 'utf-8'), function (err) {
       self.emit('info', ['sent', message]);
       if (err) {
-        self.emit('info', ['transmission failed. error occurred.', err.message]);
+        self.emit('error', ['transmission failed. error occurred.', err.message]);
       }
     });
   };
