@@ -5,7 +5,7 @@ var SerialPort = serialport.SerialPort;
 
 var portName = "/dev/cu.Bluetooth-Incoming-Port";
 var port = new SerialPort(portName, {
-  baudRate: 57600
+  baudRate: 115200
 });
 var message = 'ack\r\n';
 
