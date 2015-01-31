@@ -1,4 +1,5 @@
 var events = require('events');
+var winston = require('winston');
 
 function Robot(config) {
   var self = this;
@@ -9,11 +10,30 @@ function Robot(config) {
   self.uptime = function () {
     return (((new Date()).getTime() - self.started) / 1000).toFixed(4);
   };
-  self.logger = console; // @todo better logger
+  self.logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.File)({
+        name: 'info-file',
+        filename: '/var/log/car/debug.log',
+        level: 'debug'
+      }),
+      new (winston.transports.File)({
+        name: 'error-file',
+        filename: '/var/log/car/error.log',
+        level: 'error'
+      })
+    ],
+    exceptionHandlers: [
+      new winston.transports.File({
+        filename: '/var/log/car/exceptions.log'
+      })
+    ]
+  });
 
-  self.logger.log("Configuring nodes");
+
+  self.logger.info(self.uptime(), "Configuring nodes");
   self.config.nodes.forEach(function (node) {
-    self.logger.log("-", node.name);
+    self.logger.info(self.uptime(), node.name);
     var nodeClass = require('./nodes/' + node.name);
     var nodeInstance = new nodeClass(self, node.config);
     self.nodes.push({
@@ -23,22 +43,22 @@ function Robot(config) {
   });
 
   self.work = function () {
-    self.logger.log("Starting nodes");
+    self.logger.info(self.uptime(), "Starting nodes");
     self.nodes.forEach(function (node) {
-      self.logger.log("-", node.name);
+      self.logger.info(self.uptime(), node.name);
 
       node.instance.on('update', function (param, value) {
         self.emit('nodeUpdate', self.uptime(), node.name, param, value);
-        self.logger.log("[", self.uptime(), "]", "update", node.name, "", param, "", value);
+        self.logger.debug(self.uptime(), "update", node.name, param, value);
       });
 
       node.instance.on('info', function (message) {
-        self.logger.log("[", self.uptime(), "]", "info", node.name, "", message);
+        self.logger.info(self.uptime(), "info", node.name, message);
       });
 
       node.instance.on('data', function (data) {
         data = data.trim();
-        self.logger.log("[", self.uptime(), "]", "incoming data", node.name, "", data);
+        self.logger.debug(self.uptime(), "data", node.name, data);
         switch (data) {
           case "run":
             self.emit("mode", "auto");
@@ -60,8 +80,8 @@ function Robot(config) {
       });
 
       node.instance.on('error', function (message) {
-        self.logger.log("[", self.uptime(), "]", "error", node.name, "", message);
-        process.exit();
+        self.logger.error(self.uptime(), "error", node.name, message);
+        process.exit(); // @todo check if motor's child pi-blaster process exits as well.
       });
 
       node.instance.work();

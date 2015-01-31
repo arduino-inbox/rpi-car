@@ -13,6 +13,7 @@
     "math-statistics": "^1.0.3",
     "onoff": "^1.0.0",
     "pi-blaster.js": "0.0.2",
-    "r-pi-usonic": "^2.3.2"
+    "r-pi-usonic": "^2.3.2",
+    "winston": "~0.8.3"
   }
 }
