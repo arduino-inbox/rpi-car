@@ -11,6 +11,7 @@ var sys = require("sys");
 var stdin = process.openStdin();
 
 var lastCommand = "stop";
+var portOpen = false;
 
 stdin.addListener("data", function(d) {
   var input = d.toString().substring(0, d.length-1);
@@ -25,26 +26,29 @@ stdin.addListener("data", function(d) {
       lastCommand = "stop";
       break;
   }
-  console.log("your command:", lastCommand)
-});
-
-port.on('open', function () {
-  console.log('port open. rate: ', port.options.baudRate);
-});
-
-port.on('data', function (data) {
-  //console.log('received:', data.toString());
-  port.write(new Buffer(lastCommand + '\r\n', 'utf-8'), function(err) {
+  console.log("your command:", lastCommand);
+  if (portOpen) port.write(new Buffer(lastCommand + '\r\n', 'utf-8'), function(err) {
     if (err) {
       console.log('err ' + err);
     }
   });
 });
 
+port.on('open', function () {
+  portOpen = true;
+  console.log('port open. rate: ', port.options.baudRate);
+});
+
+port.on('data', function (data) {
+  console.log('received:', data.toString());
+});
+
 port.on('close', function () {
+  portOpen = false;
   console.log('in port closed.');
 });
 
 port.on('error', function (err) {
+  portOpen = false;
   console.log('in port error.', err);
 });

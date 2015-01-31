@@ -32,9 +32,9 @@ function Robot(config) {
         self.logger.log("[", self.uptime(), "]", "update", node.name, "", param, "", value);
       });
 
-      //node.instance.on('info', function (message) {
-      //  self.logger.log("[", self.uptime(), "]", "info", node.name, "", message);
-      //});
+      node.instance.on('info', function (message) {
+        self.logger.log("[", self.uptime(), "]", "info", node.name, "", message);
+      });
 
       node.instance.on('data', function (data) {
         data = data.trim();

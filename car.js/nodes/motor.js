@@ -1,6 +1,7 @@
 var events = require('events');
 var piblaster = require('pi-blaster.js');
 var onoff = require('onoff');
+var child = require('child_process');
 
 function Motor(robot, config) {
 
@@ -65,6 +66,17 @@ function Motor(robot, config) {
 
   // public
   self.work = function () {
+    self.piBlaster = child.spawn('pi-blaster');
+    self.piBlaster.stdout.on('data', function (data) {
+      self.emit("info", "pi-blaster::stdout: " + data);
+    });
+    self.piBlaster.stderr.on('data', function (data) {
+      self.emit("info", "pi-blaster::stderr: " + data);
+    });
+    self.piBlaster.on('close', function (code, signal) {
+      self.emit("error", "pi-blaster exited with code " + code + " on " + signal + " signal.");
+    });
+
     self.robot.on('goBackward', goBackward);
     self.robot.on('goForward', goForward);
     self.robot.on('stop', stop);
