@@ -36,23 +36,25 @@ function Robot(config) {
       //  self.logger.log("[", self.uptime(), "]", "info", node.name, "", message);
       //});
 
-      // @todo refactor
       node.instance.on('data', function (data) {
         data = data.trim();
         self.logger.log("[", self.uptime(), "]", "incoming data", node.name, "", data);
         switch (data) {
+          case "run":
+            self.emit("mode", "auto");
+            break;
           case "goForward":
-            self.manualOverride = true;
-            self.emit('goForward');
+            self.emit("mode", "manual");
+            self.emit("goForward"); // @todo pass the speed
             break;
           case "goBackward":
-            self.manualOverride = true;
-            self.emit('goBackward');
+            self.emit("mode", "manual"); // @todo pass the speed. @todo: design some simple protocol.
+            self.emit("goBackward");
             break;
           default:
           case "stop":
-            self.manualOverride = true;
-            self.emit('stop');
+            self.emit("mode", "manual");
+            self.emit("stop");
             break;
         }
       });
@@ -67,7 +69,7 @@ function Robot(config) {
 
     // simple behaviour (with manual override)
     var reactToFrontDistance = function (frontDistance) {
-      if (self.manualOverride) return; // manual control
+      if (!self.executeMainRoutine) return; // manual control
 
       if (frontDistance < 10) {
         self.emit('goBackward'); // @todo pass the speed
@@ -77,7 +79,14 @@ function Robot(config) {
         self.emit('stop');
       }
     };
-    self.on('frontDistance', reactToFrontDistance);
+
+    self.on("mode", function (mode) {
+      if (mode == "auto") {
+        self.on('frontDistance', reactToFrontDistance);
+      } else {
+        self.removeListener('frontDistance', reactToFrontDistance);
+      }
+    });
   }
 }
 Robot.prototype.__proto__ = events.EventEmitter.prototype;
