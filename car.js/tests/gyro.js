@@ -6,11 +6,15 @@ mpu.initialize();
 
 // Test the connection before using.
 mpu.testConnection(function(err, testPassed) {
+    if (err) throw new Error(err);
+    console.log('testPassed', testPassed);
     if (testPassed) {
-        mpu.getMotion6(function(err, data){
-            console.log(data);
-        });
+        setInterval(function(){
+            mpu.getMotion6(function(err, data){
+                console.log(data);
+            });
+        }, 300);
         // Put the MPU6050 back to sleep.
-        mpu.setSleepEnabled(1);
+        //mpu.setSleepEnabled(1);
     }
 });
