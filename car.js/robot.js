@@ -75,28 +75,28 @@ function Robot(config) {
         self.logger.info(self.uptime(), "info", node.name, message);
       });
 
-      node.instance.on('data', function (data) {
-        data = data.trim();
-        self.logger.debug(self.uptime(), "data", node.name, data);
-        switch (data) {
-          case "run":
-            self.emit("mode", "auto");
-            break;
-          case "goForward":
-            self.emit("mode", "manual");
-            self.emit("goForward"); // @todo pass the speed
-            break;
-          case "goBackward":
-            self.emit("mode", "manual"); // @todo pass the speed. @todo: design some simple protocol.
-            self.emit("goBackward");
-            break;
-          default:
-          case "stop":
-            self.emit("mode", "manual");
-            self.emit("stop");
-            break;
-        }
-      });
+      //node.instance.on('data', function (data) {
+      //  data = data.trim();
+      //  self.logger.debug(self.uptime(), "data", node.name, data);
+      //  switch (data) {
+      //    case "run":
+      //      self.emit("mode", "auto");
+      //      break;
+      //    case "goForward":
+      //      self.emit("mode", "manual");
+      //      self.emit("goForward"); // @todo pass the speed
+      //      break;
+      //    case "goBackward":
+      //      self.emit("mode", "manual"); // @todo pass the speed. @todo: design some simple protocol.
+      //      self.emit("goBackward");
+      //      break;
+      //    default:
+      //    case "stop":
+      //      self.emit("mode", "manual");
+      //      self.emit("stop");
+      //      break;
+      //  }
+      //});
 
       node.instance.on('error', function (message) {
         self.logger.error(self.uptime(), "error", node.name, message);
@@ -116,13 +116,13 @@ function Robot(config) {
       }
     };
 
-    self.on("mode", function (mode) {
-      if (mode == "auto") {
+    //self.on("mode", function (mode) {
+    //  if (mode == "auto") {
         self.on('frontDistance', reactToFrontDistance);
-      } else {
-        self.removeListener('frontDistance', reactToFrontDistance);
-      }
-    });
+    //  } else {
+    //    self.removeListener('frontDistance', reactToFrontDistance);
+    //  }
+    //});
   }
 }
 Robot.prototype.__proto__ = events.EventEmitter.prototype;
