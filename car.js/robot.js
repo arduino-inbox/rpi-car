@@ -106,10 +106,7 @@ function Robot(config) {
       node.instance.work();
     });
 
-    // simple behaviour (with manual override)
     var reactToFrontDistance = function (frontDistance) {
-      if (!self.executeMainRoutine) return; // manual control
-
       if (frontDistance < 10) {
         self.emit('goBackward'); // @todo pass the speed
       }  else if (frontDistance > 30) {
@@ -147,13 +144,13 @@ var constants = {
 // Run
 var robot = new Robot({
   nodes: [
-    {
-      name: "transmitter", // this one should start first.
-      config: {
-        address: '60:FB:42:7B:23:54', //'70:73:CB:C3:66:98', // @todo config
-        channel: 3
-      }
-    },
+//    {
+//      name: "transmitter", // this one should start first.
+//      config: {
+//        address: '60:FB:42:7B:23:54', //'70:73:CB:C3:66:98', // @todo config
+//        channel: 3
+//      }
+//    },
     {
       name: "ultrasonic",
       config: {
