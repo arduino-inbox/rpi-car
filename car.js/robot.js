@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var events = require('events');
 var winston = require('winston');
 
