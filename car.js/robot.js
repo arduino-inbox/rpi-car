@@ -10,25 +10,42 @@ function Robot(config) {
   self.uptime = function () {
     return (((new Date()).getTime() - self.started) / 1000).toFixed(4);
   };
-  self.logger = new (winston.Logger)({
-    transports: [
-      new (winston.transports.File)({
-        name: 'info-file',
-        filename: '/var/log/car/debug.log',
-        level: 'debug'
-      }),
-      new (winston.transports.File)({
-        name: 'error-file',
-        filename: '/var/log/car/error.log',
-        level: 'error'
-      })
-    ],
-    exceptionHandlers: [
-      new winston.transports.File({
-        filename: '/var/log/car/exceptions.log'
-      })
-    ]
-  });
+  if (process.env.NODE_ENV == "daemon") {
+    self.logger = new (winston.Logger)({
+      transports: [
+        new (winston.transports.File)({
+          name: 'info-file',
+          filename: '/var/log/car/debug.log',
+          level: 'debug'
+        }),
+        new (winston.transports.File)({
+          name: 'error-file',
+          filename: '/var/log/car/error.log',
+          level: 'error'
+        })
+      ],
+      exceptionHandlers: [
+        new winston.transports.File({
+          filename: '/var/log/car/exceptions.log'
+        })
+      ]
+    });
+  } else {
+    self.logger = new (winston.Logger)({
+      transports: [
+        new (winston.transports.Console)({
+          colorize: 'all',
+          level: 'debug'
+        })
+      ],
+      exceptionHandlers: [
+        new (winston.transports.Console)({
+          colorize: 'all',
+          level: 'debug'
+        })
+      ]
+    });
+  }
 
 
   self.logger.info(self.uptime(), "Configuring nodes");

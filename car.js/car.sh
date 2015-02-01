@@ -5,6 +5,7 @@ export PROGRAM_NAME="car"
 export FULL_PATH="/root/rpi-car/car.js"
 export FILE_NAME="robot.js"
 export NODE_PATH="/usr/bin/env node"
+export NODE_ENV="daemon"
 
 # Some things that run always
 mkdir -p /var/log/$PROGRAM_NAME
