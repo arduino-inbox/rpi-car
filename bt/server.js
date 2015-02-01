@@ -17,9 +17,12 @@ stdin.addListener("data", function(d) {
   var input = d.toString().substring(0, d.length-1);
   switch (input) {
     case "1":
-      lastCommand = "goForward";
+      lastCommand = "run";
       break;
     case "2":
+      lastCommand = "goForward";
+      break;
+    case "3":
       lastCommand = "goBackward";
       break;
     default:
