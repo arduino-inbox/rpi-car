@@ -16,15 +16,39 @@ var portOpen = false;
 stdin.addListener("data", function(d) {
   var input = d.toString().substring(0, d.length-1);
   switch (input) {
-    case "1":
+    case "0":
       lastCommand = "run";
       break;
+    case "1":
+      lastCommand = "stop";
+      break;
+
     case "2":
-      lastCommand = "goForward";
+      lastCommand = "goForward:0.05";
       break;
     case "3":
-      lastCommand = "goBackward";
+      lastCommand = "goForward:0.1";
       break;
+    case "4":
+      lastCommand = "goForward:0.2";
+      break;
+    case "5":
+      lastCommand = "goForward:0.3";
+      break;
+
+    case "6":
+      lastCommand = "goBackward:0.05";
+      break;
+    case "7":
+      lastCommand = "goBackward:0.1";
+      break;
+    case "8":
+      lastCommand = "goBackward:0.2";
+      break;
+    case "9":
+      lastCommand = "goBackward:0.3";
+      break;
+
     default:
       lastCommand = "stop";
       break;

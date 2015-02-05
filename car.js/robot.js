@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+var _ = require('lodash');
+var async = require('async');
 var events = require('events');
 var winston = require('winston');
 
@@ -7,28 +9,24 @@ function Robot(config) {
   var self = this;
   self.name = 'Robot';
   self.config = config;
-  self.nodes = [];
+  self.nodes = {};
   self.started = (new Date()).getTime();
+
   self.uptime = function () {
     return (((new Date()).getTime() - self.started) / 1000).toFixed(4);
   };
+
   if (process.env.NODE_ENV == "daemon") {
     self.logger = new (winston.Logger)({
       transports: [
         new (winston.transports.File)({
-          name: 'info-file',
-          filename: '/var/log/car/debug.log',
-          level: 'debug'
-        }),
-        new (winston.transports.File)({
-          name: 'error-file',
-          filename: '/var/log/car/error.log',
-          level: 'error'
+          filename: '/var/log/car/info.log',
+          level: 'info'
         })
       ],
       exceptionHandlers: [
         new winston.transports.File({
-          filename: '/var/log/car/exceptions.log'
+          filename: '/var/log/car/crash.log'
         })
       ]
     });
@@ -37,93 +35,120 @@ function Robot(config) {
       transports: [
         new (winston.transports.Console)({
           colorize: 'all',
-          level: 'debug'
-        })
-      ],
-      exceptionHandlers: [
-        new (winston.transports.Console)({
-          colorize: 'all',
-          level: 'debug'
+          level: 'debug',
+          handleExceptions: true
         })
       ]
     });
   }
 
+  var configureNode = function (nodeName, done) {
+    self.logger.info(self.uptime(), "Configuring " + nodeName);
 
-  self.logger.info(self.uptime(), "Configuring nodes");
-  self.config.nodes.forEach(function (node) {
-    self.logger.info(self.uptime(), node.name);
-    var nodeClass = require('./nodes/' + node.name);
-    var nodeInstance = new nodeClass(self, node.config);
-    self.nodes.push({
-      name: node.name,
-      instance: nodeInstance
-    });
-  });
+    // Init node
+    var node = new (require('./nodes/' + nodeName))(self.config.nodes[nodeName].config);
 
-  self.work = function () {
-    self.logger.info(self.uptime(), "Starting nodes");
-    self.nodes.forEach(function (node) {
-      self.logger.info(self.uptime(), node.name);
-
-      node.instance.on('update', function (param, value) {
-        self.emit('nodeUpdate', self.uptime(), node.name, param, value);
-        self.logger.debug(self.uptime(), "update", node.name, param, value);
+    // Log messages
+    _.forEach(['debug', 'info', 'warning', 'error'], function (logLevel) {
+      node.on(logLevel, function (message) {
+        self.logger[logLevel](self.uptime(), logLevel, nodeName, message);
       });
-
-      node.instance.on('info', function (message) {
-        self.logger.info(self.uptime(), "info", node.name, message);
-      });
-
-      //node.instance.on('data', function (data) {
-      //  data = data.trim();
-      //  self.logger.debug(self.uptime(), "data", node.name, data);
-      //  switch (data) {
-      //    case "run":
-      //      self.emit("mode", "auto");
-      //      break;
-      //    case "goForward":
-      //      self.emit("mode", "manual");
-      //      self.emit("goForward"); // @todo pass the speed
-      //      break;
-      //    case "goBackward":
-      //      self.emit("mode", "manual"); // @todo pass the speed. @todo: design some simple protocol.
-      //      self.emit("goBackward");
-      //      break;
-      //    default:
-      //    case "stop":
-      //      self.emit("mode", "manual");
-      //      self.emit("stop");
-      //      break;
-      //  }
-      //});
-
-      node.instance.on('error', function (message) {
-        self.logger.error(self.uptime(), "error", node.name, message);
-        process.exit(); // @todo check if motor's child pi-blaster process exits as well.
-      });
-
-      node.instance.work();
     });
 
-    var reactToFrontDistance = function (frontDistance) {
-      if (frontDistance < 10) {
-        self.emit('goBackward'); // @todo pass the speed
-      }  else if (frontDistance > 30) {
-        self.emit('goForward'); // @todo pass the speed
-      } else {
-        self.emit('stop');
+    self.nodes[nodeName] = node;
+    done();
+  };
+
+  var configureNodes = function (done) {
+    async.map(_.keys(self.config.nodes), configureNode, done);
+  };
+
+  var notifyAllNodes = function (message) {
+    _.forEach(self.nodes, function (node) {
+      node.emit(message);
+    })
+  };
+
+  var goOnline = function () {
+    self.logger.info(self.uptime(), "Online");
+    notifyAllNodes("online");
+  };
+
+  var goOffline = function () {
+    self.logger.info(self.uptime(), "Offline");
+    notifyAllNodes("offline");
+  };
+
+  var standBy = function (done) {
+    self.logger.info(self.uptime(), "Entering standby mode");
+    self.transmitter.on("connected", function () {
+      goOnline();
+    });
+    self.transmitter.on("error", function () {
+      goOffline();
+    });
+    // Bluetooth commands
+    self.nodes.transmitter.on('data', function (data) {
+      data = data.trim();
+      self.logger.debug(self.uptime(), "data", "transmitter", data);
+
+      data = data.split(":");
+      var cmd = data[0];
+      var speed = parseFloat(data[1] || self.config.nodes.motor.defaultSpeed);
+
+      switch (cmd) {
+        case "run":
+          self.mode = "auto";
+          break;
+        case "goForward":
+          self.mode = "manual";
+          command("motor", "goForward", speed);
+          break;
+        case "goBackward":
+          self.mode = "manual";
+          command("motor", "goBackward", speed);
+          break;
+        default:
+        case "stop":
+          self.mode = "manual";
+          command("motor", "stop");
+          break;
       }
+    });
+
+    var command = function (nodeName, message, aux) {
+      self.nodes[nodeName].emit(message, aux);
+      self.transmitter.emit('transmit', self.uptime(), nodeName, "command", message, aux);
     };
 
-    //self.on("mode", function (mode) {
-    //  if (mode == "auto") {
-        self.on('frontDistance', reactToFrontDistance);
-    //  } else {
-    //    self.removeListener('frontDistance', reactToFrontDistance);
-    //  }
-    //});
-  }
+    self.ultrasonic.on('frontDistance', function (frontDistance) {
+      self.transmitter.emit('transmit', self.uptime(), "ultrasonic", "distance", frontDistance);
+
+      if (self.mode != "auto") return;
+
+      if (frontDistance < 10) {
+        command("motor", "goBackward", self.config.nodes.motor.defaultSpeed);
+      } else if (frontDistance > 30) {
+        command("motor", "goForward", self.config.nodes.motor.defaultSpeed);
+      } else {
+        command("motor", "stop");
+      }
+    });
+
+    done();
+  };
+
+  self.start = function () {
+    async.waterfall([
+      configureNodes,
+      standBy
+    ], function (err) {
+      if (err) {
+        return self.logger.error("error", self.uptime(), err);
+      }
+      self.logger.info(self.uptime(), "Ready");
+    });
+  };
 }
 Robot.prototype.__proto__ = events.EventEmitter.prototype;
 
@@ -141,18 +166,18 @@ var constants = {
   }
 };
 
-// Run
+// Start
 var robot = new Robot({
-  nodes: [
-//    {
-//      name: "transmitter", // this one should start first.
-//      config: {
-//        address: '60:FB:42:7B:23:54', //'70:73:CB:C3:66:98', // @todo config
-//        channel: 3
-//      }
-//    },
-    {
-      name: "ultrasonic",
+  nodes: {
+    transmitter: {
+      config: {
+        address: '60:FB:42:7B:23:54', //'70:73:CB:C3:66:98', // @todo config
+        channel: 3,
+        reconnect: true,
+        reconnectTimeout: 60 * 1000
+      }
+    },
+    ultrasonic: {
       config: {
         echoPin: constants.pins.PIN_ULTRASONIC_ECHO,
         triggerPin: constants.pins.PIN_ULTRASONIC_TRIG,
@@ -160,8 +185,7 @@ var robot = new Robot({
         interval: 50 // @todo to fiddle with
       }
     },
-    {
-      name: "motor",
+    motor: {
       config: {
         speedPin: constants.pins.PIN_MOTOR_SPEED_PWM,
         directionPin1: constants.pins.PIN_MOTOR_DIR1,
@@ -169,7 +193,6 @@ var robot = new Robot({
         defaultSpeed: 0.3
       }
     }
-  ]
+  }
 });
-
-robot.work();
+robot.start();

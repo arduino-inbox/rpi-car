@@ -1,11 +1,10 @@
 var events = require('events');
 var usonic = require('r-pi-usonic');
 
-function Ultrasonic(robot, config) {
+function Ultrasonic(config) {
 
   var self = this;
 
-  self.robot = robot;
   self.config = config;
   self.sensor = usonic.sensor(self.config.echoPin, self.config.triggerPin, self.config.timeout);
   self.distance = 2^16 - 1;
@@ -15,14 +14,16 @@ function Ultrasonic(robot, config) {
   // private
   var update = function () {
     self.distance = self.sensor();
-    self.emit('update', 'distance', self.distance);
-    self.robot.emit('frontDistance', self.distance);
+    self.emit('frontDistance', self.distance);
   };
 
-  // public
-  self.work = function () {
-    setInterval(update, self.config.interval);
-  }
+  self.emit("info", "Ultrasonic standing by.");
+  self.on('online', function () {
+    self.worker = setInterval(update, self.config.interval);
+  });
+  self.on('offline', function () {
+    clearInterval(self.worker);
+  });
 }
 Ultrasonic.prototype.__proto__ = events.EventEmitter.prototype;
 

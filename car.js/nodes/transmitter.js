@@ -1,11 +1,10 @@
 var events = require('events');
 var bt = require('bluetooth-serial-port');
 
-function Transmitter(robot, config) {
+function Transmitter(config) {
 
   var self = this;
 
-  self.robot = robot;
   self.config = config;
   self.btSerial = new bt.BluetoothSerialPort();
 
@@ -14,27 +13,39 @@ function Transmitter(robot, config) {
   var transmit = function (uptime, nodeName, param, value) {
     var message = uptime+':'+nodeName+':'+param+':'+value;
     self.btSerial.write(new Buffer(message, 'utf-8'), function (err) {
-      self.emit('info', ['sent', message]);
+      self.emit('debug', ['sent', message]);
       if (err) {
         self.emit('error', ['transmission failed. error occurred.', err.message]);
       }
     });
   };
 
-  // public
-  self.work = function () {
+  var connect = function () {
+    self.emit('info', 'Connecting to server.');
     self.btSerial.connect(self.config.address, self.config.channel, function () {
-      self.emit('info', 'connected');
-      self.robot.on('nodeUpdate', transmit);
-
-      self.btSerial.on('data', function (data) {
-        self.emit('data', data.toString());
-      });
+      self.emit('connected');
+      self.emit('info', 'Connected.');
     }, function () {
-      self.emit('error', 'cannot connect.');
+      self.emit('error', 'Cannot connect.');
+      if (self.config.reconnect) {
+        setTimeout(connect, self.config.reconnectTimeout);
+      }
     });
-    self.btSerial.inquire();
-  }
+    self.btSerial.inquire(); // @todo check if we need to run self.btSerial.inquire(); each time
+  };
+
+  self.emit("info", "Transmitter standing by.");
+  self.on("offline", function () {
+    self.removeAllListeners('transmit');
+    self.btSerial.removeAllListeners('data');
+    connect();
+  });
+  self.on("online", function () {
+    self.on('transmit', transmit);
+    self.btSerial.on('data', function (data) {
+      self.emit('data', data.toString());
+    });
+  });
 }
 
 Transmitter.prototype.__proto__ = events.EventEmitter.prototype;
