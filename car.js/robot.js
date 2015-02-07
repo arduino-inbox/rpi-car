@@ -84,7 +84,7 @@ function Robot(config) {
     });
     // Bluetooth commands
     self.nodes.transmitter.on('data', function (data) {
-      data = data.trim();
+      data = data.toString().trim();
       self.logger.debug(self.uptime(), "data", "transmitter", data);
 
       data = data.split(":");

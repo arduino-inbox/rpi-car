@@ -84,8 +84,9 @@ function Motor(config) {
 
   self.emit("info", "Motor standing by.");
 
-  var onCommand = function (command, data) {
-    switch (command) {
+  var onCommand = function (cmd, data) {
+    self.emit('debug', ["oncommand", cmd, data]);
+    switch (cmd) {
       case "goForward":
         goForward(data);
         break;
