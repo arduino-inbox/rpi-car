@@ -83,7 +83,9 @@ function Robot(config) {
     //self.online = false;
     //self.logger.info(self.uptime(), "Offline");
     //notifyAllNodes("offline");
-    process.exit();
+    setTimeout(function () {
+      process.exit();  // die to reconnect.
+    }, 5 * 1000);
   };
 
   var standBy = function (done) {
