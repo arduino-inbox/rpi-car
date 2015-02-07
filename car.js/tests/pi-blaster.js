@@ -1,15 +1,26 @@
 var events = require('events');
-var child = require('child_process');
+var exec = require('child_process').exec;
 
-console.log("child.spawn('pi-blaster')");
-piBlasterProc = child.spawn(
-    'pi-blaster',
-    {
-        stdio: [0, 'pipe', 'pipe']
+console.log("killall pi-blaster");
+var a1 = exec('killall pi-blaster', function(error, stdout, stderr) {
+    console.log('stdout: ', stdout);
+    console.log('stderr: ', stderr);
+    if (error !== null) {
+        console.log('exec error: ', error);
     }
-);
-console.log('Spawned child pid: ' + piBlasterProc.pid);
-
-piBlasterProc.on('close', function (code, signal) {
-    console.log("error", "pi-blaster exited with code " + code + " on " + signal + " signal.");
 });
+console.log(a1);
+
+console.log("pi-blaster");
+var a2 = exec('pi-blaster', function(error, stdout, stderr) {
+    console.log('stdout: ', stdout);
+    console.log('stderr: ', stderr);
+    if (error !== null) {
+        console.log('exec error: ', error);
+    }
+});
+console.log(a2);
+
+//a2.on('close', function (code, signal) {
+//    console.log("error", "pi-blaster exited with code " + code + " on " + signal + " signal.");
+//});
