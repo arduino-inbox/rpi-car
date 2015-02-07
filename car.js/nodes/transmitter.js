@@ -43,8 +43,12 @@ function Transmitter(config) {
     var receiveHandshake = function (data) {
       data = data.toString().trim();
       self.emit("debug", ["Receive handshake", data, data == 'hello']);
+
+      // On handshake response
       if (data == 'hello') {
-        self.emit('handshake');
+        self.handshakeReceived = true;  // This will save us from handshake timeout error.
+        self.btSerial.removeAllListeners('data');
+        self.emit('connected');  // Emit "connected" event for robot to go online.
       }
     };
 
@@ -65,14 +69,7 @@ function Transmitter(config) {
                   self.emit('info', 'Bluetooth connected.');
 
                   // Subscribe to data while handshaking
-                  self.on('data', receiveHandshake);
-
-                  // On handshake response
-                  self.on('handshake', function () {
-                    self.handshakeReceived = true;  // This will save us from handshake timeout error.
-                    self.removeEventListener('data', receiveHandshake);  // Un-subscribe from data.
-                    self.emit('connected');  // Emit "connected" event for robot to go online.
-                  });
+                  self.btSerial.on('data', receiveHandshake);
 
                   // Send handshake
                   self.btSerial.write(new Buffer('hello', 'utf-8'), function (err) {
