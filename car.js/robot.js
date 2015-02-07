@@ -80,7 +80,6 @@ function Robot(config) {
   };
 
   var goOffline = function () {
-    if (!self.online) return;
     self.online = false;
     self.logger.info(self.uptime(), "Offline");
     notifyAllNodes("offline");
