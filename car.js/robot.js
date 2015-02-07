@@ -28,13 +28,13 @@ function Robot(config) {
     self.logger = new (winston.Logger)({
       transports: [
         new (winston.transports.File)({
-          filename: '/var/log/car/info.log',
+          filename: '/var/log/car/app-info.log',
           level: 'info'
         })
       ],
       exceptionHandlers: [
         new winston.transports.File({
-          filename: '/var/log/car/crash.log'
+          filename: '/var/log/car/app-error.log'
         })
       ]
     });
@@ -48,6 +48,9 @@ function Robot(config) {
       ]
     });
   }
+
+  self.logger.info("ENV:", process.env.NODE_ENV);
+  self.logger.info("DEBUG:", process.env.DEBUG);
 
   var configureNode = function (nodeName, done) {
     self.logger.info(self.uptime(), "Configuring " + nodeName);
