@@ -80,9 +80,10 @@ function Robot(config) {
   };
 
   var goOffline = function () {
-    self.online = false;
-    self.logger.info(self.uptime(), "Offline");
-    notifyAllNodes("offline");
+    //self.online = false;
+    //self.logger.info(self.uptime(), "Offline");
+    //notifyAllNodes("offline");
+    process.exit();
   };
 
   var standBy = function (done) {
