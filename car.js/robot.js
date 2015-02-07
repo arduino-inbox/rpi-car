@@ -73,11 +73,15 @@ function Robot(config) {
   };
 
   var goOnline = function () {
+    if (self.online) return;
+    self.online = true;
     self.logger.info(self.uptime(), "Online");
     notifyAllNodes("online");
   };
 
   var goOffline = function () {
+    if (!self.online) return;
+    self.online = false;
     self.logger.info(self.uptime(), "Offline");
     notifyAllNodes("offline");
   };

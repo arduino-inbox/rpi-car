@@ -34,12 +34,12 @@ function Transmitter(config) {
     setTimeout(waitForChannel, self.config.timeout);
 
     // Handshake flag (called below)
-    self.handshakeReceived = false;
     var waitForHandshake = function () {
       if (!self.handshakeReceived) {
         return self.emit('error', 'Handshake response timeout.');
       }
     };
+
     var receiveHandshake = function (data) {
       data = data.toString().trim();
       self.emit("debug", ["Receive handshake", data, data == 'hello']);
@@ -47,9 +47,26 @@ function Transmitter(config) {
       // On handshake response
       if (data == 'hello') {
         self.handshakeReceived = true;  // This will save us from handshake timeout error.
-        self.btSerial.removeAllListeners('data');
+        self.btSerial.removeListener('data', receiveHandshake);
         self.emit('connected');  // Emit "connected" event for robot to go online.
       }
+    };
+
+    var sendHandshake = function () {
+      // Reset flag
+      self.handshakeReceived = false;
+
+      // Subscribe to data while handshaking
+      self.btSerial.on('data', receiveHandshake);
+
+      // Send hello
+      self.btSerial.write(new Buffer('hello', 'utf-8'), function (err) {
+        self.emit('debug', ['sent', 'hello']);
+        if (err) {
+          return self.emit('error', ['transmission failed. error occurred.', err.message]);
+        }
+        setTimeout(waitForHandshake, 5 * 1000);
+      });
     };
 
     // Port lookup
@@ -68,17 +85,8 @@ function Transmitter(config) {
             function () {
               self.emit('info', 'Bluetooth connected.');
 
-              // Subscribe to data while handshaking
-              self.btSerial.on('data', receiveHandshake);
-
               // Send handshake
-              self.btSerial.write(new Buffer('hello', 'utf-8'), function (err) {
-                self.emit('debug', ['sent', 'hello']);
-                if (err) {
-                  return self.emit('error', ['transmission failed. error occurred.', err.message]);
-                }
-                setTimeout(waitForHandshake, 5 * 1000);
-              });
+              sendHandshake();
             },
             function (err) {
               self.emit('error', ['Cannot connect.', err]);
