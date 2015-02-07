@@ -95,7 +95,7 @@ function Robot(config) {
     });
     self.nodes.transmitter.on("error", function (err) {
       self.logger.error('Transmitter error.', err);
-      process.exit();
+      process.exit(1);
     });
     // Bluetooth commands
     self.nodes.transmitter.on('data', function (data) {
