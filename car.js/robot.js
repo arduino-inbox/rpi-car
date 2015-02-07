@@ -192,7 +192,7 @@ var config = {
       config: {
         address: '60:FB:42:7B:23:54', //'70:73:CB:C3:66:98', // @todo config
         channel: 3,
-        timeout: 30 * 1000
+        timeout: 10 * 1000
       }
     },
     ultrasonic: {
