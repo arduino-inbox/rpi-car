@@ -69,10 +69,9 @@ function Robot(config) {
     notifyAllNodes("online");
   };
 
-  var goOffline = function (done) {
+  var goOffline = function () {
     self.logger.info(self.uptime(), "Offline");
     notifyAllNodes("offline");
-    done();
   };
 
   var standBy = function (done) {
@@ -145,12 +144,12 @@ function Robot(config) {
   self.start = function () {
     async.waterfall([
       configureNodes,
-      standBy,
-      goOffline
+      standBy
     ], function (err, output) {
       if (err) {
         return self.logger.error("error", self.uptime(), err);
       }
+      self.nodes.transmitter.emit("offline"); // connect
       self.logger.info(self.uptime(), "Ready");
     });
   };
