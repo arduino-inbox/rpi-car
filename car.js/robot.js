@@ -213,7 +213,7 @@ var config = {
 
 var robot;
 var startRobot = function () {
-  robot = new Robot();
+  robot = new Robot(config);
   robot.start();
 
   // reset the robot
