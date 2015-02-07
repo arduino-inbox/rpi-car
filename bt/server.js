@@ -13,8 +13,8 @@ var stdin = process.openStdin();
 var lastCommand = "stop";
 var portOpen = false;
 
-stdin.addListener("data", function(d) {
-  var input = d.toString().substring(0, d.length-1);
+stdin.addListener("data", function (d) {
+  var input = d.toString().substring(0, d.length - 1);
   switch (input) {
     case "0":
       lastCommand = "run";
@@ -54,7 +54,7 @@ stdin.addListener("data", function(d) {
       break;
   }
   console.log("your command:", lastCommand);
-  if (portOpen) port.write(new Buffer(lastCommand + '\r\n', 'utf-8'), function(err) {
+  if (portOpen) port.write(new Buffer(lastCommand + '\r\n', 'utf-8'), function (err) {
     if (err) {
       console.log('err ' + err);
     }
@@ -72,7 +72,7 @@ port.on('data', function (data) {
 
   // handshake
   if (input == 'hello') {
-    port.write(new Buffer(input + '\r\n', 'utf-8'), function(err) {
+    port.write(new Buffer(input + '\r\n', 'utf-8'), function (err) {
       if (err) {
         return console.log('err:', err);
       }

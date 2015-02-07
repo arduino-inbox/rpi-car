@@ -11,7 +11,7 @@ function Transmitter(config) {
   events.EventEmitter.call(self);
 
   var transmit = function (uptime, nodeName, param, value) {
-    var message = uptime+':'+nodeName+':'+param+':'+value;
+    var message = uptime + ':' + nodeName + ':' + param + ':' + value;
     self.btSerial.write(new Buffer(message, 'utf-8'), function (err) {
       self.emit('debug', ['sent', message]);
       if (err) {
@@ -54,41 +54,41 @@ function Transmitter(config) {
 
     // Port lookup
     self.btSerial.findSerialPortChannel(
-        self.config.address,
-        function (channel) {
-          self.emit('debug', ['Bluetooth serial port channel found.', channel]);
-          if (channel == self.config.channel) {
-            self.channelFound = true;
-            self.emit('info', ['This is the bluetooth serial port channel we are looking for.']);
+      self.config.address,
+      function (channel) {
+        self.emit('debug', ['Bluetooth serial port channel found.', channel]);
+        if (channel == self.config.channel) {
+          self.channelFound = true;
+          self.emit('info', ['This is the bluetooth serial port channel we are looking for.']);
 
-            // Try to connect
-            self.btSerial.connect(
-                self.config.address,
-                self.config.channel,
-                function () {
-                  self.emit('info', 'Bluetooth connected.');
+          // Try to connect
+          self.btSerial.connect(
+            self.config.address,
+            self.config.channel,
+            function () {
+              self.emit('info', 'Bluetooth connected.');
 
-                  // Subscribe to data while handshaking
-                  self.btSerial.on('data', receiveHandshake);
+              // Subscribe to data while handshaking
+              self.btSerial.on('data', receiveHandshake);
 
-                  // Send handshake
-                  self.btSerial.write(new Buffer('hello', 'utf-8'), function (err) {
-                    self.emit('debug', ['sent', 'hello']);
-                    if (err) {
-                      return self.emit('error', ['transmission failed. error occurred.', err.message]);
-                    }
-                    setTimeout(waitForHandshake, 5 * 1000);
-                  });
-                },
-                function (err) {
-                  self.emit('error', ['Cannot connect.', err]);
+              // Send handshake
+              self.btSerial.write(new Buffer('hello', 'utf-8'), function (err) {
+                self.emit('debug', ['sent', 'hello']);
+                if (err) {
+                  return self.emit('error', ['transmission failed. error occurred.', err.message]);
                 }
-            );
-          }
-        },
-        function () {
-          self.emit('error', ['Cannot find a serial port channel on '+self.config.address+'.']);
+                setTimeout(waitForHandshake, 5 * 1000);
+              });
+            },
+            function (err) {
+              self.emit('error', ['Cannot connect.', err]);
+            }
+          );
         }
+      },
+      function () {
+        self.emit('error', ['Cannot find a serial port channel on ' + self.config.address + '.']);
+      }
     );
     self.btSerial.inquire();
   };
