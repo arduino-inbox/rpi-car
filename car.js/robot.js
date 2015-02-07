@@ -93,8 +93,9 @@ function Robot(config) {
     self.nodes.transmitter.on("connected", function () {
       goOnline();
     });
-    self.nodes.transmitter.on("error", function () {
-      throw new Error('Transmitter error. Die.')
+    self.nodes.transmitter.on("error", function (err) {
+      self.logger.error('Transmitter error.', err);
+      process.exit();
     });
     // Bluetooth commands
     self.nodes.transmitter.on('data', function (data) {
