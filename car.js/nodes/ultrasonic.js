@@ -6,7 +6,7 @@ function Ultrasonic(config) {
   var self = this;
 
   self.config = config;
-  self.sensor = usonic(self.config.echoPin, self.config.triggerPin, self.config.timeout);
+  self.sensor = usonic.createSensor(self.config.echoPin, self.config.triggerPin, self.config.timeout);
   self.distance = 2^16 - 1;
 
   events.EventEmitter.call(self);
