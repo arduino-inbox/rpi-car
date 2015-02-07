@@ -1,5 +1,7 @@
+var _ = require('lodash');
 var events = require('events');
 var bt = require('bluetooth-serial-port');
+
 
 function Transmitter(config) {
 
@@ -21,7 +23,6 @@ function Transmitter(config) {
   };
 
   var connect = function () {
-    self.connecting = true;
     self.emit('info', 'Connecting to server.');
 
     // Wait for channel
@@ -101,22 +102,15 @@ function Transmitter(config) {
     //self.btSerial.inquire();
   };
 
-  self.connecting = false;
-  self.on('error', function () {
-    self.connecting = false;
-  });
-
-  self.emit("info", "Transmitter standing by.");
-  self.on("offline", function () {
+  // Throttle offline handler to avoid the flood.
+  var onOffline = _.throttle(function () {
     self.removeAllListeners('transmit');
     self.btSerial.removeAllListeners('data');
-    if (self.connecting) {
-      self.emit("info", "Already connecting.");
-      return;
-    }
     connect();
-  });
+  }, self.config.timeout);
 
+  self.emit("info", "Transmitter standing by.");
+  self.on("offline", onOffline);
   self.on("online", function () {
     self.on('transmit', transmit);
     self.btSerial.on('data', function (data) {
