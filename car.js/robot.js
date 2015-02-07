@@ -80,10 +80,10 @@ function Robot(config) {
 
   var standBy = function (done) {
     self.logger.info(self.uptime(), "Entering standby mode");
-    self.transmitter.on("connected", function () {
+    self.nodes.transmitter.on("connected", function () {
       goOnline();
     });
-    self.transmitter.on("error", function () {
+    self.nodes.transmitter.on("error", function () {
       goOffline();
     });
     // Bluetooth commands
@@ -116,18 +116,18 @@ function Robot(config) {
     });
 
     var command = function (nodeName, message, aux) {
-      self.nodes[nodeName].emit(message, aux);
-      self.transmitter.emit('transmit', self.uptime(), nodeName, "command", message, aux);
+      self.nodes[nodeName].emit("command", message, aux);
+      self.nodes.transmitter.emit('transmit', self.uptime(), nodeName, "command", message, aux);
     };
 
-    self.ultrasonic.on('frontDistance', function (frontDistance) {
-      self.transmitter.emit('transmit', self.uptime(), "ultrasonic", "distance", frontDistance);
+    self.nodes.ultrasonic.on('update', function (distance) {
+      self.nodes.transmitter.emit('transmit', self.uptime(), "ultrasonic", "distance", distance);
 
       if (self.mode != "auto") return;
 
-      if (frontDistance < 10) {
+      if (distance < 10) {
         command("motor", "goBackward", self.config.nodes.motor.defaultSpeed);
-      } else if (frontDistance > 30) {
+      } else if (distance > 30) {
         command("motor", "goForward", self.config.nodes.motor.defaultSpeed);
       } else {
         command("motor", "stop");

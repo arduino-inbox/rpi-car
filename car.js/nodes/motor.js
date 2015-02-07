@@ -69,7 +69,7 @@ function Motor(config) {
     setSpeed(0);
   };
 
-  // @todo test
+  // @todo test!!!
   self.piBlasterProc = child.spawn('pi-blaster');
   self.piBlasterProc.stdout.on('data', function (data) {
     self.emit("info", "pi-blaster::stdout: " + data);
@@ -83,16 +83,27 @@ function Motor(config) {
 
   self.emit("info", "Motor standing by.");
 
+  var onCommand = function (command, data) {
+    switch (command) {
+      case "goForward":
+        goForward(data);
+        break;
+      case "goBackward":
+        goBackward(data);
+        break;
+      default:
+      case "stop":
+        stop();
+        break;
+    }
+  };
+
   self.on('online', function () {
-    self.on('goBackward', goBackward);
-    self.on('goForward', goForward);
-    self.on('stop', stop);
+    self.on('command', onCommand);
   });
 
   self.on('offline', function () {
-    self.removeAllListeners('goBackward');
-    self.removeAllListeners('goForward');
-    self.removeAllListeners('stop');
+    self.removeAllListeners('command');
   });
 }
 

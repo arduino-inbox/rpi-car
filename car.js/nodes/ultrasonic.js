@@ -14,7 +14,7 @@ function Ultrasonic(config) {
   // private
   var update = function () {
     self.distance = self.sensor();
-    self.emit('frontDistance', self.distance);
+    self.emit('update', self.distance);
   };
 
   self.emit("info", "Ultrasonic standing by.");
