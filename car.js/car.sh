@@ -14,7 +14,8 @@ mkdir -p /var/log/$PROGRAM_NAME
 case "$1" in
   start)
     echo "Starting car"
-    forever start --spinSleepTime=30000 --minUptime=30000 $FULL_PATH/$FILE_NAME
+    cd $FULL_PATH
+    forever start --command node --sourceDir $FULL_PATH --spinSleepTime=30000 --minUptime=1000 $FILE_NAME >> /var/log/$PROGRAM_NAME/info.log 2>&1
     ;;
   stop)
     echo "Stopping car"
