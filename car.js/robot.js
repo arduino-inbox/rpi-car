@@ -43,7 +43,6 @@ function Robot(config) {
       transports: [
         new (winston.transports.Console)({
           colorize: 'all',
-          json: true,
           level: (process.env.DEBUG ? 'debug' : 'info')
         })
       ]
@@ -94,7 +93,7 @@ function Robot(config) {
     // Bluetooth commands
     self.nodes.transmitter.on('data', function (data) {
       data = data.toString().trim();
-      self.logger.debug(self.uptime(), "data", "transmitter", data);
+      self.logger.info(self.uptime(), "data", "transmitter", data);
 
       data = data.split(":");
       var cmd = data[0];

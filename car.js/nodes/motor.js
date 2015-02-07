@@ -84,7 +84,7 @@ function Motor(config) {
   });
 
   var onCommand = function (cmd, data) {
-    self.emit('debug', ["oncommand", cmd, data]);
+    self.emit('info', ["oncommand", cmd, data]); // @fixme set to "debug"
     switch (cmd) {
       case "goForward":
         goForward(data);
@@ -100,10 +100,12 @@ function Motor(config) {
   };
 
   self.on('online', function () {
+    self.emit("info", "Motor online");
     self.on('command', onCommand);
   });
 
   self.on('offline', function () {
+    self.emit("info", "Motor offline");
     self.removeAllListeners('command');
   });
 }
