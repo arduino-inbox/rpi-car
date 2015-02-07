@@ -12,6 +12,13 @@ exec('killall pi-blaster', function () {
   piBlaster.on('close', function (code, signal) {
     console.log("error", "pi-blaster exited with code " + code + " on " + signal + " signal.");
   });
-  piBlaster.stdout.pipe(console.log);
-  piBlaster.stderr.pipe(console.log);
+
+  piBlaster.stdout.on('data', function(data) {
+    console.log('stdout: ' + data);
+  });
+
+  piBlaster.stderr.on('data', function(data) {
+    console.log('stdout: ' + data);
+  });
+
 });
