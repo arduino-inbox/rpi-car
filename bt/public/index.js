@@ -53,6 +53,10 @@ $(function() {
     socket.emit('send', $field.val());
   });
 
+  $('.run').click(function () {
+    $field.val('run');
+    $frm.submit();
+  });
   $('.fwd').click(function () {
     $field.val('goForward:'+$('.speed').val());
     $frm.submit();

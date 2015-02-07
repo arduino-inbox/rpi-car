@@ -91,8 +91,8 @@ function Robot(config) {
       goOnline();
     });
     self.nodes.transmitter.on("error", function () {
-      //goOffline();
-      self.emit("offline")
+      // @fixme reconnect does not work.
+      goOffline();
     });
     // Bluetooth commands
     self.nodes.transmitter.on('data', function (data) {
@@ -211,13 +211,10 @@ var config = {
   }
 };
 
-var robot;
 var startRobot = function () {
-  robot = new Robot(config);
+  var robot = new Robot(config);
   robot.start();
-
-  // reset the robot
-  robot.on("offline", startRobot);
+  // @todo fixme reset the robot on disconnect.
 };
 startRobot();
 
