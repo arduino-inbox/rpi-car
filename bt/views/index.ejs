@@ -10,29 +10,31 @@
 <body>
 <main class="panel panel-primary">
     <div class="panel-heading">
-        <h3 class="panel-title">Log</h3>
+        <h3 class="panel-title">Runtime: <span class="runtime">0</span></h3>
     </div>
-    <div id="log" class="panel-body"></div>
+    <div id="dashboard" class="panel-body">
+    </div>
     <div id="controls" class="panel-footer">
-        <form id="frm">
-            <input type="text" id="field" class="text-primary" placeholder="command" title="
+    <form id="frm">
+    <input type="text" id="field" class="text-primary" placeholder="command" title="Commands:
 
-run
-stop
-goForward:0.05
-goForward:0.1
-goForward:0.2
-goForward:0.3
-goBackward:0.05
-goBackward:0.1
-goBackward:0.2
-goBackward:0.3
+    run
+    stop
+    goForward:0.05
+    goForward:0.1
+    goForward:0.2
+    goForward:0.3
+    goBackward:0.05
+    goBackward:0.1
+    goBackward:0.2
+    goBackward:0.3
 
-            "/>
-            <button type="submit" class="btn btn-primary">Command</button>
-        </form>
+    "/>
+    <button type="submit" class="btn btn-primary">Command</button>
+    </form>
     </div>
 </main>
+<script src="/jquery-2.1.3.min.js"></script>
 <script src="/bootstrap.min.js"></script>
 <script src="/index.js"></script>
 <script src="/socket.io/socket.io.js"></script>

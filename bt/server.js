@@ -24,44 +24,65 @@ app.get("/", function (req, res) {
 });
 
 var io = require('socket.io').listen(app.listen(httpPort));
-io.sockets.on('connection', function (socket) {
-  socket.emit('message', {message: 'Welcome!'});
-  socket.on('send', function (data) {
-    io.sockets.emit('message', data);
+var socket = {
+  emit: function () {}  // dummy
+};
+
+io.sockets.on('connection', function (s) {
+  socket = {
+    emit: function (t, m) {
+      s.emit(t, m);
+      if (process.env.DEBUG) {
+        console.log("socket.emit", t, m);
+      }
+    }
+  };
+  socket.emit('message', 'Welcome!');
+  s.on('send', function (data) {
+    lastCommand = data.trim();
+    socket.emit('message', {info: data});
 
     port.write(new Buffer(lastCommand + '\r\n', 'utf-8'), function (err) {
       if (err) {
-        io.sockets.emit('message', 'Could not send '+lastCommand+' command. Error: '+err);
+        socket.emit('message', {error: 'Could not send '+lastCommand+' command. Error: '+err});
       }
     });
   });
 });
 
 port.on('open', function () {
-  io.sockets.emit('message', 'port open. rate: ' + port.options.baudRate);
+  socket.emit('message', {info: 'port open. rate: ' + port.options.baudRate});
 });
 
 port.on('data', function (data) {
   var input = data.toString().trim();
-  io.sockets.emit('message', 'received:'+input);
+  // socket.emit('message', 'received:'+input);
+  // '13.2430:ultrasonic:distance:53.4691724137931'
+  var inputData = input.split(':');
+  socket.emit('runtime', inputData[0]);
+  socket.emit('message', {input: {
+    sensor: inputData[1],
+    parameter: inputData[2],
+    value: inputData[3]
+  }});
 
   // handshake
   if (input == 'hello') {
     port.write(new Buffer(input + '\r\n', 'utf-8'), function (err) {
       if (err) {
-        return io.sockets.emit('message', 'Could not send '+input+' command. Error: '+err);
+        return socket.emit('message', {error: 'Could not send '+input+' command. Error: '+err});
       }
-      io.sockets.emit('message', 'sent:'+input);
+      socket.emit('message', {info: 'sent:'+input});
     });
   }
 });
 
 port.on('close', function () {
-  io.sockets.emit('message', 'serial port closed.');
+  socket.emit('message', {error: 'serial port closed.'});
 });
 
 port.on('error', function (err) {
-  io.sockets.emit('message', 'serial port error. '+err);
+  socket.emit('message', {error: 'serial port error. '+err});
 });
 
 console.log("Listening on port " + httpPort);

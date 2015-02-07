@@ -124,12 +124,11 @@ function Robot(config) {
 
     var command = function (nodeName, message, aux) {
       self.nodes[nodeName].emit("command", message, aux);
-      self.nodes.transmitter.emit('transmit', self.uptime(), nodeName, "command", message, aux);
+      self.nodes.transmitter.emit('transmit', self.uptime(), nodeName, "command", message + (aux ? ':' + aux : ''));
     };
 
     self.nodes.ultrasonic.on('update', function (distance) {
       self.nodes.transmitter.emit('transmit', self.uptime(), "ultrasonic", "distance", distance);
-
       if (self.mode != "auto") return;
 
       if (distance < 10) {
