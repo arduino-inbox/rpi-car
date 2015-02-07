@@ -67,7 +67,18 @@ port.on('open', function () {
 });
 
 port.on('data', function (data) {
-  console.log('received:', data.toString());
+  var input = data.toString().trim();
+  console.log('received:', input);
+
+  // handshake
+  if (input == 'hello') {
+    port.write(new Buffer(input + '\r\n', 'utf-8'), function(err) {
+      if (err) {
+        return console.log('err:', err);
+      }
+      console.log('sent:', input);
+    });
+  }
 });
 
 port.on('close', function () {

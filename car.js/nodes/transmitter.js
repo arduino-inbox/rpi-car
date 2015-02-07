@@ -21,31 +21,98 @@ function Transmitter(config) {
   };
 
   var connect = function () {
+    self.connecting = true;
     self.emit('info', 'Connecting to server.');
-    self.btSerial.connect(self.config.address, self.config.channel, function () {
-      self.btSerial.write(new Buffer('hello', 'utf-8'), function (err) {
-        self.emit('debug', ['sent', 'hello']);
-        if (err) {
-          return self.emit('error', ['transmission failed. error occurred.', err.message]);
-        }
-        self.emit('info', 'Connected.');
-        self.emit('connected');
-      });
-    }, function () {
-      self.emit('error', 'Cannot connect.');
-      if (self.config.reconnect) {
-        setTimeout(connect, self.config.reconnectTimeout);
+
+    //self.btSerial.inquire(); // @todo check if we need to run self.btSerial.inquire(); each time
+
+    // Wait for channel
+    self.channelFound = false;
+    var waitForChannel = function () {
+      if (!self.channelFound) {
+        return self.emit('error', 'Channel lookup timeout.');
       }
-    });
-    self.btSerial.inquire(); // @todo check if we need to run self.btSerial.inquire(); each time
+    };
+    setTimeout(waitForChannel, 3000);
+
+    // Handshake flag (called below)
+    self.handshaked = false;
+    var waitForHandshake = function () {
+      if (!self.handshaked) {
+        return self.emit('error', 'Handshake response timeout.');
+      }
+    };
+    var receiveHandshake = function (data) {
+      data = data.trim();
+      if (data == 'hello') {
+        self.emit('handshaked');
+      }
+    };
+
+    // Port lookup
+    self.btSerial.findSerialPortChannel(
+        self.config.address,
+        function (channel) {
+
+          self.emit('debug', ['Bluetooth serial port channel found.', channel]);
+          if (channel == self.config.channel) {
+            self.channelFound = true;
+            self.emit('info', ['This is the bluetooth serial port channel we are looking for.']);
+
+            // Try to connect
+            self.btSerial.connect(
+                self.config.address,
+                self.config.channel,
+                function () {
+                  self.emit('info', 'Bluetooth connected.');
+
+                  // Subscribe to data while handshaking
+                  self.on('data', receiveHandshake);
+
+                  // On handshake response
+                  self.on('handshaked', function () {
+                    self.handshaked = true;  // This will save us from handshake timeout error.
+                    self.removeEventListener('data', receiveHandshake);  // Unsubscribe from data.
+                    self.emit('connected');  // Emit "connected" event for robot to go online.
+                  });
+
+                  // Send handshake
+                  self.btSerial.write(new Buffer('hello', 'utf-8'), function (err) {
+                    self.emit('debug', ['sent', 'hello']);
+                    if (err) {
+                      return self.emit('error', ['transmission failed. error occurred.', err.message]);
+                    }
+                    setTimeout(waitForHandshake, 1000);
+                  });
+                },
+                function (err) {
+                  self.emit('error', ['Cannot connect.', err]);
+                }
+            );
+          }
+        },
+        function (err) {
+          self.emit('error', ['Cannot find a serial port channel on '+self.config.address+'.', err]);
+        }
+    );
   };
+
+  self.connecting = false;
+  self.on('error', function () {
+    self.connecting = false;
+  });
 
   self.emit("info", "Transmitter standing by.");
   self.on("offline", function () {
     self.removeAllListeners('transmit');
     self.btSerial.removeAllListeners('data');
+    if (self.connecting) {
+      self.emit("info", "Already connecting.");
+      return;
+    }
     connect();
   });
+
   self.on("online", function () {
     self.on('transmit', transmit);
     self.btSerial.on('data', function (data) {
