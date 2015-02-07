@@ -58,10 +58,6 @@ function Robot(config) {
     done();
   };
 
-  var configureNodes = function (done) {
-    async.map(_.keys(self.config.nodes), configureNode, done);
-  };
-
   var notifyAllNodes = function (message) {
     _.forEach(self.nodes, function (node) {
       node.emit(message);
@@ -126,9 +122,9 @@ function Robot(config) {
       if (self.mode != "auto") return;
 
       if (distance < 10) {
-        command("motor", "goBackward", self.config.nodes.motor.defaultSpeed);
+        command("motor", "goBackward");
       } else if (distance > 30) {
-        command("motor", "goForward", self.config.nodes.motor.defaultSpeed);
+        command("motor", "goForward");
       } else {
         command("motor", "stop");
       }
@@ -137,15 +133,20 @@ function Robot(config) {
     done();
   };
 
+  var configureNodes = function (done) {
+    async.map(_.keys(self.config.nodes), configureNode, done);
+  };
+
   self.start = function () {
     async.waterfall([
       configureNodes,
       standBy
-    ], function (err) {
+    ], function (err, output) {
       if (err) {
         return self.logger.error("error", self.uptime(), err);
       }
       self.logger.info(self.uptime(), "Ready");
+      self.logger.debug(self.uptime(), "output", output);
     });
   };
 }
@@ -189,7 +190,8 @@ var robot = new Robot({
         speedPin: constants.pins.PIN_MOTOR_SPEED_PWM,
         directionPin1: constants.pins.PIN_MOTOR_DIR1,
         directionPin2: constants.pins.PIN_MOTOR_DIR2,
-        defaultSpeed: 0.3
+        defaultSpeed: 0.3,
+        maxSpeed: 0.5
       }
     }
   }

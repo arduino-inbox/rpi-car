@@ -15,7 +15,8 @@ function Motor(config) {
   events.EventEmitter.call(self);
 
   var setSpeed = function (speed) {
-    if (speed > 1) speed = 1;
+    if (!speed) speed = self.config.defaultSpeed;
+    if (speed > self.config.maxSpeed) speed = self.config.maxSpeed;
     if (speed < 0) speed = 0;
 
     self.emit('debug', ['Setting speed to', speed]);
