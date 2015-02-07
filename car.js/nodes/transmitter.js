@@ -23,8 +23,14 @@ function Transmitter(config) {
   var connect = function () {
     self.emit('info', 'Connecting to server.');
     self.btSerial.connect(self.config.address, self.config.channel, function () {
-      self.emit('connected');
-      self.emit('info', 'Connected.');
+      self.btSerial.write(new Buffer('hello', 'utf-8'), function (err) {
+        self.emit('debug', ['sent', 'hello']);
+        if (err) {
+          return self.emit('error', ['transmission failed. error occurred.', err.message]);
+        }
+        self.emit('info', 'Connected.');
+        self.emit('connected');
+      });
     }, function () {
       self.emit('error', 'Cannot connect.');
       if (self.config.reconnect) {

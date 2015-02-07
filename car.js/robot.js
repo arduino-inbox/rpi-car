@@ -145,11 +145,11 @@ function Robot(config) {
     async.waterfall([
       configureNodes,
       standBy
-    ], function (err, output) {
+    ], function (err) {
       if (err) {
         return self.logger.error("error", self.uptime(), err);
       }
-      self.nodes.transmitter.emit("offline"); // connect
+      notifyAllNodes("offline");
       self.logger.info(self.uptime(), "Ready");
     });
   };
