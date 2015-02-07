@@ -91,7 +91,8 @@ function Robot(config) {
       goOnline();
     });
     self.nodes.transmitter.on("error", function () {
-      goOffline();
+      //goOffline();
+      self.emit("offline")
     });
     // Bluetooth commands
     self.nodes.transmitter.on('data', function (data) {
@@ -181,7 +182,7 @@ var constants = {
 };
 
 // Start
-var robot = new Robot({
+var config = {
   nodes: {
     transmitter: {
       config: {
@@ -208,5 +209,15 @@ var robot = new Robot({
       }
     }
   }
-});
-robot.start();
+};
+
+var robot;
+var startRobot = function () {
+  robot = new Robot();
+  robot.start();
+
+  // reset the robot
+  robot.on("offline", startRobot);
+};
+startRobot();
+

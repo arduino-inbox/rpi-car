@@ -63,7 +63,8 @@ port.on('data', function (data) {
   socket.emit('message', {input: {
     sensor: inputData[1],
     parameter: inputData[2],
-    value: inputData[3]
+    value: inputData[3],
+    aux: inputData[4]
   }});
 
   // handshake
