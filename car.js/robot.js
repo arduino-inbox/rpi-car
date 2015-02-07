@@ -79,14 +79,14 @@ function Robot(config) {
     notifyAllNodes("online");
   };
 
-  //var goOffline = function () {
-  //  self.online = false;
-  //  self.logger.info(self.uptime(), "Offline");
-  //  notifyAllNodes("offline");
-  //  setTimeout(function () {
-  //    process.exit();  // die to reconnect.
-  //  }, self.config.nodes.transmitter.config.timeout);
-  //};
+  var goOffline = function () {
+    self.online = false;
+    self.logger.info(self.uptime(), "Offline");
+    notifyAllNodes("offline");
+    setTimeout(function () {
+      process.exit();  // die to reconnect.
+    }, self.config.nodes.transmitter.config.timeout);
+  };
 
   var standBy = function (done) {
     self.logger.info(self.uptime(), "Entering standby mode");
@@ -94,6 +94,7 @@ function Robot(config) {
       goOnline();
     });
     self.nodes.transmitter.on("error", function (err) {
+      goOffline();
       self.logger.error('Transmitter error.', err);
       process.exit(1);
     });
