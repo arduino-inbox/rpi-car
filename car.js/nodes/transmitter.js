@@ -2,6 +2,7 @@ var _ = require('lodash');
 var events = require('events');
 var bt = require('bluetooth-serial-port');
 
+// @note Do not emit "error". Use "disconnected" instead.
 
 function Transmitter(config) {
 
@@ -17,7 +18,7 @@ function Transmitter(config) {
     self.btSerial.write(new Buffer(message, 'utf-8'), function (err) {
       self.emit('debug', ['sent', message]);
       if (err) {
-        self.emit('error', ['transmission failed. could not send message.', err.message]);
+        self.emit('disconnected', ['transmission failed. could not send message.', err.message]);
       }
     });
   };
@@ -29,7 +30,7 @@ function Transmitter(config) {
     self.channelFound = false;
     var waitForChannel = function () {
       if (!self.channelFound) {
-        return self.emit('error', 'Channel lookup timeout.');
+        return self.emit('disconnected', 'Channel lookup timeout.');
       }
     };
     setTimeout(waitForChannel, self.config.timeout);
@@ -37,7 +38,7 @@ function Transmitter(config) {
     // Handshake flag (called below)
     var waitForHandshake = function () {
       if (!self.handshakeReceived) {
-        return self.emit('error', 'Handshake response timeout.');
+        return self.emit('disconnected', 'Handshake response timeout.');
       }
     };
 
@@ -64,7 +65,7 @@ function Transmitter(config) {
       self.btSerial.write(new Buffer('hello', 'utf-8'), function (err) {
         self.emit('debug', ['sent', 'hello']);
         if (err) {
-          return self.emit('error', ['transmission failed. could not send "hello".', err.message]);
+          return self.emit('disconnected', ['transmission failed. could not send "hello".', err.message]);
         }
         setTimeout(waitForHandshake, 5 * 1000);
       });
@@ -90,13 +91,13 @@ function Transmitter(config) {
               sendHandshake();
             },
             function (err) {
-              self.emit('error', ['Cannot connect.', err]);
+              self.emit('disconnected', ['Cannot connect.', err]);
             }
           );
         }
       },
       function () {
-        self.emit('error', ['Cannot find a serial port channel on ' + self.config.address + '.']);
+        self.emit('disconnected', ['Cannot find a serial port channel on ' + self.config.address + '.']);
       }
     );
     self.btSerial.inquire();

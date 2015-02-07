@@ -93,7 +93,7 @@ function Robot(config) {
     self.nodes.transmitter.on("connected", function () {
       goOnline();
     });
-    self.nodes.transmitter.on("error", function (err) {
+    self.nodes.transmitter.on("disconnected", function (err) {
       goOffline();
       self.logger.error('Transmitter error.', err);
       process.exit(1);
