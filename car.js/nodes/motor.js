@@ -70,19 +70,18 @@ function Motor(config) {
     setSpeed(0);
   };
 
-  // @todo test!!!
-  self.piBlasterProc = child.spawn('pi-blaster');
-  self.piBlasterProc.stdout.on('data', function (data) {
-    self.emit("info", "pi-blaster::stdout: " + data);
-  });
-  self.piBlasterProc.stderr.on('data', function (data) {
-    self.emit("error", "pi-blaster::stderr: " + data);
-  });
-  self.piBlasterProc.on('close', function (code, signal) {
-    self.emit("error", "pi-blaster exited with code " + code + " on " + signal + " signal.");
-  });
+  child.exec('killall pi-blaster', function () {
+    self.piBlasterProc = child.exec('pi-blaster');
+    if (!self.piBlasterProc.pid) {
+      return self.emit('error', "Could not start pi-blaster");
+    }
 
-  self.emit("info", "Motor standing by.");
+    self.emit('info', ["pi-blaster PID:", self.piBlasterProc.pid]);
+    self.piBlasterProc.on('close', function (code, signal) {
+      self.emit("error", "pi-blaster exited with code " + code + " on " + signal + " signal.");
+    });
+    self.emit("info", "Motor standing by.");
+  });
 
   var onCommand = function (cmd, data) {
     self.emit('debug', ["oncommand", cmd, data]);
