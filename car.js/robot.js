@@ -134,7 +134,11 @@ function Robot(config) {
   };
 
   var configureNodes = function (done) {
-    async.map(_.keys(self.config.nodes), configureNode, done);
+    async.map(_.keys(self.config.nodes), configureNode, function (err, output) {
+      if (err) return done(err);
+      self.logger.debug(self.uptime(), "output", output);
+      done();
+    });
   };
 
   self.start = function () {
@@ -146,7 +150,6 @@ function Robot(config) {
         return self.logger.error("error", self.uptime(), err);
       }
       self.logger.info(self.uptime(), "Ready");
-      self.logger.debug(self.uptime(), "output", output);
     });
   };
 }
