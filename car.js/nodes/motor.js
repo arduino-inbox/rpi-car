@@ -7,7 +7,6 @@ function Motor(config) {
 
   var self = this;
 
-  self.name = "Motor";
   self.config = config;
   self.defaultSpeed = self.config.defaultSpeed;
   self.directionPin1 = new onoff.Gpio(self.config.directionPin1, 'out');

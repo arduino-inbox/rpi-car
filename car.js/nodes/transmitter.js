@@ -5,7 +5,6 @@ function Transmitter(config) {
 
   var self = this;
 
-  self.name = "Bluetooth Transmitter";
   self.config = config;
   self.btSerial = new bt.BluetoothSerialPort();
 

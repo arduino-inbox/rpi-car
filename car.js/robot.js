@@ -55,7 +55,7 @@ function Robot(config) {
     });
 
     self.nodes[nodeName] = node;
-    done(node);
+    done(null, nodeName);
   };
 
   var notifyAllNodes = function (message) {
