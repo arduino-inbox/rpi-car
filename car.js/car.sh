@@ -15,7 +15,7 @@ case "$1" in
   start)
     echo "Starting car"
     cd $FULL_PATH
-    forever start --append -l /var/log/$PROGRAM_NAME/forever.log -o /var/log/$PROGRAM_NAME/forever-out.log -e /var/log/$PROGRAM_NAME/forever-error.log --command node --sourceDir $FULL_PATH --spinSleepTime=10000 --minUptime=1000 $FILE_NAME >> /var/log/$PROGRAM_NAME/forever-init.log 2>&1
+    forever start --append -l /var/log/$PROGRAM_NAME/forever.log -o /var/log/$PROGRAM_NAME/forever-out.log -e /var/log/$PROGRAM_NAME/forever-error.log --command node --sourceDir $FULL_PATH --spinSleepTime=30000 --minUptime=10000 $FILE_NAME >> /var/log/$PROGRAM_NAME/forever-init.log 2>&1
     ;;
   stop)
     echo "Stopping car"
