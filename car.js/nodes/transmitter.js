@@ -34,16 +34,17 @@ function Transmitter(config) {
     setTimeout(waitForChannel, self.config.timeout);
 
     // Handshake flag (called below)
-    self.handshaked = false;
+    self.handshakeReceived = false;
     var waitForHandshake = function () {
-      if (!self.handshaked) {
+      if (!self.handshakeReceived) {
         return self.emit('error', 'Handshake response timeout.');
       }
     };
     var receiveHandshake = function (data) {
-      data = data.trim();
+      data = data.toString().trim();
+      self.emit("debug", ["Receive handshake", data, data == 'hello']);
       if (data == 'hello') {
-        self.emit('handshaked');
+        self.emit('handshake');
       }
     };
 
@@ -67,9 +68,9 @@ function Transmitter(config) {
                   self.on('data', receiveHandshake);
 
                   // On handshake response
-                  self.on('handshaked', function () {
-                    self.handshaked = true;  // This will save us from handshake timeout error.
-                    self.removeEventListener('data', receiveHandshake);  // Unsubscribe from data.
+                  self.on('handshake', function () {
+                    self.handshakeReceived = true;  // This will save us from handshake timeout error.
+                    self.removeEventListener('data', receiveHandshake);  // Un-subscribe from data.
                     self.emit('connected');  // Emit "connected" event for robot to go online.
                   });
 
@@ -79,7 +80,7 @@ function Transmitter(config) {
                     if (err) {
                       return self.emit('error', ['transmission failed. error occurred.', err.message]);
                     }
-                    setTimeout(waitForHandshake, self.config.timeout);
+                    setTimeout(waitForHandshake, 5 * 1000);
                   });
                 },
                 function (err) {
