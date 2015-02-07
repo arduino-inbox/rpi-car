@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 
+/*
+ @todo
+ - check what's up with pi blaster child process not sending output
+ - handle sigterm and terminate child processes (pi blaster)
+ - separate logging for each node (at least mute/unmute some nodes output using commands maybe)
+ - check why command are not received from bt.
+ */
+
 var _ = require('lodash');
 var async = require('async');
 var events = require('events');
