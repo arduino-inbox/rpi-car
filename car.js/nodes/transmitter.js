@@ -98,7 +98,7 @@ function Transmitter(config) {
         self.emit('error', ['Cannot find a serial port channel on ' + self.config.address + '.']);
       }
     );
-    self.btSerial.inquire();
+    //self.btSerial.inquire();
   };
 
   self.connecting = false;
