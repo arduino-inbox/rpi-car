@@ -88,8 +88,8 @@ function Transmitter(config) {
             );
           }
         },
-        function (err) {
-          self.emit('error', ['Cannot find a serial port channel on '+self.config.address+'.', err]);
+        function () {
+          self.emit('error', ['Cannot find a serial port channel on '+self.config.address+'.']);
         }
     );
     self.btSerial.inquire();
