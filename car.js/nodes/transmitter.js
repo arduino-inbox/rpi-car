@@ -31,7 +31,7 @@ function Transmitter(config) {
         return self.emit('error', 'Channel lookup timeout.');
       }
     };
-    setTimeout(waitForChannel, 30 * 1000);
+    setTimeout(waitForChannel, self.config.timeout);
 
     // Handshake flag (called below)
     self.handshaked = false;
@@ -79,7 +79,7 @@ function Transmitter(config) {
                     if (err) {
                       return self.emit('error', ['transmission failed. error occurred.', err.message]);
                     }
-                    setTimeout(waitForHandshake, 1000);
+                    setTimeout(waitForHandshake, self.config.timeout);
                   });
                 },
                 function (err) {

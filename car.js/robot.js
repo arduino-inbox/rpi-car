@@ -177,7 +177,7 @@ var robot = new Robot({
       config: {
         address: '60:FB:42:7B:23:54', //'70:73:CB:C3:66:98', // @todo config
         channel: 3,
-        reconnectTimeout: 60 * 1000
+        timeout: 60 * 1000
       }
     },
     ultrasonic: {
