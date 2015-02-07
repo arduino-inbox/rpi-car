@@ -17,7 +17,7 @@ function Transmitter(config) {
     self.btSerial.write(new Buffer(message, 'utf-8'), function (err) {
       self.emit('debug', ['sent', message]);
       if (err) {
-        self.emit('error', ['transmission failed. error occurred.', err.message]);
+        self.emit('error', ['transmission failed. could not send message.', err.message]);
       }
     });
   };
@@ -64,7 +64,7 @@ function Transmitter(config) {
       self.btSerial.write(new Buffer('hello', 'utf-8'), function (err) {
         self.emit('debug', ['sent', 'hello']);
         if (err) {
-          return self.emit('error', ['transmission failed. error occurred.', err.message]);
+          return self.emit('error', ['transmission failed. could not send "hello".', err.message]);
         }
         setTimeout(waitForHandshake, 5 * 1000);
       });

@@ -19,7 +19,8 @@ case "$1" in
     ;;
   stop)
     echo "Stopping car"
-    forever stop $FULL_PATH/$FILE_NAME
+    cd $FULL_PATH
+    forever stop --command node --sourceDir $FULL_PATH $FILE_NAME >> /var/log/$PROGRAM_NAME/info.log 2>&1
     ;;
   *)
     echo "Usage: /etc/init.d/car {start|stop}"
