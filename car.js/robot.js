@@ -79,14 +79,14 @@ function Robot(config) {
     notifyAllNodes("online");
   };
 
-  var goOffline = function () {
-    self.online = false;
-    self.logger.info(self.uptime(), "Offline");
-    notifyAllNodes("offline");
-    setTimeout(function () {
-      process.exit();  // die to reconnect.
-    }, self.config.nodes.transmitter.config.timeout);
-  };
+  //var goOffline = function () {
+  //  self.online = false;
+  //  self.logger.info(self.uptime(), "Offline");
+  //  notifyAllNodes("offline");
+  //  setTimeout(function () {
+  //    process.exit();  // die to reconnect.
+  //  }, self.config.nodes.transmitter.config.timeout);
+  //};
 
   var standBy = function (done) {
     self.logger.info(self.uptime(), "Entering standby mode");
@@ -94,7 +94,7 @@ function Robot(config) {
       goOnline();
     });
     self.nodes.transmitter.on("error", function () {
-      goOffline();
+      throw new Error('Transmitter error. Die.')
     });
     // Bluetooth commands
     self.nodes.transmitter.on('data', function (data) {
@@ -190,7 +190,7 @@ var config = {
       config: {
         address: '60:FB:42:7B:23:54', //'70:73:CB:C3:66:98', // @todo config
         channel: 3,
-        timeout: 15 * 1000
+        timeout: 5 * 1000
       }
     },
     ultrasonic: {

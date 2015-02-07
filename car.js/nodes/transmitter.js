@@ -99,18 +99,16 @@ function Transmitter(config) {
         self.emit('error', ['Cannot find a serial port channel on ' + self.config.address + '.']);
       }
     );
-    //self.btSerial.inquire();
+    self.btSerial.inquire();
   };
 
-  // Throttle offline handler to avoid the flood.
-  var onOffline = _.throttle(function () {
+  self.emit("info", "Transmitter standing by.");
+  self.on("offline", function () {
     self.removeAllListeners('transmit');
     self.btSerial.removeAllListeners('data');
     connect();
-  }, self.config.timeout);
+  });
 
-  self.emit("info", "Transmitter standing by.");
-  self.on("offline", onOffline);
   self.on("online", function () {
     self.on('transmit', transmit);
     self.btSerial.on('data', function (data) {
