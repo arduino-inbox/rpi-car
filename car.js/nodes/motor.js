@@ -19,7 +19,7 @@ function Motor(config) {
     if (speed > self.config.maxSpeed) speed = self.config.maxSpeed;
     if (speed < 0) speed = 0;
 
-    self.emit('debug', ['Setting speed to', speed]);
+    self.emit('info', ['Setting speed to', speed]);
 
     piBlasterJs.setPwm(self.config.speedPin, speed);
   };
@@ -31,7 +31,7 @@ function Motor(config) {
       self.emit('debug', 'already executing "goForward" command.');
       return;
     }
-    self.emit('debug', 'executing "goForward" command.');
+    self.emit('info', 'executing "goForward" command.');
     self.direction = "forward";
 
     self.directionPin1.writeSync(1);
@@ -46,7 +46,7 @@ function Motor(config) {
       self.emit('debug', 'already executing "goBackward" command.');
       return;
     }
-    self.emit('debug', 'executing "goBackward" command.');
+    self.emit('info', 'executing "goBackward" command.');
     self.direction = "backward";
 
     self.directionPin1.writeSync(0);
@@ -61,7 +61,7 @@ function Motor(config) {
       self.emit('debug', 'already executing "stop" command.');
       return;
     }
-    self.emit('debug', 'executing "stop" command.');
+    self.emit('info', 'executing "stop" command.');
     self.direction = null;
 
     self.directionPin1.writeSync(0);

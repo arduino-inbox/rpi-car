@@ -43,7 +43,8 @@ function Robot(config) {
       transports: [
         new (winston.transports.Console)({
           colorize: 'all',
-          level: 'debug'
+          json: true,
+          level: (process.env.DEBUG ? 'debug' : 'info')
         })
       ]
     });
