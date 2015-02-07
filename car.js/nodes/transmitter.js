@@ -24,8 +24,6 @@ function Transmitter(config) {
     self.connecting = true;
     self.emit('info', 'Connecting to server.');
 
-    //self.btSerial.inquire(); // @todo check if we need to run self.btSerial.inquire(); each time
-
     // Wait for channel
     self.channelFound = false;
     var waitForChannel = function () {
@@ -33,7 +31,7 @@ function Transmitter(config) {
         return self.emit('error', 'Channel lookup timeout.');
       }
     };
-    setTimeout(waitForChannel, 3000);
+    setTimeout(waitForChannel, 30 * 1000);
 
     // Handshake flag (called below)
     self.handshaked = false;
@@ -53,7 +51,6 @@ function Transmitter(config) {
     self.btSerial.findSerialPortChannel(
         self.config.address,
         function (channel) {
-
           self.emit('debug', ['Bluetooth serial port channel found.', channel]);
           if (channel == self.config.channel) {
             self.channelFound = true;
@@ -95,6 +92,7 @@ function Transmitter(config) {
           self.emit('error', ['Cannot find a serial port channel on '+self.config.address+'.', err]);
         }
     );
+    self.btSerial.inquire();
   };
 
   self.connecting = false;
