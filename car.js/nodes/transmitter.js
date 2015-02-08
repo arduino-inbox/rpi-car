@@ -104,10 +104,15 @@ function Transmitter(config) {
   };
 
   self.emit("info", "Transmitter standing by.");
+
   self.on("connect", function () {
+    self.emit('offline');
+    connect();
+  });
+
+  self.on("offline", function () {
     self.removeAllListeners('transmit');
     self.btSerial.removeAllListeners('data');
-    connect();
   });
 
   self.on("online", function () {

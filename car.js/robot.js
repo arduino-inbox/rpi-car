@@ -97,9 +97,8 @@ function Robot(config) {
       goOnline();
     });
     self.nodes.transmitter.on("disconnected", function (err) {
-      goOffline();
       self.logger.error('Transmitter error.', err);
-      process.exit(1);
+      goOffline();
     });
     // Bluetooth commands
     self.nodes.transmitter.on('data', function (data) {
