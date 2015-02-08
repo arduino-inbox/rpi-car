@@ -88,7 +88,7 @@ function Robot(config) {
     notifyAllNodes("offline");
     setTimeout(function () {
       self.logger.error(self.uptime(), "Restarting...");
-      process.exit(1);  // die to reconnect.
+      throw new Error('Offline');  // die to reconnect.
     }, self.config.nodes.transmitter.config.timeout);
   };
 
