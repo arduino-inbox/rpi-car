@@ -84,10 +84,11 @@ function Robot(config) {
 
   var goOffline = function () {
     self.online = false;
-    self.logger.info(self.uptime(), "Offline");
+    self.logger.error(self.uptime(), "Offline");
     notifyAllNodes("offline");
     setTimeout(function () {
-      process.exit();  // die to reconnect.
+      self.logger.error(self.uptime(), "Restarting...");
+      process.exit(1);  // die to reconnect.
     }, self.config.nodes.transmitter.config.timeout);
   };
 
