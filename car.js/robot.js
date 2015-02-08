@@ -168,6 +168,7 @@ function Robot(config) {
         return self.logger.error("error", self.uptime(), err);
       }
       notifyAllNodes("offline");
+      self.nodes.transmitter.emit('connect');
       self.logger.info(self.uptime(), "Ready");
     });
   };

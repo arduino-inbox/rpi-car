@@ -15,12 +15,17 @@ case "$1" in
   start)
     echo "Starting car"
     cd $FULL_PATH
-    forever start --append -l /var/log/$PROGRAM_NAME/forever.log -o /var/log/$PROGRAM_NAME/forever-out.log -e /var/log/$PROGRAM_NAME/forever-error.log --command node --sourceDir $FULL_PATH --spinSleepTime=30000 --minUptime=10000 $FILE_NAME >> /var/log/$PROGRAM_NAME/forever-init.log 2>&1
+    forever start -m 3600 --plain --silent --command node --sourceDir $FULL_PATH --watch --watchDirectory $FULL_PATH --workingDir $FULL_PATH --spinSleepTime=30000 --minUptime=30000 $FILE_NAME >> /dev/null 2>&1
     ;;
   stop)
     echo "Stopping car"
     cd $FULL_PATH
-    forever stop --command node --sourceDir $FULL_PATH $FILE_NAME >> /var/log/$PROGRAM_NAME/info.log 2>&1
+    forever stop --command node --sourceDir $FULL_PATH $FILE_NAME >> /dev/null 2>&1
+    ;;
+  restart)
+    echo "Restarting car"
+    cd $FULL_PATH
+    forever restart --command node --sourceDir $FULL_PATH $FILE_NAME >> /dev/null 2>&1
     ;;
   *)
     echo "Usage: /etc/init.d/car {start|stop}"

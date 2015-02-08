@@ -104,7 +104,7 @@ function Transmitter(config) {
   };
 
   self.emit("info", "Transmitter standing by.");
-  self.on("offline", function () {
+  self.on("connect", function () {
     self.removeAllListeners('transmit');
     self.btSerial.removeAllListeners('data');
     connect();
