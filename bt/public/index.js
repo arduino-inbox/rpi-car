@@ -5,6 +5,7 @@ $(function() {
 
   socket.on('runtime', function (runtime) {
     $('.runtime').html(runtime);
+    $('title').html('Car: '+runtime);
   });
 
   socket.on('message', function (message) {
