@@ -1,0 +1,10 @@
+html, body { height:100% }
+
+main {
+    width: 100%;
+    height: 100%;
+}
+
+.panel-body {
+    min-height: 85%;
+}
