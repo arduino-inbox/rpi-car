@@ -23,6 +23,10 @@ app.get("/", function (req, res) {
   res.render("index");
 });
 
+app.get("/map", function (req, res) {
+  res.render("map");
+});
+
 var io = require('socket.io').listen(app.listen(httpPort));
 var socket = {
   emit: function () {}  // dummy
