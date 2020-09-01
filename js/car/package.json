@@ -11,7 +11,7 @@
   "dependencies": {
     "async": "^0.9.0",
     "bluetooth-serial-port": "^1.2.0",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.19",
     "math-statistics": "^1.0.3",
     "microtime": "*",
     "mpu6050": "https://github.com/arduino-inbox/mpu6050/archive/master.tar.gz",
