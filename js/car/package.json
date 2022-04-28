@@ -9,7 +9,7 @@
   "author": "",
   "license": "GPL",
   "dependencies": {
-    "async": "^0.9.0",
+    "async": "^2.6.4",
     "bluetooth-serial-port": "^1.2.0",
     "lodash": "^4.17.21",
     "math-statistics": "^1.0.3",
